@@ -3,11 +3,13 @@ bodyParser = require 'body-parser'
 morgan = require 'morgan'
 errorhandler  = require 'errorhandler'
 request = require 'request'
+healthcheck = require 'express-meshblu-healthcheck'
 
 app = express()
 app.use bodyParser()
 app.use morgan()
 app.use errorhandler()
+app.use healthcheck()
 
 RESPONSE = {
   "version": "1.0",
