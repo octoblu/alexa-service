@@ -1,0 +1,24 @@
+{
+  "name": "alexa-service",
+  "version": "1.0.0",
+  "description": "Alexa Service",
+  "main": "server.js",
+  "scripts": {
+    "test": "exit 0",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/octoblu/alexa-service.git"
+  },
+  "keywords": [
+    "Alexa",
+    "Octoblu"
+  ],
+  "author": "Octoblu Inc",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/octoblu/alexa-service/issues"
+  },
+  "homepage": "https://github.com/octoblu/alexa-service"
+}
