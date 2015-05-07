@@ -1,0 +1,42 @@
+language: node_js
+sudo: false
+cache:
+  bundler: true
+  directories:
+  - node_modules
+node_js:
+- '0.10'
+env:
+  global:
+  - AWS_ACCESS_KEY_ID=AKIAIT4X4NDGM2WVL6VA
+  - DOCKER_USERNAME=octoblu
+  - DEPLOY_APPLICATION_NAME=alexa-service
+  - DEPLOY_REGION=us-west-2
+  - DEPLOY_BUCKET=octoblu-deploy
+  - DEPLOYMENT_GROUP=master
+  - DEPLOY_KEY=alexa-service/alexa-service-$TRAVIS_COMMIT.zip
+  - secure: iEajFzGsUBjP7xS07JbufSksQ8yNPNN8azb5QMTNKfLTLsfYWM9TCUZfQzxEiZ92hnRmi9GwUMJ746oJMz6Ia4TWy2gpnvE4criflwAJPSQnWcficxMY0wJj8gTy8OsIlXzGSjl9e/Kzs7MHgxmTgc+e4/vJTOqyxH/BBO/HFd8avf4BxJrvetQ3AoK/s7eNUAEhXmLcdF7FqvEUa7fiw9YXIMd4i8m7j5N1ajB+V5ZPZYGUzxb2WTSAMRJJVb+1Yg8HfMuTi6SzEbti2vuN8Vxp6XmGwACj0t3BBHjUGPNLqcZmOmK8bvZeRRMZNW0o5gY2IO1cjjcO2vik+Y4TwTpRZCzBTpLHONhTeKCCTfxc0ZHIn6sk73v7n7vcqUc715OrXvRZgLNLrmWj2wbAS8wutm9vU0MC8qbsm6RXBJzvq4eDoN2N3RNO5iXh0+Jiz9uBobb+0dwFIrzDH0egnKuqB76aV2/N6QmEgmXh5BPLoVw5ouz4Hl4y3jioaqf5VpcS6bcaG+FNsat8B1c4bcaI0847CtttD/EKrdWAzx0AYingPTn5XoMU0NQnR2VYrN1n36pyB+QTXwrKnJBXfZ3GaLCJWpl7H/+YasLy5vLHGeKRji82yQzW2FCs6FMuDsU94GVC9SK44IrFOnjf1rW6hCjaBmGPapzcuZeXZuA=
+  - secure: QplSDXuJH55C5cXAsWnN44K7I8Yqb+AcTBZ+gyE2ZN+ooQ4CLySz/i1GLcJPb1fU3saHSBInNEe1zTXBzn9iv3oUXjPQbif7HzfPi4y1xohbVgmOS0Wa8RCUCqjngyEycCQGPZIq0eZtEmNk8DWO6+uPSkCxo6Umy1sHYF83M7jD3ST1anV+XOsS04V9XKAsxRLbWdFdvGbmOVqKIaF9qc+DlOl9adnnrJJNVPA/w16Hy+77CPi2LmdpjEKHcmwK9JEy/HQteW10piV977tBcPF5gaz/9WX+OnsFWxZ9n1JSIuCUNwRfkJa3jsln6vaB7ZnTRNFj24YXHWJhFCYuPn/i4AGVs/NBY1hnx95j4pz1OeruhXmpFVIi1cg5+331cY8ZeUW5B2HfgGmhfMN+hqMinCkY3/yNgE4g8BnOdH7jLiFtefLJRm7GIyJHDeAU8SwYGlrSdSAp7rzuyELEOuoMMByTLw8fx9RV29wNvVPyJ+tBFjVjCJoxZdXRNmIz+XopeNuLv7iDzWezPZDxo+pZeYC9jqM8ip28Sa8s5sLg4DCcN/7H6xocG+HSsjjNVOWHFwV+RpJAqNwBhQQO7luGv5BprdNjrGJ4rvjF4EOvqv7BUDMmDGWlPH44EvnimhIwy8JvkswLHXmLA5CrikxrD0qbr6t0uKAjNH5YdL4=
+after_success:
+- .kubernetes/travis_after_success
+deploy:
+- provider: s3
+  access_key_id: AKIAIT4X4NDGM2WVL6VA
+  secret_access_key: &1
+    secure: C4aDG8I9yX1xFsvYhQjGqjhALssQ+89FnRuDO1B66lssCrp2/CEI2tf2rT6lvRfCuOSfo73iqcIKebLdLHsKAOp2VTLMsi8T3J5CmLJ9vs2wLUEYqF8oNkj6MSOLAS3oFM604cU1C2gNq1G869WVkJxNW+zi3v+QQFDQnNL5nXCKdAU8NQQHhOSktzqK5ii5FF3+Npfny5UAhUoPS0BHhwAkV3peKzn+PPsMXSjR/9EgfizwP5xzVerVXOEpFoAIV2AqxwJddh+GHl4jLvdWyydcyAZvhqUVR03SxG0Jc1QEoaP6/E/cy7WZoy+c4Y8r0xXTY00CLdgnrG8w1Dc/DLYQled4iDIKG4LZL8dBbPzrTdRixsAKHWLuTlUQWTf7zS+3g3eSBjlOs2gDACU6l8jx1InvxMr6yGgqwEUIuElEP/2678Y/HCGa4cezQdjv5bJErlWjfEeOmohXB2j5zUc9A1nCxq7kShvFOIyfsX11YBJwNJO7i1zJ5pu5EVmwWsO+OM02U3QngrdIMA8j0f6fqYje/2SUfHElt+hMKbIO/E0M1h92lsXAahEyzZTOfISwyjTIFWeP8C0MaJpj03sHAz49Mb2Na8fXxTbtwnH3bP9po7ubJF1630Xem+pswfdIrI+siFf+IepBUI+ngI3SiUWfBn53Bg/NA/ZoDNc=
+  local_dir: dpl_cd_upload
+  skip_cleanup: true
+  bucket: octoblu-deploy
+  on:
+    branch: master
+- provider: codedeploy
+  access_key_id: AKIAIT4X4NDGM2WVL6VA
+  secret_access_key: *1
+  bucket: octoblu-deploy
+  key: docker-builder/alexa-service-$TRAVIS_COMMIT.zip
+  bundle_type: zip
+  region: us-west-2
+  application: docker-builder
+  deployment_group: alexa-service
+  on:
+    branch: master

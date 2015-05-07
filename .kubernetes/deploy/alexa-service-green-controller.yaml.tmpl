@@ -1,0 +1,26 @@
+id: alexa-service-green-controller
+kind: ReplicationController
+apiVersion: v1beta1
+labels:
+  name: alexa-service-green
+  version: "$SHORT_COMMIT"
+desiredState:
+  replicas: 2
+  replicaSelector:
+    name: alexa-service-green
+    version: "$SHORT_COMMIT"
+  podTemplate:
+    labels:
+      name: alexa-service-green
+      app: alexa-service-green
+      version: "$SHORT_COMMIT"
+    desiredState:
+      manifest:
+        version: v1beta1
+        id: alexa-service-green
+        containers:
+          - name: alexa-service-green
+            image: octoblu/alexa-service:$SHORT_COMMIT
+            ports:
+              - containerPort: 80
+
