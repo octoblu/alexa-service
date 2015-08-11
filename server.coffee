@@ -1,34 +1,24 @@
-express = require 'express'
-bodyParser = require 'body-parser'
-morgan = require 'morgan'
-errorhandler  = require 'errorhandler'
-request = require 'request'
-healthcheck = require 'express-meshblu-healthcheck'
+express         = require 'express'
+bodyParser      = require 'body-parser'
+morgan          = require 'morgan'
+errorhandler    = require 'errorhandler'
+healthcheck     = require 'express-meshblu-healthcheck'
+AlexaController = require './src/alexa-controller'
 
 app = express()
-app.use bodyParser()
-app.use morgan()
+app.use bodyParser.json()
+app.use morgan 'dev'
 app.use errorhandler()
 app.use healthcheck()
 
-RESPONSE = {
-  "version": "1.0",
-  "response": {
-    "outputSpeech": {
-      "type": "PlainText",
-      "text": "Happy birthday Jade"
-    },
-    "shouldEndSession": true
-  }
-}
+alexaController = new AlexaController
 
-app.post '/debug', (req, res) ->
-  json = {body: req.body, headers: req.headers}
-  request.post 'http://requestb.in/ukminwuk', json: json, =>
-    res.status(200).send(RESPONSE)
+app.post '/debug', alexaController.debug
+
+app.post '/trigger', alexaController.trigger
 
 server = app.listen (process.env.ALEXA_SERVICE_PORT || 80), ->
   host = server.address().address
   port = server.address().port
 
-  console.log 'Example app listening at http://%s:%s', host, port
+  console.log "Alexa Service started http://#{host}:#{port}"
