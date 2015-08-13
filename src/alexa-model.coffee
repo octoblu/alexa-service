@@ -71,7 +71,7 @@ class AlexaModel
     name = intent?.slots?.Name?.value
     @triggers.getTriggerByName name, (error, trigger) =>
       debug 'about to trigger'
-      @triggers.trigger trigger.id, trigger.flowId, requestId, alexaIntent, (error) =>
+      @triggers.trigger trigger.id, trigger.flowId, requestId, alexaIntent.request, (error) =>
         debug 'triggered', error
         return callback error if error?
         callback null
