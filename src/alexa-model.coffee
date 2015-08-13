@@ -41,9 +41,9 @@ SUCCESS_RESPONSE  = {
   "response": {
     "outputSpeech": {
       "type": "PlainText",
-      "text": "Successful request"
+      "text": "Success"
     },
-    "shouldEndSession": false
+    "shouldEndSession": true
   }
 }
 
