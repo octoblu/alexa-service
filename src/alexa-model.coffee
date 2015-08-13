@@ -53,6 +53,11 @@ class AlexaModel
     @INTENTS =
       'Trigger': @trigger
 
+  convertError: (error) =>
+    response = _.clone CLOSE_RESPONSE
+    response.response.outputSpeech.text = error?.message ? error
+    response
+
   debug: (json, callback=->) =>
     request.post 'http://requestb.in/1gy5wgo1', json: json, (error) =>
       return callback error if error?
@@ -61,7 +66,7 @@ class AlexaModel
   intent: (alexaIntent, callback=->) =>
     {intent} = alexaIntent.request
     debug 'intent', intent
-    return callback new Error "Invalid Intent" unless @INTENTS[intent.name]?
+    return callback null, @convertError new Error("Invalid Intent") unless @INTENTS[intent.name]?
     debug 'intent name', intent.name
     @INTENTS[intent.name] alexaIntent, callback
 
@@ -70,11 +75,11 @@ class AlexaModel
     {intent, requestId} = alexaIntent.request
     name = intent?.slots?.Name?.value
     @triggers.getTriggerByName name, (error, trigger) =>
-      return callback error if error?
+      return callback null, error if error?
       debug 'about to trigger'
       @triggers.trigger trigger.id, trigger.flowId, requestId, alexaIntent.request, (error) =>
         debug 'triggered', error
-        return callback error if error?
+        return callback null, error if error?
         callback null
 
   respond: (body, callback=->) =>

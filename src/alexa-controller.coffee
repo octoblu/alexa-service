@@ -31,7 +31,7 @@ class Alexa
     debug 'stored pending request'
     @alexaModel.intent request.body, (error) =>
       debug 'responding', error
-      return response.status(500).end() if error?
+      return response.status(200).send @alexaModel.convertError error if error?
       debug 'leaving open'
 
   open: (request, response) =>
@@ -55,9 +55,9 @@ class Alexa
     return response.status(404).end() unless @pendingRequests[requestId]?
     @alexaModel.respond request.body, (error, alexaResponse) =>
       debug 'responded to request', error, alexaResponse
-      return response.status(500).end() if error?
-      pendingResponse = @pendingRequests[requestId]?.request
+      pendingResponse = @pendingRequests[requestId]?.response
       delete @pendingRequests[requestId]
+      return pendingResponse.status(200).send @alexaModel.convertError error if error?
       pendingResponse.status(200).send alexaResponse
       responded.status(200).send alexaResponse
 
