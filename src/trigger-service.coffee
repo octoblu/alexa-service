@@ -20,12 +20,13 @@ class Triggers
         from: triggerId
         params: params
         requestId: requestId
-    meshbluConfig.message message, callback
+    meshbluHttp.message message, callback
 
   getTriggers: (callback=->) =>
     debug 'getting triggers'
     meshbluConfig = new MeshbluConfig {}
     meshbluHttp = new MeshbluHttp meshbluConfig.toJSON()
+    
     meshbluHttp.devices type: 'octoblu:flow', (error, body) =>
       return callback 'unauthorized' if error?.message == 'unauthorized'
       return callback 'unable to get triggers' if error?
