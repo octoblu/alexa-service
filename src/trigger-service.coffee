@@ -3,7 +3,7 @@ MeshbluHttp     = require 'meshblu-http'
 MeshbluConfig   = require 'meshblu-config'
 TriggerModel    = require './trigger-model'
 debug           = require('debug')('alexa-service:triggers-service')
-
+_               = require 'lodash'
 class Triggers
   constructor: ->
     @triggerModel = new TriggerModel()
