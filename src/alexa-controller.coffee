@@ -50,11 +50,15 @@ class Alexa
 
   respond: (request, response) =>
     requestId = request.body.requestId
+    debug 'responding to request', requestId
     return response.status(412).end() unless requestId?
     return response.status(404).end() unless @pendingRequests[requestId]?
     @alexaModel.respond request.body, (error, alexaResponse) =>
+      debug 'responded to request', error, alexaResponse
       return response.status(500).end() if error?
       pendingResponse = @pendingRequests[requestId]?.request
+      delete @pendingRequests[requestId]
       pendingResponse.status(200).send alexaResponse
+      responded.status(200).send alexaResponse
 
 module.exports = Alexa
