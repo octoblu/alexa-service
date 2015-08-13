@@ -1,5 +1,6 @@
 request         = require 'request'
 Triggers        = require './trigger-service'
+debug           = require('debug')('alexa-service:model')
 
 DEBUG_RESPONSE  = {
   "version": "1.0",
@@ -58,26 +59,36 @@ class AlexaModel
 
   intent: (alexaIntent, callback=->) =>
     {intent} = alexaIntent.request
+    debug 'intent', intent
     return callback new Error "Invalid Intent" unless @INTENTS[intent.name]?
+    debug 'intent name', intent.name
     @INTENTS[intent.name] alexaIntent, callback
 
   trigger: (alexaIntent, callback=->) =>
+    debug 'triggering'
     {intent, requestId} = alexaIntent.request
     @triggers.getTriggers (error, triggers) =>
+      debug 'got triggers', error, triggers
       return callback error if error?
-      trigger = _.find triggers, name: intent?.slots?.Name?.value
+      name = intent?.slots?.Name?.value
+      trigger = _.find triggers, name: name
+      debug 'trigger', name: name, trigger: trigger
       return callback new Error("No trigger by that name") unless trigger?
       @triggers.trigger trigger.id, trigger.flowId, requestId, alexaIntent, (error) =>
+        debug 'triggered', error
         return callback error if error?
         callback null
 
   respond: (request, callback=->) =>
+    debug 'respond'
     callback null, SUCCESS_RESPONSE
 
   open: (alexaIntent, callback=->) =>
+    debug 'open'
     callback null, OPEN_RESPONSE
 
   close: (alexaIntent, callback=->) =>
+    debug 'close'
     callback null, CLOSE_RESPONSE
 
 
