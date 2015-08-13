@@ -35,10 +35,10 @@ class Triggers
     meshbluHttp = new MeshbluHttp meshbluConfig.toJSON()
 
     meshbluHttp.devices type: 'octoblu:flow', owner: meshbluConfig.uuid, (error, body) =>
-    return callback 'unauthorized' if error?.message == 'unauthorized'
-    return callback 'unable to get triggers' if error?
+      return callback 'unauthorized' if error?.message == 'unauthorized'
+      return callback 'unable to get triggers' if error?
 
-    triggers = @triggerModel.parseTriggersFromDevices body.devices
-    callback null, triggers
+      triggers = @triggerModel.parseTriggersFromDevices body.devices
+      callback null, triggers
 
 module.exports = Triggers
