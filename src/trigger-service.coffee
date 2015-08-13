@@ -15,18 +15,19 @@ class Triggers
 
     message =
       devices: [flowId]
-      topic: 'alexa-service'
+      topic: 'triggers-service'
       payload:
         from: triggerId
         params: params
         requestId: requestId
+    debug 'trigger message', message
     meshbluHttp.message message, callback
 
   getTriggers: (callback=->) =>
     debug 'getting triggers'
     meshbluConfig = new MeshbluConfig {}
     meshbluHttp = new MeshbluHttp meshbluConfig.toJSON()
-    
+
     meshbluHttp.devices type: 'octoblu:flow', (error, body) =>
       return callback 'unauthorized' if error?.message == 'unauthorized'
       return callback 'unable to get triggers' if error?
