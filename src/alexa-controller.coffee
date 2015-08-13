@@ -19,6 +19,7 @@ class Alexa
     @requestByType[type] request, response
 
   intent: (request, response) =>
+    {requestId} = request.body?.request
     @pendingRequests[requestId] = request: request, response: response
     @alexaModel.trigger request.body, (error) =>
       return response.status(500).end() if error?

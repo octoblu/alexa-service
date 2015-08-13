@@ -62,12 +62,12 @@ class AlexaModel
     @INTENTS[intent.name] alexaIntent, callback
 
   trigger: (alexaIntent, callback=->) =>
-    {intent} = alexaIntent.request
+    {intent, requestId} = alexaIntent.request
     @triggers.getTriggers (error, triggers) =>
       return callback error if error?
       trigger = _.find triggers, name: intent?.slots?.Name?.value
       return callback new Error("No trigger by that name") unless trigger?
-      @triggers.trigger trigger.id, trigger.flowId, alexaIntent, (error) =>
+      @triggers.trigger trigger.id, trigger.flowId, requestId, alexaIntent, (error) =>
         return callback error if error?
         callback null
 

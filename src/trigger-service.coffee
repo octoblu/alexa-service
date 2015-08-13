@@ -7,7 +7,7 @@ class Triggers
   constructor: ->
     @triggerModel = new TriggerModel()
 
-  trigger: (flowId, triggerId, params, callback=->) =>
+  trigger: (triggerId, flowId, requestId, params, callback=->) =>
     meshbluConfig = new MeshbluConfig {}
     meshbluHttp = new MeshbluHttp meshbluConfig.toJSON()
 
@@ -17,7 +17,7 @@ class Triggers
       payload:
         from: triggerId
         params: params
-        requestId: uuid.v1()
+        requestId: requestId
     meshbluConfig.message message, callback
 
   getTriggers: (callback=->) =>
