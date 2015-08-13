@@ -1,6 +1,7 @@
 request         = require 'request'
 Triggers        = require './trigger-service'
 debug           = require('debug')('alexa-service:model')
+_               = require 'lodash'
 
 DEBUG_RESPONSE  = {
   "version": "1.0",
@@ -80,8 +81,11 @@ class AlexaModel
         callback null
 
   respond: (request, callback=->) =>
-    debug 'respond'
-    callback null, SUCCESS_RESPONSE
+    {responseText} = request.body
+    debug 'respond', responseText
+    response = _.clone SUCCESS_RESPONSE
+    response.response.outputSpeech.text = responseText if responseText
+    callback null, response
 
   open: (alexaIntent, callback=->) =>
     debug 'open'
