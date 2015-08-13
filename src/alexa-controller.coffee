@@ -59,6 +59,6 @@ class Alexa
       delete @pendingRequests[requestId]
       return pendingResponse.status(200).send @alexaModel.convertError error if error?
       pendingResponse.status(200).send alexaResponse
-      responded.status(200).send alexaResponse
+      response.status(200).send success: true
 
 module.exports = Alexa
