@@ -34,14 +34,14 @@ class Alexa
       return response.status(500).end() if error?
       debug 'leaving open'
 
-  open: (request, repsonse) =>
+  open: (request, response) =>
     debug 'opening session'
     @alexaModel.open request.body, (error, alexaResponse) =>
       debug 'responding', error, alexaResponse
       return response.status(500).end() if error?
       return response.status(200).send alexaResponse
 
-  close: (request, repsonse) =>
+  close: (request, response) =>
     debug 'closing session'
     @alexaModel.close request.body, (error, alexaResponse) =>
       debug 'responding', error, alexaResponse
