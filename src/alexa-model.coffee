@@ -68,13 +68,9 @@ class AlexaModel
   trigger: (alexaIntent, callback=->) =>
     debug 'triggering'
     {intent, requestId} = alexaIntent.request
-    @triggers.getMyTriggers (error, triggers) =>
-      debug 'got triggers', error, triggers
-      return callback error if error?
-      name = intent?.slots?.Name?.value
-      trigger = _.find triggers, name: name
-      debug 'trigger', name: name, trigger: trigger
-      return callback new Error("No trigger by that name") unless trigger?
+    name = intent?.slots?.Name?.value
+    @triggers.getTriggerByName name, (error, trigger) =>
+      debug 'about to trigger'
       @triggers.trigger trigger.id, trigger.flowId, requestId, alexaIntent, (error) =>
         debug 'triggered', error
         return callback error if error?
