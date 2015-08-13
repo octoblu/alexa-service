@@ -76,8 +76,8 @@ class AlexaModel
         return callback error if error?
         callback null
 
-  respond: (request, callback=->) =>
-    {responseText} = request.body
+  respond: (body, callback=->) =>
+    {responseText} = body ? {}
     debug 'respond', responseText
     response = _.clone SUCCESS_RESPONSE
     response.response.outputSpeech.text = responseText if responseText
