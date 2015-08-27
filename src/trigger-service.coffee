@@ -23,24 +23,25 @@ class Triggers
     debug 'trigger message', message
     meshbluHttp.message message, callback
 
-  getTriggers: (callback=->) =>
+  getTriggers: (query={}, callback=->) =>
     debug 'getting triggers'
     meshbluConfig = new MeshbluConfig {}
     meshbluHttp = new MeshbluHttp meshbluConfig.toJSON()
-
-    meshbluHttp.devices type: 'octoblu:flow', (error, body) =>
+    query.type ?= 'octoblu:flow'
+    meshbluHttp.devices query, (error, body) =>
       return callback 'unauthorized' if error?.message == 'unauthorized'
       return callback 'unable to get triggers' if error?
 
       triggers = @triggerModel.parseTriggersFromDevices body.devices
       callback null, triggers
 
-  getMyTriggers: (callback=->) =>
-    debug 'getting my triggers'
+  getMyTriggers: (query={}, callback=->) =>
+    debug 'getting my triggers', query
     meshbluConfig = new MeshbluConfig {}
     meshbluHttp = new MeshbluHttp meshbluConfig.toJSON()
-
-    meshbluHttp.devices {type: 'octoblu:flow', owner: meshbluConfig.uuid}, (error, body) =>
+    query.type ?= 'octoblu:flow'
+    query.owner ?= meshbluConfig.uuid
+    meshbluHttp.devices query, (error, body) =>
       return callback 'unauthorized' if error?.message == 'unauthorized'
       return callback 'unable to get triggers' if error?
 
@@ -48,8 +49,9 @@ class Triggers
       callback null, triggers
 
   getTriggerByName: (name, callback=->) =>
-    debug 'get triggers by name', name
-    @getMyTriggers (error, triggers) =>
+    query = flow: '$elemMatch': name: name
+    debug 'get triggers by name', query
+    @getMyTriggers query, (error, triggers) =>
       debug 'got triggers', error, _.size(triggers), _.pluck(triggers, 'name')
       return callback error if error?
       debug 'searching for name', name

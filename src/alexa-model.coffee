@@ -1,51 +1,8 @@
 request         = require 'request'
 Triggers        = require './trigger-service'
+responses       = require './responses'
 debug           = require('debug')('alexa-service:model')
 _               = require 'lodash'
-
-DEBUG_RESPONSE  = {
-  "version": "1.0",
-  "response": {
-    "outputSpeech": {
-      "type": "PlainText",
-      "text": "It has been done!"
-    },
-    "shouldEndSession": true
-  }
-}
-
-OPEN_RESPONSE  = {
-  "version": "1.0",
-  "response": {
-    "outputSpeech": {
-      "type": "PlainText",
-      "text": "What would you like to do?"
-    },
-    "shouldEndSession": false
-  }
-}
-
-CLOSE_RESPONSE  = {
-  "version": "1.0",
-  "response": {
-    "outputSpeech": {
-      "type": "PlainText",
-      "text": "Session Closed"
-    },
-    "shouldEndSession": true
-  }
-}
-
-SUCCESS_RESPONSE  = {
-  "version": "1.0",
-  "response": {
-    "outputSpeech": {
-      "type": "PlainText",
-      "text": "Success"
-    },
-    "shouldEndSession": true
-  }
-}
 
 class AlexaModel
   constructor: ->
@@ -54,14 +11,14 @@ class AlexaModel
       'Trigger': @trigger
 
   convertError: (error) =>
-    response = _.clone CLOSE_RESPONSE
+    response = _.clone responses.CLOSE_RESPONSE
     response.response.outputSpeech.text = error?.message ? error
     response
 
   debug: (json, callback=->) =>
     request.post 'http://requestb.in/1gy5wgo1', json: json, (error) =>
       return callback error if error?
-      callback null, DEBUG_RESPONSE
+      callback null, responses.DEBUG_RESPONSE
 
   intent: (alexaIntent, callback=->) =>
     {intent} = alexaIntent.request
@@ -85,17 +42,17 @@ class AlexaModel
   respond: (body, callback=->) =>
     {responseText} = body ? {}
     debug 'respond', responseText
-    response = _.clone SUCCESS_RESPONSE
+    response = _.clone responses.SUCCESS_RESPONSE
     response.response.outputSpeech.text = responseText if responseText
     callback null, response
 
   open: (alexaIntent, callback=->) =>
     debug 'open'
-    callback null, OPEN_RESPONSE
+    callback null, responses.OPEN_RESPONSE
 
   close: (alexaIntent, callback=->) =>
     debug 'close'
-    callback null, CLOSE_RESPONSE
+    callback null, responses.CLOSE_RESPONSE
 
 
 module.exports = AlexaModel
