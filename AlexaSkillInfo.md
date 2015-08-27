@@ -7,8 +7,7 @@
 {
   "intents": [
     {
-      "intent": "
-      Trigger",
+      "intent": "Trigger",
       "slots": [
         {
           "name": "Name",
@@ -22,82 +21,43 @@
 
 ## Utterances
 
-Trigger trigger turn the {lights on|Name}
-
-Trigger trigger turn the {lights off|Name}
-
-Trigger turn the {lights on|Name}
-
-Trigger turn the {lights off|Name}
-
-Trigger trigger {lights on|Name}
-
-Trigger trigger {lights off|Name}
-
-Trigger trigger my {lights on|Name}
-
-Trigger trigger my {lights off|Name}
-
-Trigger turn my {lights on|Name}
-
-Trigger turn my {lights off|Name}
-
-Trigger trigger turn the {light on|Name}
-
-Trigger trigger turn the {light off|Name}
-
-Trigger turn the {light on|Name}
-
-Trigger turn the {light off|Name}
-
-Trigger trigger {light on|Name}
-
-Trigger trigger {light off|Name}
-
-Trigger trigger my {light on|Name}
-
-Trigger trigger my {light off|Name}
-
-Trigger turn my {light on|Name}
-
-Trigger turn my {light off|Name}
-
-Trigger play {chromecast|Name}
-
-Trigger play my {chromecast|Name}
-
-Trigger trigger {chromecast|Name}
-
-Trigger trigger my {chromecast|Name}
-
-Trigger trigger {list tasks|Name}
-
-Trigger get {my tasks|Name}
-
-Trigger show {my tasks|Name}
-
-Trigger list {my tasks|Name}
-
-Trigger trigger {list task|Name}
-
-Trigger get {my task|Name}
-
-Trigger show {my task|Name}
-
-Trigger list {my task|Name}
-
-Trigger trigger {list meetings|Name}
-
-Trigger get {my meetings|Name}
-
-Trigger show {my meetings|Name}
-
-Trigger list {my meetings|Name}
-
-Trigger trigger {list meeting|Name}
-
-Trigger get {my meeting|Name}
-
-Trigger show {my meeting|Name}
-
-Trigger list {my meeting|Name}
+Trigger trigger turn the {lights on|Name}<br>
+Trigger trigger turn the {lights off|Name}<br>
+Trigger turn the {lights on|Name}<br>
+Trigger turn the {lights off|Name}<br>
+Trigger trigger {lights on|Name}<br>
+Trigger trigger {lights off|Name}<br>
+Trigger trigger my {lights on|Name}<br>
+Trigger trigger my {lights off|Name}<br>
+Trigger turn my {lights on|Name}<br>
+Trigger turn my {lights off|Name}<br>
+Trigger trigger turn the {light on|Name}<br>
+Trigger trigger turn the {light off|Name}<br>
+Trigger turn the {light on|Name}<br>
+Trigger turn the {light off|Name}<br>
+Trigger trigger {light on|Name}<br>
+Trigger trigger {light off|Name}<br>
+Trigger trigger my {light on|Name}<br>
+Trigger trigger my {light off|Name}<br>
+Trigger turn my {light on|Name}<br>
+Trigger turn my {light off|Name}<br>
+Trigger play {chromecast|Name}<br>
+Trigger play my {chromecast|Name}<br>
+Trigger trigger {chromecast|Name}<br>
+Trigger trigger my {chromecast|Name}<br>
+Trigger trigger {list tasks|Name}<br>
+Trigger get {my tasks|Name}<br>
+Trigger show {my tasks|Name}<br>
+Trigger list {my tasks|Name}<br>
+Trigger trigger {list task|Name}<br>
+Trigger get {my task|Name}<br>
+Trigger show {my task|Name}<br>
+Trigger list {my task|Name}<br>
+Trigger trigger {list meetings|Name}<br>
+Trigger get {my meetings|Name}<br>
+Trigger show {my meetings|Name}<br>
+Trigger list {my meetings|Name}<br>
+Trigger trigger {list meeting|Name}<br>
+Trigger get {my meeting|Name}<br>
+Trigger show {my meeting|Name}<br>
+Trigger list {my meeting|Name}<br>
