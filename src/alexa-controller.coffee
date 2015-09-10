@@ -1,4 +1,5 @@
 _          = require 'lodash'
+md5        = require 'md5'
 AlexaModel = require './alexa-model'
 debug      = require('debug')('alexa-service:controller')
 
@@ -12,7 +13,7 @@ class Alexa
 
   getKeyFromRequest: (request) =>
     userId = request.session?.user?.userId
-    return userId.hashCode() if _.isString(userId) && process.env["#{userId}_UUID"]?
+    return md5 userId if process.env["#{userId}_UUID"]?
     return 'MESHBLU'
 
   debug: (request, response) =>
