@@ -7,15 +7,14 @@ class TriggerModel
 
     return triggers unless devices?
 
-    _.each devices, (device) =>
-      triggers = _.union triggers, @collectTriggersFromDevice(device)
+    _.each devices, (device) => triggers = _.union triggers, @collectTriggersFromDevice(device)
 
-    triggers
+    return triggers
 
   collectTriggersFromDevice: (device) =>
     triggersInFlow = _.where device.flow, type: 'trigger'
 
-    _.map triggersInFlow, (trigger) =>
+    return _.map triggersInFlow, (trigger) =>
       name: trigger.name
       flowId: device.uuid
       flowName: device.name ? ''

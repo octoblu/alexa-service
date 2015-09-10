@@ -1,18 +1,25 @@
-AlexaModel      = require './alexa-model'
-debug           = require('debug')('alexa-service:controller')
+_          = require 'lodash'
+AlexaModel = require './alexa-model'
+debug      = require('debug')('alexa-service:controller')
 
 class Alexa
   constructor: ->
-    @alexaModel = new AlexaModel
     @pendingRequests = {}
     @requestByType =
       'LaunchRequest': @open
       'IntentRequest': @intent
       'SessionEndedRequest': @end
 
+  getKeyFromRequest: (request) =>
+    userId = request.session?.user?.userId
+    return userId.hashCode() if _.isString(userId) && process.env["#{userId}_UUID"]?
+    return 'MESHBLU'
+
   debug: (request, response) =>
     debug 'debug reqeust', request.body
-    @alexaModel.debug body: request.body, headers: request.headers, (error, alexaResponse) =>
+    alexaModel = new AlexaModel
+    alexaModel.setAuthFromKey @getKeyFromRequest request
+    alexaModel.debug body: request.body, headers: request.headers, (error, alexaResponse) =>
       return response.status(500).end() if error?
       response.status(200).send alexaResponse
 
@@ -29,21 +36,27 @@ class Alexa
     debug 'intent', requestId
     @pendingRequests[requestId] = request: request, response: response
     debug 'stored pending request'
-    @alexaModel.intent request.body, (error) =>
+    alexaModel = new AlexaModel
+    alexaModel.setAuthFromKey @getKeyFromRequest request
+    alexaModel.intent request.body, (error) =>
       debug 'responding', error
-      return response.status(200).send @alexaModel.convertError error if error?
+      return response.status(200).send alexaModel.convertError error if error?
       debug 'leaving open'
 
   open: (request, response) =>
     debug 'opening session'
-    @alexaModel.open request.body, (error, alexaResponse) =>
+    alexaModel = new AlexaModel
+    alexaModel.setAuthFromKey @getKeyFromRequest request
+    alexaModel.open request.body, (error, alexaResponse) =>
       debug 'responding', error, alexaResponse
       return response.status(500).end() if error?
       return response.status(200).send alexaResponse
 
   close: (request, response) =>
     debug 'closing session'
-    @alexaModel.close request.body, (error, alexaResponse) =>
+    alexaModel = new AlexaModel
+    alexaModel.setAuthFromKey @getKeyFromRequest request
+    alexaModel.close request.body, (error, alexaResponse) =>
       debug 'responding', error, alexaResponse
       return response.status(500).end() if error?
       return response.status(200).send alexaResponse
@@ -53,11 +66,13 @@ class Alexa
     debug 'responding to request', requestId
     return response.status(412).end() unless requestId?
     return response.status(404).end() unless @pendingRequests[requestId]?
-    @alexaModel.respond request.body, (error, alexaResponse) =>
+    alexaModel = new AlexaModel
+    alexaModel.setAuthFromKey @getKeyFromRequest request
+    alexaModel.respond request.body, (error, alexaResponse) =>
       debug 'responded to request', error, alexaResponse
       pendingResponse = @pendingRequests[requestId]?.response
       delete @pendingRequests[requestId]
-      return pendingResponse.status(200).send @alexaModel.convertError error if error?
+      return pendingResponse.status(200).send alexaModel.convertError error if error?
       pendingResponse.status(200).send alexaResponse
       response.status(200).send success: true
 
