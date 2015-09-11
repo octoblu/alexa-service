@@ -12,8 +12,8 @@ class Alexa
       'SessionEndedRequest': @end
 
   getKeyFromRequest: (request) =>
-    userId = request.session?.user?.userId
-    return md5 userId if process.env["#{userId}_UUID"]?
+    userId = md5 request.session?.user?.userId
+    return userId if process.env["#{userId}_UUID"]?
     return 'MESHBLU'
 
   debug: (request, response) =>
