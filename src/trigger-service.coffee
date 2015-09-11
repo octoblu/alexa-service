@@ -26,7 +26,7 @@ class Triggers
     debug 'getting my triggers', query
     meshbluHttp = new MeshbluHttp @meshbluConfig
     query.type ?= 'octoblu:flow'
-    query.owner ?= meshbluConfig.uuid
+    query.owner ?= @meshbluConfig.uuid
     meshbluHttp.devices query, (error, body) =>
       return callback 'unauthorized' if error?.message == 'unauthorized'
       return callback 'unable to get triggers' if error?
