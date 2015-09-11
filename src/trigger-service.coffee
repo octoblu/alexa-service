@@ -24,7 +24,6 @@ class Triggers
 
   getMyTriggers: (query={}, callback=->) =>
     debug 'getting my triggers', query
-    meshbluConfig = new MeshbluConfig {}
     meshbluHttp = new MeshbluHttp @meshbluConfig
     query.type ?= 'octoblu:flow'
     query.owner ?= meshbluConfig.uuid
