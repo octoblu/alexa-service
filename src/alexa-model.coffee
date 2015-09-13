@@ -36,11 +36,11 @@ class AlexaModel
     name = intent?.slots?.Name?.value
     triggers = new Triggers @meshbluConfig
     triggers.getTriggerByName name, (error, trigger) =>
-      return callback null, error if error?
+      return callback error  if error?
       debug 'about to trigger'
       triggers.trigger trigger.id, trigger.flowId, requestId, alexaIntent.request, (error) =>
         debug 'triggered', error
-        return callback null, error if error?
+        return callback error if error?
         callback null
 
   respond: (body, callback=->) =>

@@ -13,7 +13,9 @@ class Alexa
 
   getKeyFromRequest: (request) =>
     userId = md5 request.body?.session?.user?.userId
-    return userId if process.env["#{userId}_UUID"]?
+    envName = "#{userId}_UUID"
+    debug 'user id (md5)', userId, process.env[envName]?
+    return userId if process.env[envName]?
     return 'MESHBLU'
 
   debug: (request, response) =>
@@ -40,7 +42,7 @@ class Alexa
     alexaModel = new AlexaModel
     alexaModel.setAuthFromKey @getKeyFromRequest request
     alexaModel.intent request.body, (error) =>
-      debug 'responding', error
+      debug 'responding', error: error
       return response.status(200).send alexaModel.convertError error if error?
       debug 'leaving open'
 
@@ -49,7 +51,7 @@ class Alexa
     alexaModel = new AlexaModel
     alexaModel.setAuthFromKey @getKeyFromRequest request
     alexaModel.open request.body, (error, alexaResponse) =>
-      debug 'responding', error, alexaResponse
+      debug 'responding', error: error, response: alexaResponse
       return response.status(500).end() if error?
       return response.status(200).send alexaResponse
 
@@ -58,7 +60,7 @@ class Alexa
     alexaModel = new AlexaModel
     alexaModel.setAuthFromKey @getKeyFromRequest request
     alexaModel.close request.body, (error, alexaResponse) =>
-      debug 'responding', error, alexaResponse
+      debug 'responding', error: error, response: alexaResponse
       return response.status(500).end() if error?
       return response.status(200).send alexaResponse
 
