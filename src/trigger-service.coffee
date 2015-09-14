@@ -41,7 +41,7 @@ class Triggers
       debug 'got triggers', error, _.size(triggers), _.pluck(triggers, 'name')
       return callback error if error?
       debug 'searching for name', name
-      trigger = _.first triggers
+      trigger = _.find triggers, name: name
       debug 'trigger', trigger
       return callback new Error("No trigger by that name") unless trigger?
       callback null, trigger
