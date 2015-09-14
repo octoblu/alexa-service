@@ -9,7 +9,7 @@ class Alexa
     @requestByType =
       'LaunchRequest': @open
       'IntentRequest': @intent
-      'SessionEndedRequest': @end
+      'SessionEndedRequest': @close
 
   getKeyFromRequest: (request) =>
     userId = md5 request.body?.session?.user?.userId
@@ -30,9 +30,11 @@ class Alexa
     debug 'trigger request', request.body
     {type} = request.body?.request
     debug 'request type', type
-    return response.status(412).end() unless @requestByType[type]?
-    debug 'is a valid type'
-    @requestByType[type] request, response
+    debug 'is a valid type', @requestByType[type]?
+    return @requestByType[type] request, response if @requestByType[type]?
+    alexaModel = new AlexaModel
+    error = alexaModel.convertError new Error("Invalid Intent Type")
+    return response.status(200).send error
 
   intent: (request, response) =>
     {requestId} = request.body?.request

@@ -20,7 +20,7 @@ responses.CLOSE_RESPONSE  =
   response:
     outputSpeech:
       type: "PlainText"
-      text: "Session Closed"
+      text: "Closing session"
     shouldEndSession: true
 
 responses.SUCCESS_RESPONSE  =
