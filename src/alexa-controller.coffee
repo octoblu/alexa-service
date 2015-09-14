@@ -21,7 +21,6 @@ class Alexa
   debug: (request, response) =>
     debug 'debug reqeust', request.body
     alexaModel = new AlexaModel
-    alexaModel.setAuthFromKey @getKeyFromRequest request
     alexaModel.debug body: request.body, headers: request.headers, (error, alexaResponse) =>
       return response.status(500).end() if error?
       response.status(200).send alexaResponse
@@ -51,7 +50,6 @@ class Alexa
   open: (request, response) =>
     debug 'opening session'
     alexaModel = new AlexaModel
-    alexaModel.setAuthFromKey @getKeyFromRequest request
     alexaModel.open request.body, (error, alexaResponse) =>
       debug 'responding', error: error, response: alexaResponse
       return response.status(500).end() if error?
@@ -60,7 +58,6 @@ class Alexa
   close: (request, response) =>
     debug 'closing session'
     alexaModel = new AlexaModel
-    alexaModel.setAuthFromKey @getKeyFromRequest request
     alexaModel.close request.body, (error, alexaResponse) =>
       debug 'responding', error: error, response: alexaResponse
       return response.status(500).end() if error?
@@ -72,7 +69,6 @@ class Alexa
     return response.status(412).end() unless requestId?
     return response.status(404).end() unless @pendingRequests[requestId]?
     alexaModel = new AlexaModel
-    alexaModel.setAuthFromKey @getKeyFromRequest request
     alexaModel.respond request.body, (error, alexaResponse) =>
       debug 'responded to request', error, alexaResponse
       pendingResponse = @pendingRequests[requestId]?.response

@@ -4,6 +4,7 @@ class NewMeshbluConfig extends MeshbluConfig
   constructor: (key) ->
     debug 'key', key
     super()
+    return if key == 'MESHBLU'
     @uuid_env_name = "UUID_#{key}"
     @token_env_name = "TOKEN_#{key}"
     @server_env_name = "SERVER_#{key}"
