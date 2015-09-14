@@ -13,7 +13,7 @@ class Alexa
 
   getKeyFromRequest: (request) =>
     userId = md5 request.body?.session?.user?.userId
-    envName = "#{userId}_UUID"
+    envName = "UUID_#{userId}"
     debug 'user id (md5)', userId, process.env[envName]?
     return userId if process.env[envName]?
     return 'MESHBLU'

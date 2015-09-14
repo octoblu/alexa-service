@@ -1,6 +1,6 @@
 {
   "name": "alexa-service",
-  "version": "2.1.8",
+  "version": "2.1.9",
   "description": "Alexa Service",
   "main": "server.js",
   "scripts": {
