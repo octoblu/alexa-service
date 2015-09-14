@@ -32,8 +32,7 @@ class Alexa
     debug 'is a valid type', @requestByType[type]?
     return @requestByType[type] request, response if @requestByType[type]?
     alexaModel = new AlexaModel
-    error = alexaModel.convertError new Error("Invalid Intent Type")
-    return response.status(200).send error
+    return response.status(200).send alexaModel.convertError new Error("Invalid Intent Type")
 
   intent: (request, response) =>
     {requestId} = request.body?.request
@@ -52,7 +51,7 @@ class Alexa
     alexaModel = new AlexaModel
     alexaModel.open request.body, (error, alexaResponse) =>
       debug 'responding', error: error, response: alexaResponse
-      return response.status(500).end() if error?
+      return response.status(200).send alexaModel.convertError error if error?
       return response.status(200).send alexaResponse
 
   close: (request, response) =>
@@ -60,7 +59,7 @@ class Alexa
     alexaModel = new AlexaModel
     alexaModel.close request.body, (error, alexaResponse) =>
       debug 'responding', error: error, response: alexaResponse
-      return response.status(500).end() if error?
+      return response.status(200).send alexaModel.convertError error if error?
       return response.status(200).send alexaResponse
 
   respond: (request, response) =>
@@ -68,13 +67,13 @@ class Alexa
     debug 'responding to request', requestId
     return response.status(412).end() unless requestId?
     return response.status(404).end() unless @pendingRequests[requestId]?
+    pendingResponse = @pendingRequests[requestId]?.response
+    delete @pendingRequests[requestId]
     alexaModel = new AlexaModel
     alexaModel.respond request.body, (error, alexaResponse) =>
-      debug 'responded to request', error, alexaResponse
-      pendingResponse = @pendingRequests[requestId]?.response
-      delete @pendingRequests[requestId]
+      debug 'responding', error: error, response: alexaResponse
       return pendingResponse.status(200).send alexaModel.convertError error if error?
       pendingResponse.status(200).send alexaResponse
-      response.status(200).send success: true
+      response.status(200).send alexaResponse
 
 module.exports = Alexa
