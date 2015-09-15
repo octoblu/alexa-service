@@ -1,11 +1,12 @@
 _          = require 'lodash'
 md5        = require 'md5'
 AlexaModel = require './alexa-model'
+PendingRequests = require './pending-requests'
 debug      = require('debug')('alexa-service:controller')
 
 class Alexa
   constructor: ->
-    @pendingRequests = {}
+    @pendingRequests = new PendingRequests
     @requestByType =
       'LaunchRequest': @open
       'IntentRequest': @intent
@@ -37,7 +38,8 @@ class Alexa
   intent: (request, response) =>
     {requestId} = request.body?.request
     debug 'intent', requestId
-    @pendingRequests[requestId] = request: request, response: response
+    value = request: request, response: response
+    @pendingRequests.set requestId, value, @timeoutResponse
     debug 'stored pending request'
     alexaModel = new AlexaModel
     alexaModel.setAuthFromKey @getKeyFromRequest request
@@ -64,16 +66,23 @@ class Alexa
 
   respond: (request, response) =>
     requestId = request.body.requestId
+    pendingValue = @pendingRequests.get requestId
     debug 'responding to request', requestId
     return response.status(412).end() unless requestId?
-    return response.status(404).end() unless @pendingRequests[requestId]?
-    pendingResponse = @pendingRequests[requestId]?.response
-    delete @pendingRequests[requestId]
+    return response.status(404).end() unless pendingValue?
+
+    pendingResponse = pendingValue.response
+    @pendingRequests.remove requestId
+
     alexaModel = new AlexaModel
     alexaModel.respond request.body, (error, alexaResponse) =>
       debug 'responding', error: error, response: alexaResponse
       return pendingResponse.status(200).send alexaModel.convertError error if error?
       pendingResponse.status(200).send alexaResponse
       response.status(200).send alexaResponse
+
+  timeoutResponse: (value) =>
+    {response} = value
+    response.status(200).send alexaModel.convertError new Error "Unable to trigger flow"
 
 module.exports = Alexa
