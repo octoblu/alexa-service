@@ -82,7 +82,9 @@ class Alexa
       response.status(200).send alexaResponse
 
   timeoutResponse: (value) =>
-    {response} = value
+    {response, request} = value
+    {requestId} = request.body?.request
+    debug 'timeout response to', requestId
     response.status(200).send alexaModel.convertError new Error "Unable to trigger flow"
 
 module.exports = Alexa

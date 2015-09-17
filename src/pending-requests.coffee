@@ -1,20 +1,23 @@
 _  = require 'lodash'
 
-TIMEOUT = 8 * 1000 # 12 Seconds
+TIMEOUT = 8 * 1000
 
 class PendingRequests
   constructor: ->
     @requests = {}
+    @timeouts = {}
 
   get: (key) =>
     return @requests[key]
 
   set: (key, value, timeoutCallback=->) =>
     @requests[key] = value
-    _.delay @timeout, TIMEOUT, key, timeoutCallback
+    @timeouts[key] = _.delay @timeout, TIMEOUT, key, timeoutCallback
 
   remove: (key) =>
     delete @requests[key]
+    clearTimeout @timeouts[key]
+    delete @timeouts[key]
 
   timeout: (key, callback=->) =>
     value = @get key
