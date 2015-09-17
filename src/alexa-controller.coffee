@@ -26,7 +26,7 @@ class Alexa
 
   debug: (request, response) =>
     debug 'debug reqeust', request.body
-    @getAlexaModel().debug body: request.body, headers: request.headers, (error, alexaResponse) =>
+    @getAlexaModel(request).debug body: request.body, headers: request.headers, (error, alexaResponse) =>
       return response.status(500).end() if error?
       response.status(200).send alexaResponse
 
@@ -45,7 +45,7 @@ class Alexa
     value = request: request, response: response
     @pendingRequests.set requestId, value, @timeoutResponse
     debug 'stored pending request'
-    alexaModel = @getAlexaModel()
+    alexaModel = @getAlexaModel request
     alexaModel.intent request.body, (error) =>
       debug 'responding', error: error
       return response.status(200).send alexaModel.convertError error if error?
@@ -53,7 +53,7 @@ class Alexa
 
   open: (request, response) =>
     debug 'opening session'
-    alexaModel = @getAlexaModel()
+    alexaModel = @getAlexaModel request
     alexaModel.open request.body, (error, alexaResponse) =>
       debug 'responding', error: error, response: alexaResponse
       return response.status(200).send alexaModel.convertError error if error?
@@ -61,7 +61,7 @@ class Alexa
 
   close: (request, response) =>
     debug 'closing session'
-    alexaModel = @getAlexaModel()
+    alexaModel = @getAlexaModel request
     alexaModel.close request.body, (error, alexaResponse) =>
       debug 'responding', error: error, response: alexaResponse
       return response.status(200).send alexaModel.convertError error if error?
@@ -77,7 +77,7 @@ class Alexa
     pendingResponse = pendingValue.response
     @pendingRequests.remove requestId
 
-    alexaModel = @getAlexaModel()
+    alexaModel = @getAlexaModel request
     alexaModel.respond request.body, (error, alexaResponse) =>
       debug 'responding', error: error, response: alexaResponse
       return pendingResponse.status(200).send alexaModel.convertError error if error?
@@ -88,6 +88,6 @@ class Alexa
     {response, request} = value
     {requestId} = request.body?.request
     debug 'timeout response to', requestId
-    response.status(200).send @getAlexaModel().convertError new Error "Unable to trigger flow"
+    response.status(200).send @getAlexaModel(request).convertError new Error "Unable to trigger flow"
 
 module.exports = Alexa
