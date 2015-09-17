@@ -1,6 +1,6 @@
 _  = require 'lodash'
 
-TIMEOUT = 12 * 1000 # 12 Seconds
+TIMEOUT = 8 * 1000 # 12 Seconds
 
 class PendingRequests
   constructor: ->
