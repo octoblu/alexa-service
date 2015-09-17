@@ -19,10 +19,14 @@ class Alexa
     return userId if process.env[envName]?
     return 'MESHBLU'
 
+  getAlexaModel: (request) =>
+    alexaModel = new AlexaModel
+    alexaModel.setAuthFromKey @getKeyFromRequest request if request?
+    return alexaModel
+
   debug: (request, response) =>
     debug 'debug reqeust', request.body
-    alexaModel = new AlexaModel
-    alexaModel.debug body: request.body, headers: request.headers, (error, alexaResponse) =>
+    @getAlexaModel().debug body: request.body, headers: request.headers, (error, alexaResponse) =>
       return response.status(500).end() if error?
       response.status(200).send alexaResponse
 
@@ -32,7 +36,7 @@ class Alexa
     debug 'request type', type
     debug 'is a valid type', @requestByType[type]?
     return @requestByType[type] request, response if @requestByType[type]?
-    alexaModel = new AlexaModel
+    alexaModel = @getAlexaModel request
     return response.status(200).send alexaModel.convertError new Error("Invalid Intent Type")
 
   intent: (request, response) =>
@@ -41,8 +45,7 @@ class Alexa
     value = request: request, response: response
     @pendingRequests.set requestId, value, @timeoutResponse
     debug 'stored pending request'
-    alexaModel = new AlexaModel
-    alexaModel.setAuthFromKey @getKeyFromRequest request
+    alexaModel = @getAlexaModel()
     alexaModel.intent request.body, (error) =>
       debug 'responding', error: error
       return response.status(200).send alexaModel.convertError error if error?
@@ -50,7 +53,7 @@ class Alexa
 
   open: (request, response) =>
     debug 'opening session'
-    alexaModel = new AlexaModel
+    alexaModel = @getAlexaModel()
     alexaModel.open request.body, (error, alexaResponse) =>
       debug 'responding', error: error, response: alexaResponse
       return response.status(200).send alexaModel.convertError error if error?
@@ -58,7 +61,7 @@ class Alexa
 
   close: (request, response) =>
     debug 'closing session'
-    alexaModel = new AlexaModel
+    alexaModel = @getAlexaModel()
     alexaModel.close request.body, (error, alexaResponse) =>
       debug 'responding', error: error, response: alexaResponse
       return response.status(200).send alexaModel.convertError error if error?
@@ -74,7 +77,7 @@ class Alexa
     pendingResponse = pendingValue.response
     @pendingRequests.remove requestId
 
-    alexaModel = new AlexaModel
+    alexaModel = @getAlexaModel()
     alexaModel.respond request.body, (error, alexaResponse) =>
       debug 'responding', error: error, response: alexaResponse
       return pendingResponse.status(200).send alexaModel.convertError error if error?
@@ -85,6 +88,6 @@ class Alexa
     {response, request} = value
     {requestId} = request.body?.request
     debug 'timeout response to', requestId
-    response.status(200).send alexaModel.convertError new Error "Unable to trigger flow"
+    response.status(200).send @getAlexaModel().convertError new Error "Unable to trigger flow"
 
 module.exports = Alexa
