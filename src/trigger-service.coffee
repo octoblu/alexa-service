@@ -22,7 +22,7 @@ class Triggers
     debug 'trigger message', message
     meshbluHttp.message message, callback
 
-  getMyTriggers: (query={}, callback=->) =>
+  getFlows: (query={}, callback=->) =>
     debug 'getting my triggers', query
     meshbluHttp = new MeshbluHttp @meshbluConfig
     query.type ?= 'octoblu:flow'
@@ -30,16 +30,20 @@ class Triggers
     meshbluHttp.devices query, (error, body) =>
       return callback 'unauthorized' if error?.message == 'unauthorized'
       return callback 'unable to get triggers' if error?
+      callback null, body
 
-      triggers = @triggerModel.parseTriggersFromDevices body.devices
-      callback null, triggers
+  parseFlowsForTriggers: (flows={}, callback=->) =>
+    return @triggerModel.parseTriggersFromDevices flows
 
   getTriggerByName: (name, callback=->) =>
     query = flow: '$elemMatch': name: name
     debug 'get triggers by name', query
-    @getMyTriggers query, (error, triggers) =>
-      debug 'got triggers', error, _.size(triggers), _.pluck(triggers, 'name')
+    @getFlows query, (error, body={}) =>
       return callback error if error?
+      flows = _.filter body.devices, online: true
+      return callback new Error("Flow is offline, please deploy.") unless _.size(flows)
+      triggers = @parseFlowsForTriggers flows
+      debug 'got triggers', error, _.size(triggers), _.pluck(triggers, 'name')
       debug 'searching for name', name
       trigger = _.find triggers, name: name
       debug 'trigger', trigger
