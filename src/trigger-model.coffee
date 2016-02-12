@@ -12,7 +12,7 @@ class TriggerModel
     return triggers
 
   collectTriggersFromDevice: (device) =>
-    triggersInFlow = _.where device.flow, type: 'trigger'
+    triggersInFlow = _.filter device.flow?.nodes, type: 'operation:trigger'
 
     return _.map triggersInFlow, (trigger) =>
       name: trigger.name

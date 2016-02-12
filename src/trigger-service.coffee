@@ -9,17 +9,17 @@ class Triggers
   constructor: (@meshbluConfig={}) ->
     @triggerModel = new TriggerModel()
     @HOSTNAME = process.env.HOSTNAME
-    @PORT = process.env.PORT
+    @PORT = process.env.PORT ? process.env.ALEXA_PORT
     @PROTOCOL = "http"
 
-  trigger: (triggerId, flowId, responseId, params, callback=->) =>
+  trigger: (triggerId, flowId, requestId, params, callback=->) =>
     debug 'trigger trigger'
     meshbluHttp = new MeshbluHttp @meshbluConfig
     urlOptions =
-      hostname: @HOSTNAME
+      hostname: @HOSTNAME ? 'localhost'
       port: @PORT
       protocol: @PROTOCOL
-      pathname: "/respond/#{responseId}"
+      pathname: "/respond/#{requestId}"
 
     callbackUrl = url.format urlOptions
     message =
@@ -28,16 +28,16 @@ class Triggers
       payload:
         from: triggerId
         params: params
-        responseId: responseId
+        requestId: requestId
         callbackUrl: callbackUrl
     debug 'trigger message', message
     meshbluHttp.message message, callback
 
   getFlows: (query={}, callback=->) =>
-    debug 'getting my triggers', query
     meshbluHttp = new MeshbluHttp @meshbluConfig
     query.type ?= 'octoblu:flow'
     query.owner ?= @meshbluConfig.uuid
+    debug 'getting my triggers', query
     meshbluHttp.devices query, (error, body) =>
       return callback 'unauthorized' if error?.message == 'unauthorized'
       return callback 'unable to get triggers' if error?
@@ -47,11 +47,11 @@ class Triggers
     return @triggerModel.parseTriggersFromDevices flows
 
   getTriggerByName: (name, callback=->) =>
-    query = flow: '$elemMatch': name: name
+    query = 'flow.nodes': '$elemMatch': name: name
     debug 'get triggers by name', query
-    @getFlows query, (error, body={}) =>
+    @getFlows query, (error, body=[]) =>
       return callback error if error?
-      flows = _.filter body.devices, online: true
+      flows = _.filter body, online: true
       return callback new Error("Flow is offline, please deploy.") unless _.size(flows)
       triggers = @parseFlowsForTriggers flows
       debug 'got triggers', error, _.size(triggers), _.pluck(triggers, 'name')

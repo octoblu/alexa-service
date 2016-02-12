@@ -19,7 +19,7 @@ app.post '/debug', alexaController.debug
 
 app.post '/trigger', alexaController.trigger
 
-app.post '/respond/:responseId', alexaController.respond
+app.post '/respond/:requestId', alexaController.respond
 
 server = app.listen (process.env.ALEXA_PORT || 80), ->
   host = server.address().address
