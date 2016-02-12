@@ -2,6 +2,7 @@ express         = require 'express'
 bodyParser      = require 'body-parser'
 morgan          = require 'morgan'
 errorhandler    = require 'errorhandler'
+MeshbluConfig   = require 'meshblu-config'
 healthcheck     = require 'express-meshblu-healthcheck'
 AlexaController = require './src/alexa-controller'
 
@@ -11,13 +12,14 @@ app.use morgan 'dev'
 app.use errorhandler()
 app.use healthcheck()
 
-alexaController = new AlexaController
+meshbluConfig = new MeshbluConfig({}).toJSON()
+alexaController = new AlexaController {meshbluConfig}
 
 app.post '/debug', alexaController.debug
 
 app.post '/trigger', alexaController.trigger
 
-app.post '/respond', alexaController.respond
+app.post '/respond/:responseId', alexaController.respond
 
 server = app.listen (process.env.PORT || 80), ->
   host = server.address().address

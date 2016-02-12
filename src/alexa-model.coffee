@@ -1,17 +1,13 @@
-_               = require 'lodash'
-request         = require 'request'
-responses       = require './responses'
-MeshbluConfig   = require './meshblu-config'
-Triggers        = require './trigger-service'
-debug           = require('debug')('alexa-service:model')
+_         = require 'lodash'
+request   = require 'request'
+responses = require './responses'
+Triggers  = require './trigger-service'
+debug     = require('debug')('alexa-service:model')
 
 class AlexaModel
-  constructor: ->
+  constructor: ({@meshbluConfig}) ->
     @INTENTS =
       'Trigger': @trigger
-
-  setAuthFromKey: (key) =>
-    @meshbluConfig = new MeshbluConfig(key).toJSON()
 
   convertError: (error) =>
     response = _.clone responses.CLOSE_RESPONSE
@@ -32,13 +28,13 @@ class AlexaModel
 
   trigger: (alexaIntent, callback=->) =>
     debug 'triggering'
-    {intent, requestId} = alexaIntent.request
+    {intent, responseId} = alexaIntent.request
     name = intent?.slots?.Name?.value
     triggers = new Triggers @meshbluConfig
     triggers.getTriggerByName name, (error, trigger) =>
       return callback error if error?
       debug 'about to trigger'
-      triggers.trigger trigger.id, trigger.flowId, requestId, alexaIntent.request, (error) =>
+      triggers.trigger trigger.id, trigger.flowId, responseId, alexaIntent.request, (error) =>
         debug 'triggered', error
         return callback error if error?
         callback null

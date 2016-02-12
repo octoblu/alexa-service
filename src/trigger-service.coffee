@@ -1,24 +1,35 @@
-_               = require 'lodash'
-uuid            = require 'node-uuid'
-MeshbluHttp     = require 'meshblu-http'
-TriggerModel    = require './trigger-model'
-debug           = require('debug')('alexa-service:triggers-service')
+_            = require 'lodash'
+url          = require 'url'
+uuid         = require 'node-uuid'
+MeshbluHttp  = require 'meshblu-http'
+TriggerModel = require './trigger-model'
+debug        = require('debug')('alexa-service:triggers-service')
 
 class Triggers
   constructor: (@meshbluConfig={}) ->
     @triggerModel = new TriggerModel()
+    @HOSTNAME = process.env.HOSTNAME
+    @PORT = process.env.PORT
+    @PROTOCOL = "http"
 
-  trigger: (triggerId, flowId, requestId, params, callback=->) =>
+  trigger: (triggerId, flowId, responseId, params, callback=->) =>
     debug 'trigger trigger'
     meshbluHttp = new MeshbluHttp @meshbluConfig
+    urlOptions =
+      hostname: @HOSTNAME
+      port: @PORT
+      protocol: @PROTOCOL
+      pathname: "/respond/#{responseId}"
 
+    callbackUrl = url.format urlOptions
     message =
       devices: [flowId]
       topic: 'triggers-service'
       payload:
         from: triggerId
         params: params
-        requestId: requestId
+        responseId: responseId
+        callbackUrl: callbackUrl
     debug 'trigger message', message
     meshbluHttp.message message, callback
 
