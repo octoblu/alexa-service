@@ -9,6 +9,8 @@ class RestService
       auth:
         username: @meshbluConfig.uuid
         password: @meshbluConfig.token
+      headers:
+        'X-RESPONSE-BASE-URI': 'https://alexa.octoblu.com'
       json: body
 
     request.post options, (error, response, body)=>
