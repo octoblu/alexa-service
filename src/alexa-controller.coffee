@@ -22,7 +22,7 @@ class Alexa
   getAlexaModel: (request) =>
     meshbluConfig = @meshbluConfig
     meshbluConfig = @getMeshbluConfigFromRequest request if request?
-    alexaModel = new AlexaModel {meshbluConfig}
+    alexaModel = new AlexaModel {meshbluConfig,@restServiceUri}
     return alexaModel
 
   debug: (request, response) =>
