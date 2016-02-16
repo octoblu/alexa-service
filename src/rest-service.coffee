@@ -17,7 +17,7 @@ class RestService
       return callback error if error?
       callback null, code: response.statusCode, data: body
 
-  respond: (repsonseId, body, callback) =>
+  respond: (responseId, body, callback) =>
     options =
       baseUrl: @restServiceUri
       uri: "/respond/#{responseId}"
