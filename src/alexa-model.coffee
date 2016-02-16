@@ -1,11 +1,11 @@
 _         = require 'lodash'
 request   = require 'request'
 responses = require './responses'
-Triggers  = require './trigger-service'
+Rest      = require './rest-service'
 debug     = require('debug')('alexa-service:model')
 
 class AlexaModel
-  constructor: ({@meshbluConfig}) ->
+  constructor: ({@meshbluConfig,@restServiceUri}) ->
     @INTENTS =
       'Trigger': @trigger
 
@@ -28,23 +28,16 @@ class AlexaModel
 
   trigger: (alexaIntent, callback=->) =>
     debug 'triggering'
-    {intent, requestId} = alexaIntent.request
+    {intent, responseId} = alexaIntent.request
     name = intent?.slots?.Name?.value
-    triggers = new Triggers @meshbluConfig
-    triggers.getTriggerByName name, (error, trigger) =>
+    rest = new Rest {@meshbluConfig,@restServiceUri}
+    rest.trigger name, alexaIntent.request, (error, body) =>
       return callback error if error?
-      debug 'about to trigger'
-      triggers.trigger trigger.id, trigger.flowId, requestId, alexaIntent.request, (error) =>
-        debug 'triggered', error
-        return callback error if error?
-        callback null
+      callback null, body
 
-  respond: (body, callback=->) =>
-    {responseText} = body ? {}
-    debug 'respond', responseText
-    response = _.clone responses.SUCCESS_RESPONSE
-    response.response.outputSpeech.text = responseText if responseText
-    callback null, response
+  respond: (responseId, body, callback=->) =>
+    rest = new Rest {@meshbluConfig,@restServiceUri}
+    rest.respond responseId, body, callback
 
   open: (alexaIntent, callback=->) =>
     debug 'open'

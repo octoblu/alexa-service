@@ -1,11 +1,9 @@
 _               = require 'lodash'
 AlexaModel      = require './alexa-model'
-PendingRequests = require './pending-requests'
 debug           = require('debug')('alexa-service:controller')
 
 class Alexa
-  constructor: ({@meshbluConfig}) ->
-    @pendingRequests = new PendingRequests
+  constructor: ({@meshbluConfig,@restServiceUri}) ->
     @requestByType =
       'LaunchRequest': @open
       'IntentRequest': @intent
@@ -43,19 +41,13 @@ class Alexa
     return response.status(200).send alexaModel.convertError new Error("Invalid Intent Type")
 
   intent: (request, response) =>
-    {requestId} = request.body?.request
-    debug 'intent', requestId
-    value = request: request, response: response
-    @pendingRequests.set requestId, value, @timeoutResponse
-    debug 'stored pending request'
+    {responseId} = request.body?.request
+    debug 'intent', responseId
     alexaModel = @getAlexaModel request
-    alexaModel.intent request.body, (error) =>
+    alexaModel.intent request.body, (error, result) =>
       debug 'responding', error: error
-      if error?
-        error = alexaModel.convertError error
-        @pendingRequests.remove requestId
-        return response.status(200).send error
-      debug 'leaving open'
+      return response.status(200).send alexaModel.convertError error if error?
+      response.status(result.code).send result.data
 
   open: (request, response) =>
     debug 'opening session'
@@ -74,26 +66,19 @@ class Alexa
       return response.status(200).send alexaResponse
 
   respond: (request, response) =>
-    {requestId} = request.params
-    pendingValue = @pendingRequests.get requestId
-    debug 'responding to request', requestId
-    return response.status(412).end() unless requestId?
-    return response.status(404).end() unless pendingValue?
-
-    pendingResponse = pendingValue.response
-    @pendingRequests.remove requestId
+    {responseId} = request.params
+    return response.status(412).end() unless responseId?
 
     alexaModel = @getAlexaModel request
-    alexaModel.respond request.body, (error, alexaResponse) =>
-      debug 'responding', error: error, response: alexaResponse
-      return pendingResponse.status(200).send alexaModel.convertError error if error?
-      pendingResponse.status(200).send alexaResponse
-      response.status(200).send alexaResponse
+    alexaModel.respond responseId, request.body, (error, result) =>
+      debug 'responding', error: error
+      return response.status(500).send error: error if error?
+      response.status(result.code).send result.data
 
   timeoutResponse: (value) =>
     {response, request} = value
-    {requestId} = request.body?.request
-    debug 'timeout response to', requestId
+    {responseId} = request.body?.request
+    debug 'timeout response to', responseId
     response.status(200).send @getAlexaModel(request).convertError new Error "Flow unresponsive"
 
 module.exports = Alexa
