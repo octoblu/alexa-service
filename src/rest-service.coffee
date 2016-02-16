@@ -21,9 +21,6 @@ class RestService
     options =
       baseUrl: @restServiceUri
       uri: "/respond/#{responseId}"
-      auth:
-        username: @meshbluConfig.uuid
-        password: @meshbluConfig.token
       json: body
 
     request.post options, (error, response, body)=>
