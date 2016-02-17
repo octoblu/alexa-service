@@ -19,7 +19,7 @@ class AlexaController
     meshbluConfig.token = token
     return meshbluConfig
 
-  getAlexaModel: (request) =>
+  getAlexaModel: (request, response) =>
     meshbluConfig = @meshbluConfig
     meshbluConfig = @getMeshbluConfigFromRequest request if request?
     alexaModel = new AlexaModel {meshbluConfig,@restServiceUri}

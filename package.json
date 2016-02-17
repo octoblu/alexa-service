@@ -1,6 +1,6 @@
 {
   "name": "alexa-service",
-  "version": "4.0.6",
+  "version": "4.0.7",
   "description": "Alexa Service",
   "main": "server.js",
   "scripts": {
@@ -30,7 +30,6 @@
     "express": "^4.13.3",
     "express-meshblu-healthcheck": "^1.0.1",
     "lodash": "^3.10.1",
-    "md5": "^2.0.0",
     "meshblu-config": "^3.1.0",
     "meshblu-http": "^5.1.0",
     "morgan": "^1.6.1",

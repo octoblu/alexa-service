@@ -1,6 +1,7 @@
 _           = require 'lodash'
 responses   = require './responses'
 RestService = require '../services/rest-service'
+MeshbluHttp = require 'meshblu-http'
 debug       = require('debug')('alexa-service:model')
 
 class AlexaModel
@@ -18,33 +19,40 @@ class AlexaModel
     response.response.outputSpeech.text = responseText if responseText?
     response
 
-  intent: (alexaIntent, callback=->) =>
+  validateConfig: (callback)=>
+    return callback new Error 'Unauthorized' unless @meshbluConfig?
+    meshbluHttp = new MeshbluHttp @meshbluConfig
+    meshbluHttp.whoami callback
+
+  intent: (alexaIntent, callback) =>
     {intent} = alexaIntent.request
     debug 'intent', intent
     return callback null, @convertError new Error("Invalid Intent") unless @INTENTS[intent.name]?
     debug 'intent name', intent.name
     @INTENTS[intent.name] alexaIntent, callback
 
-  trigger: (alexaIntent, callback=->) =>
+  trigger: (alexaIntent, callback) =>
     debug 'triggering a trigger'
     {intent, responseId} = alexaIntent.request
     name = intent?.slots?.Name?.value
-    restService = new RestService {@meshbluConfig,@restServiceUri}
-    restService.trigger name, alexaIntent.request, (error, result) =>
+    @validateConfig (error) =>
       return callback error if error?
-      return callback result.data?.error ? result.data if result.code > 299
-      callback null, @convertResponse result.data
+      restService = new RestService {@meshbluConfig,@restServiceUri}
+      restService.trigger name, alexaIntent.request, (error, result) =>
+        return callback error if error?
+        return callback result.data?.error ? result.data if result.code > 299
+        callback null, @convertResponse result.data
 
-  respond: (responseId, body, callback=->) =>
+  respond: (responseId, body, callback) =>
     debug 'responding', responseId
     restService = new RestService {@meshbluConfig,@restServiceUri}
     restService.respond responseId, body, callback
 
-  open: (alexaIntent, callback=->) =>
+  open: (alexaIntent, callback) =>
     debug 'open'
     callback null, responses.OPEN_RESPONSE
 
-  close: (alexaIntent, callback=->) =>
+  close: (alexaIntent, callback) =>
     debug 'close'
     callback null, responses.CLOSE_RESPONSE
 
