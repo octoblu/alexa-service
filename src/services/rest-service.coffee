@@ -1,4 +1,6 @@
 request = require 'request'
+SimpleBenchmark = require 'simple-benchmark'
+debug           = require('debug')('alexa-service:rest-service')
 
 class RestService
   constructor: ({@meshbluConfig,@restServiceUri}) ->
@@ -22,7 +24,9 @@ class RestService
       uri: "/respond/#{responseId}"
       json: body
 
+    benchmark = new SimpleBenchmark
     request.post options, (error, response, body)=>
+      debug 'respond benchmark', benchmark.toString()
       return callback error if error?
       callback null, code: response.statusCode, data: body
 
