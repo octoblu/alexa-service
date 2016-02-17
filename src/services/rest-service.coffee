@@ -14,8 +14,8 @@ class RestService
       headers:
         'X-RESPONSE-BASE-URI': 'https://alexa.octoblu.com'
       json: body
-      timeout: 10 * 1000
-      
+      timeout: 9 * 1000
+
     request.post options, (error, response, body)=>
       return callback new Error 'Request Timeout' if error?.code == 'ETIMEDOUT'
       return callback error if error?
