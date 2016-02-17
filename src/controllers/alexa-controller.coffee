@@ -1,8 +1,8 @@
-_               = require 'lodash'
-AlexaModel      = require './alexa-model'
-debug           = require('debug')('alexa-service:controller')
+_          = require 'lodash'
+AlexaModel = require '../models/alexa-model'
+debug      = require('debug')('alexa-service:controller')
 
-class Alexa
+class AlexaController
   constructor: ({@meshbluConfig,@restServiceUri}) ->
     @requestByType =
       'LaunchRequest': @open
@@ -24,12 +24,6 @@ class Alexa
     meshbluConfig = @getMeshbluConfigFromRequest request if request?
     alexaModel = new AlexaModel {meshbluConfig,@restServiceUri}
     return alexaModel
-
-  debug: (request, response) =>
-    debug 'debug reqeust', request.body
-    @getAlexaModel(request).debug body: request.body, headers: request.headers, (error, alexaResponse) =>
-      return response.status(500).end() if error?
-      response.status(200).send alexaResponse
 
   trigger: (request, response) =>
     debug 'trigger request', request.body
@@ -75,10 +69,4 @@ class Alexa
       return response.status(500).send error: error if error?
       response.status(result.code).send result.data
 
-  timeoutResponse: (value) =>
-    {response, request} = value
-    {responseId} = request.body?.request
-    debug 'timeout response to', responseId
-    response.status(200).send @getAlexaModel(request).convertError new Error "Flow unresponsive"
-
-module.exports = Alexa
+module.exports = AlexaController

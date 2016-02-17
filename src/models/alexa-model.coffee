@@ -1,8 +1,7 @@
-_         = require 'lodash'
-request   = require 'request'
-responses = require './responses'
-Rest      = require './rest-service'
-debug     = require('debug')('alexa-service:model')
+_           = require 'lodash'
+responses   = require './responses'
+RestService = require '../services/rest-service'
+debug       = require('debug')('alexa-service:model')
 
 class AlexaModel
   constructor: ({@meshbluConfig,@restServiceUri}) ->
@@ -14,11 +13,6 @@ class AlexaModel
     response.response.outputSpeech.text = error?.message ? error
     response
 
-  debug: (json, callback=->) =>
-    request.post 'http://requestb.in/1gy5wgo1', json: json, (error) =>
-      return callback error if error?
-      callback null, responses.DEBUG_RESPONSE
-
   intent: (alexaIntent, callback=->) =>
     {intent} = alexaIntent.request
     debug 'intent', intent
@@ -27,17 +21,18 @@ class AlexaModel
     @INTENTS[intent.name] alexaIntent, callback
 
   trigger: (alexaIntent, callback=->) =>
-    debug 'triggering'
+    debug 'triggering a trigger'
     {intent, responseId} = alexaIntent.request
     name = intent?.slots?.Name?.value
-    rest = new Rest {@meshbluConfig,@restServiceUri}
-    rest.trigger name, alexaIntent.request, (error, body) =>
+    restService = new RestService {@meshbluConfig,@restServiceUri}
+    restService.trigger name, alexaIntent.request, (error, body) =>
       return callback error if error?
       callback null, body
 
   respond: (responseId, body, callback=->) =>
-    rest = new Rest {@meshbluConfig,@restServiceUri}
-    rest.respond responseId, body, callback
+    debug 'responding', responseId
+    restService = new RestService {@meshbluConfig,@restServiceUri}
+    restService.respond responseId, body, callback
 
   open: (alexaIntent, callback=->) =>
     debug 'open'
@@ -46,6 +41,5 @@ class AlexaModel
   close: (alexaIntent, callback=->) =>
     debug 'close'
     callback null, responses.CLOSE_RESPONSE
-
 
 module.exports = AlexaModel
