@@ -1,7 +1,10 @@
 language: node_js
-cache:
-  bundler: true
-  directories:
-  - node_modules
 node_js:
-- '0.10'
+- '5'
+addons:
+  code_climate:
+    repo_token: "7a120486a7e0f5153102b5b74f5211e3330eebcb62f777e2eb1367d7233dfe37"
+before_script:
+- npm install -g codeclimate-test-reporter
+after_script:
+- codeclimate-test-reporter < coverage/lcov.info

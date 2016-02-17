@@ -12,7 +12,6 @@ class RestService
       headers:
         'X-RESPONSE-BASE-URI': 'https://alexa.octoblu.com'
       json: body
-
     request.post options, (error, response, body)=>
       return callback error if error?
       callback null, code: response.statusCode, data: body

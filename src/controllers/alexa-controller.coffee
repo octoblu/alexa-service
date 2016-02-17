@@ -38,10 +38,10 @@ class AlexaController
     {responseId} = request.body?.request
     debug 'intent', responseId
     alexaModel = @getAlexaModel request
-    alexaModel.intent request.body, (error, result) =>
+    alexaModel.intent request.body, (error, alexaResponse) =>
       debug 'responding', error: error
       return response.status(200).send alexaModel.convertError error if error?
-      response.status(result.code).send result.data
+      response.status(200).send alexaResponse
 
   open: (request, response) =>
     debug 'opening session'

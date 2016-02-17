@@ -9,8 +9,13 @@ class AlexaModel
       'Trigger': @trigger
 
   convertError: (error) =>
-    response = _.clone responses.CLOSE_RESPONSE
+    response = _.cloneDeep responses.CLOSE_RESPONSE
     response.response.outputSpeech.text = error?.message ? error
+    response
+
+  convertResponse: ({responseText}) =>
+    response = _.cloneDeep responses.SUCCESS_RESPONSE
+    response.response.outputSpeech.text = responseText if responseText?
     response
 
   intent: (alexaIntent, callback=->) =>
@@ -25,9 +30,10 @@ class AlexaModel
     {intent, responseId} = alexaIntent.request
     name = intent?.slots?.Name?.value
     restService = new RestService {@meshbluConfig,@restServiceUri}
-    restService.trigger name, alexaIntent.request, (error, body) =>
+    restService.trigger name, alexaIntent.request, (error, result) =>
       return callback error if error?
-      callback null, body
+      return callback result.data?.error ? result.data if result.code > 299
+      callback null, @convertResponse result.data
 
   respond: (responseId, body, callback=->) =>
     debug 'responding', responseId
