@@ -46,6 +46,7 @@ describe 'Trigger', ->
           .post '/flows/triggers/the%20weather'
           .set 'Authorization', "Basic #{userAuth}"
           .set 'X-RESPONSE-BASE-URI', 'https://alexa.octoblu.com'
+          .query type: 'operation:echo-in'
           .send {
             type: "IntentRequest",
             requestId: "request-id",

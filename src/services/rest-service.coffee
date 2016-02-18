@@ -14,6 +14,8 @@ class RestService
       headers:
         'X-RESPONSE-BASE-URI': 'https://alexa.octoblu.com'
       json: body
+      qs:
+        type: 'operation:echo-in'
       timeout: 9 * 1000
 
     request.post options, (error, response, body)=>
