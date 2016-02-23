@@ -45,11 +45,10 @@ describe 'List Triggers', ->
         @getDevices = @meshblu
           .get '/devices'
           .set 'Authorization', "Basic #{userAuth}"
-          .query owner: 'user-uuid', type: 'octoblu:flow'
+          .query owner: 'user-uuid', type: 'octoblu:flow', online: 'true'
           .reply 200, {
             devices: [
               {online: true, flow: nodes: [{name: 'sweet', type: 'operation:echo-in'}]}
-              {online: false, flow: nodes: [{name: 'hello', type: 'operation:echo-in'}]}
               {online: true, flow: nodes: [{name: 'yay', type: 'operation:echo-in'}]}
             ]
           }
@@ -106,12 +105,11 @@ describe 'List Triggers', ->
         @getDevices = @meshblu
           .get '/devices'
           .set 'Authorization', "Basic #{userAuth}"
-          .query owner: 'user-uuid', type: 'octoblu:flow'
+          .query owner: 'user-uuid', type: 'octoblu:flow', online: 'true'
           .reply 200, {
             devices: [
-              {online: true, flow: nodes: [{name: 'sweet', type: 'operation:echo-in'}]}
-              {online: false, flow: nodes: [{name: 'hello', type: 'operation:echo-in'}]}
-              {online: true, flow: nodes: [{name: 'yay', type: 'operation:echo-in'}]}
+              {flow: nodes: [{name: 'sweet', type: 'operation:echo-in'}]}
+              {flow: nodes: [{name: 'yay', type: 'operation:echo-in'}]}
             ]
           }
 
@@ -167,7 +165,7 @@ describe 'List Triggers', ->
       @getDevices = @meshblu
         .get '/devices'
         .set 'Authorization', "Basic #{userAuth}"
-        .query owner: 'user-uuid', type: 'octoblu:flow'
+        .query owner: 'user-uuid', type: 'octoblu:flow', online: 'true'
         .reply 200, {
           devices: []
         }

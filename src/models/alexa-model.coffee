@@ -55,8 +55,6 @@ class AlexaModel
       triggers = new Triggers {@meshbluConfig}
       triggers.myTriggers {type: 'operation:echo-in'}, (error, triggers) =>
         return callback error if error?
-
-        triggers = _.filter triggers, online: true
         triggersList = _.map(triggers, 'name')
         responseText = "You don't have any echo-in triggers. Get started by importing an alexa bluprint."
         responseText = "Your triggers are #{triggersList.join(', and ')}" if _.size triggersList
