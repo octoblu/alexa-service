@@ -141,8 +141,8 @@ describe 'List Triggers', ->
           response:
             outputSpeech:
               type: 'PlainText'
-              text: 'Your triggers are sweet, and yay'
-            shouldEndSession: true
+              text: 'This skill allows you to trigger an Octoblu flow that perform a series of events or actions. Currently, Your triggers are sweet, and yay'
+            shouldEndSession: false
 
       it 'should respond with 200', ->
         expect(@response.statusCode).to.equal 200
