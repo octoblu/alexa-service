@@ -81,7 +81,7 @@ describe 'Invalid Intent', ->
           response:
             outputSpeech:
               type: 'PlainText'
-              text: 'I don\'t understand this action. This skill allows you to trigger an Octoblu flow that perform a series of events or actions. Currently, Your triggers are sweet, and yay'
+              text: 'I don\'t understand this action. This skill allows you to trigger an Octoblu flow that perform a series of events or actions. Currently, Your triggers are sweet, and yay. Say a trigger name to perform the action'
             shouldEndSession: true
 
       it 'should respond with 200', ->

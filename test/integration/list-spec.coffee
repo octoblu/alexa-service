@@ -81,7 +81,7 @@ describe 'List Triggers', ->
           response:
             outputSpeech:
               type: 'PlainText'
-              text: 'Your triggers are sweet, and yay'
+              text: 'Your triggers are sweet, and yay. Say a trigger name to perform the action'
             shouldEndSession: true
 
       it 'should respond with 200', ->
@@ -141,7 +141,7 @@ describe 'List Triggers', ->
           response:
             outputSpeech:
               type: 'PlainText'
-              text: 'This skill allows you to trigger an Octoblu flow that perform a series of events or actions. Currently, Your triggers are sweet, and yay'
+              text: 'This skill allows you to trigger an Octoblu flow that perform a series of events or actions. Currently, Your triggers are sweet, and yay. Say a trigger name to perform the action'
             shouldEndSession: false
 
       it 'should respond with 200', ->

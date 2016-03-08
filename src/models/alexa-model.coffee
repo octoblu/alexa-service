@@ -56,7 +56,7 @@ class AlexaModel
         return callback error if error?
         triggersList = _.map(triggers, 'name')
         responseText = "You don't have any echo-in triggers. Get started by importing one or more alexa bluprints."
-        responseText = "Your triggers are #{triggersList.join(', and ')}" if _.size triggersList
+        responseText = "Your triggers are #{triggersList.join(', and ')}. Say a trigger name to perform the action" if _.size triggersList
         callback null, @convertResponse {responseText}
 
   respond: (responseId, body, callback) =>
