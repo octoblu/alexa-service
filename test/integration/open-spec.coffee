@@ -2,7 +2,7 @@ request    = require 'request'
 shmock     = require '@octoblu/shmock'
 Server     = require '../../src/server'
 
-describe 'List Triggers', ->
+describe 'Open Intent', ->
   beforeEach (done) ->
     @restService = shmock 0xbabe
     @meshblu = shmock 0xd00d
@@ -66,11 +66,9 @@ describe 'List Triggers', ->
                 accessToken: userAuth
               new: true
             request:
-              type: "IntentRequest",
+              type: "LaunchRequest",
               requestId: "request-id",
-              timestamp: "2016-02-12T19:28:15Z",
-              intent:
-                name: "ListTriggers"
+              timestamp: "2016-02-12T19:28:15Z"
 
         request.post options, (error, @response, @body) =>
           done error
@@ -81,8 +79,8 @@ describe 'List Triggers', ->
           response:
             outputSpeech:
               type: 'PlainText'
-              text: 'Your triggers are sweet, and yay'
-            shouldEndSession: true
+              text: 'This skill allows you to trigger an Octoblu flow that perform a series of events or actions. Currently, Your triggers are sweet, and yay'
+            shouldEndSession: false
 
       it 'should respond with 200', ->
         expect(@response.statusCode).to.equal 200
@@ -126,11 +124,9 @@ describe 'List Triggers', ->
                 accessToken: userAuth
               new: true
             request:
-              type: "IntentRequest",
+              type: "LaunchRequest",
               requestId: "request-id",
               timestamp: "2016-02-12T19:28:15Z",
-              intent:
-                name: "Amazon.HelpIntent"
 
         request.post options, (error, @response, @body) =>
           done error
@@ -141,8 +137,8 @@ describe 'List Triggers', ->
           response:
             outputSpeech:
               type: 'PlainText'
-              text: 'Your triggers are sweet, and yay'
-            shouldEndSession: true
+              text: 'This skill allows you to trigger an Octoblu flow that perform a series of events or actions. Currently, Your triggers are sweet, and yay'
+            shouldEndSession: false
 
       it 'should respond with 200', ->
         expect(@response.statusCode).to.equal 200
@@ -183,7 +179,7 @@ describe 'List Triggers', ->
               accessToken: userAuth
             new: true
           request:
-            type: "IntentRequest",
+            type: "LaunchRequest",
             requestId: "request-id",
             timestamp: "2016-02-12T19:28:15Z",
             intent:
@@ -198,8 +194,8 @@ describe 'List Triggers', ->
         response:
           outputSpeech:
             type: 'PlainText'
-            text: "You don't have any echo-in triggers. Get started by importing one or more alexa bluprints."
-          shouldEndSession: true
+            text: "This skill allows you to trigger an Octoblu flow that perform a series of events or actions. Currently, You don't have any echo-in triggers. Get started by importing one or more alexa bluprints."
+          shouldEndSession: false
 
     it 'should respond with 200', ->
       expect(@response.statusCode).to.equal 200

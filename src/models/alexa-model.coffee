@@ -17,9 +17,10 @@ class AlexaModel
     response.response.outputSpeech.text = error?.message ? error
     response
 
-  convertResponse: ({responseText}) =>
+  convertResponse: ({responseText, closeSession}) =>
     response = _.cloneDeep responses.SUCCESS_RESPONSE
     response.response.outputSpeech.text = responseText if responseText?
+    response.response.shouldEndSession = false if closeSession
     response
 
   validateConfig: (callback)=>
@@ -30,13 +31,13 @@ class AlexaModel
   intent: (alexaIntent, callback) =>
     {intent} = alexaIntent.request
     debug 'intent', intent
-    return callback null, @convertError new Error("Invalid Intent") unless @INTENTS[intent.name]?
+    return @invalidIntent callback unless @INTENTS[intent.name]?
     debug 'intent name', intent.name
     @INTENTS[intent.name] alexaIntent, callback
 
   trigger: (alexaIntent, callback) =>
     debug 'triggering a trigger'
-    {intent, responseId} = alexaIntent.request
+    {intent} = alexaIntent.request
     name = intent?.slots?.Name?.value
     @validateConfig (error) =>
       return callback error if error?
@@ -46,17 +47,15 @@ class AlexaModel
         return callback result.data?.error ? result.data if result.code > 299
         callback null, @convertResponse result.data
 
-  listTriggers: (alexaIntent, callback) =>
+  listTriggers: ({}, callback) =>
     debug 'triggering a trigger'
-    {intent, responseId} = alexaIntent.request
-    name = intent?.slots?.Name?.value
     @validateConfig (error) =>
       return callback error if error?
       triggers = new Triggers {@meshbluConfig}
       triggers.myTriggers {type: 'operation:echo-in'}, (error, triggers) =>
         return callback error if error?
         triggersList = _.map(triggers, 'name')
-        responseText = "You don't have any echo-in triggers. Get started by importing an alexa bluprint."
+        responseText = "You don't have any echo-in triggers. Get started by importing one or more alexa bluprints."
         responseText = "Your triggers are #{triggersList.join(', and ')}" if _.size triggersList
         callback null, @convertResponse {responseText}
 
@@ -65,9 +64,19 @@ class AlexaModel
     restService = new RestService {@meshbluConfig,@restServiceUri}
     restService.respond responseId, body, callback
 
-  open: (alexaIntent, callback) =>
+  open: ({}, callback) =>
     debug 'open'
-    callback null, responses.OPEN_RESPONSE
+    @listTriggers {}, (error, response) =>
+      _responseText = response.response.outputSpeech.text
+      responseText = "This skill allows you to trigger an Octoblu flow that perform a series of events or actions. Currently, #{_responseText}"
+      callback null, @convertResponse {responseText, closeSession: true}
+
+  invalidIntent: (callback) =>
+    debug 'open'
+    @open {}, (error, response) =>
+      _responseText = response.response.outputSpeech.text
+      responseText = "I don't understand this action. #{_responseText}"
+      callback null, @convertResponse {responseText}
 
   close: (alexaIntent, callback) =>
     debug 'close'

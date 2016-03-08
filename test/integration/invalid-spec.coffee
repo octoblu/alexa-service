@@ -2,7 +2,7 @@ request    = require 'request'
 shmock     = require '@octoblu/shmock'
 Server     = require '../../src/server'
 
-describe 'List Triggers', ->
+describe 'Invalid Intent', ->
   beforeEach (done) ->
     @restService = shmock 0xbabe
     @meshblu = shmock 0xd00d
@@ -68,9 +68,9 @@ describe 'List Triggers', ->
             request:
               type: "IntentRequest",
               requestId: "request-id",
-              timestamp: "2016-02-12T19:28:15Z",
+              timestamp: "2016-02-12T19:28:15Z"
               intent:
-                name: "ListTriggers"
+                name: "Something"
 
         request.post options, (error, @response, @body) =>
           done error
@@ -81,7 +81,7 @@ describe 'List Triggers', ->
           response:
             outputSpeech:
               type: 'PlainText'
-              text: 'Your triggers are sweet, and yay'
+              text: 'I don\'t understand this action. This skill allows you to trigger an Octoblu flow that perform a series of events or actions. Currently, Your triggers are sweet, and yay'
             shouldEndSession: true
 
       it 'should respond with 200', ->
@@ -130,7 +130,7 @@ describe 'List Triggers', ->
               requestId: "request-id",
               timestamp: "2016-02-12T19:28:15Z",
               intent:
-                name: "Amazon.HelpIntent"
+                name: "Something"
 
         request.post options, (error, @response, @body) =>
           done error
@@ -141,7 +141,7 @@ describe 'List Triggers', ->
           response:
             outputSpeech:
               type: 'PlainText'
-              text: 'Your triggers are sweet, and yay'
+              text: 'I don\'t understand this action. This skill allows you to trigger an Octoblu flow that perform a series of events or actions. Currently, Your triggers are sweet, and yay'
             shouldEndSession: true
 
       it 'should respond with 200', ->
@@ -187,7 +187,7 @@ describe 'List Triggers', ->
             requestId: "request-id",
             timestamp: "2016-02-12T19:28:15Z",
             intent:
-              name: "ListTriggers"
+              name: "Something"
 
       request.post options, (error, @response, @body) =>
         done error
@@ -198,7 +198,7 @@ describe 'List Triggers', ->
         response:
           outputSpeech:
             type: 'PlainText'
-            text: "You don't have any echo-in triggers. Get started by importing one or more alexa bluprints."
+            text: "I don\'t understand this action. This skill allows you to trigger an Octoblu flow that perform a series of events or actions. Currently, You don't have any echo-in triggers. Get started by importing one or more alexa bluprints."
           shouldEndSession: true
 
     it 'should respond with 200', ->

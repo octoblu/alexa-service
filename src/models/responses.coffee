@@ -1,12 +1,4 @@
 responses = {}
-responses.OPEN_RESPONSE  =
-  version: "1.0"
-  response:
-    outputSpeech:
-      type: "PlainText"
-      text: "What would you like to do?"
-    shouldEndSession: false
-
 responses.CLOSE_RESPONSE  =
   version: "1.0"
   response:
