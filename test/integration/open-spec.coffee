@@ -91,7 +91,7 @@ describe 'Open Intent', ->
       it 'should hit up whoami', ->
         @whoami.done()
 
-    describe 'when the Amazon.HelpIntent', ->
+    describe 'when the AMAZON.HelpIntent', ->
       beforeEach (done) ->
         userAuth = new Buffer('user-uuid:user-token').toString('base64')
 

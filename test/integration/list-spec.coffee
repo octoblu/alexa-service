@@ -93,7 +93,7 @@ describe 'List Triggers', ->
       it 'should hit up whoami', ->
         @whoami.done()
 
-    describe 'when the Amazon.HelpIntent', ->
+    describe 'when the AMAZON.HelpIntent', ->
       beforeEach (done) ->
         userAuth = new Buffer('user-uuid:user-token').toString('base64')
 
@@ -130,7 +130,7 @@ describe 'List Triggers', ->
               requestId: "request-id",
               timestamp: "2016-02-12T19:28:15Z",
               intent:
-                name: "Amazon.HelpIntent"
+                name: "AMAZON.HelpIntent"
 
         request.post options, (error, @response, @body) =>
           done error

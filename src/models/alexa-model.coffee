@@ -10,7 +10,7 @@ class AlexaModel
     @INTENTS =
       'Trigger': @trigger
       'ListTriggers': @listTriggers
-      'Amazon.HelpIntent': @listTriggers
+      'AMAZON.HelpIntent': @listTriggers
 
   convertError: (error) =>
     response = _.cloneDeep responses.CLOSE_RESPONSE
