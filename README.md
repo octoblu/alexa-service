@@ -53,59 +53,59 @@ docker run alexa-service:v4.3.3 -p 5000:80
   1. Set the Invocation Name
 1. **Interaction Model**
   1. Set the Intent Schema to:
-    ```json
+```json
+{
+  "intents": [
     {
-      "intents": [
+      "intent": "Trigger",
+      "slots": [
         {
-          "intent": "Trigger",
-          "slots": [
-            {
-              "name": "Name",
-              "type": "TRIGGER"
-            }
-          ]
-        },
-        {
-          "intent": "AMAZON.HelpIntent"
-        },
-        {
-          "intent": "ListTriggers"
+          "name": "Name",
+          "type": "TRIGGER"
         }
       ]
+    },
+    {
+      "intent": "AMAZON.HelpIntent"
+    },
+    {
+      "intent": "ListTriggers"
     }
-    ```
+  ]
+}
+```
   1. Create a Custom Slot with a type of "Trigger" and the values will be the name of the tasks you want to run. The values should be the same of the "echo-in" node name in your flow.
   1. Add the following generic Sample Utterances
-    ```json
-    Trigger {Name}
-    Trigger the {Name}
-    Trigger a {Name}
-    Trigger get {Name}
-    Trigger get a {Name}
-    Trigger get the {Name}
-    Trigger list {Name}
-    Trigger list a {Name}
-    Trigger list the {Name}
-    Trigger set {Name}
-    Trigger set a {Name}
-    Trigger set the {Name}
-    Trigger do {Name}
-    Trigger do a {Name}
-    Trigger do the {Name}
-    Trigger trigger {Name}
-    Trigger trigger a {Name}
-    Trigger trigger the {Name}
-    Trigger my {Name}
-    Trigger get my {Name}
-    Trigger list my {Name}
-    Trigger set my {Name}
-    Trigger do my {Name}
-    Trigger trigger my {Name}
-    ListTriggers what are my triggers
-    ListTriggers what can I do
-    ListTriggers list my triggers
-    ListTriggers tell me my triggers
-    ```
+```txt
+Trigger {Name}
+Trigger the {Name}
+Trigger a {Name}
+Trigger get {Name}
+Trigger get a {Name}
+Trigger get the {Name}
+Trigger list {Name}
+Trigger list a {Name}
+Trigger list the {Name}
+Trigger set {Name}
+Trigger set a {Name}
+Trigger set the {Name}
+Trigger do {Name}
+Trigger do a {Name}
+Trigger do the {Name}
+Trigger trigger {Name}
+Trigger trigger a {Name}
+Trigger trigger the {Name}
+Trigger my {Name}
+Trigger get my {Name}
+Trigger list my {Name}
+Trigger set my {Name}
+Trigger do my {Name}
+Trigger trigger my {Name}
+ListTriggers what are my triggers
+ListTriggers what can I do
+ListTriggers list my triggers
+ListTriggers tell me my triggers
+```
 1. **Configuration**
   1. Set the Endpoint to HTTPS and `https://alexa.octoblu.com/trigger` or the url of your hosted Alexa Service.
   1. Set Account Linking to "Yes"
