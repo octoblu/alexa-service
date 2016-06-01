@@ -38,8 +38,8 @@ npm start
 Or by using docker. Replace tag with latest and if needed, change the exposed port.
 
 ```shell
-docker pull quay.io/octoblu/alexa-service:v4.3.3
-docker run alexa-service:v4.3.3 -p 5000:80
+docker pull quay.io/octoblu/alexa-service:v4.3.4
+docker run alexa-service:v4.3.4 -p 5000:80
 ```
 
 # Creating Custom Skill
