@@ -15,9 +15,6 @@ class Command
     process.exit 1
 
   run: =>
-    # Use this to require env
-    # @panic new Error('Missing required environment variable: ENV_NAME') if _.isEmpty @serverOptions.envName
-
     server = new Server @serverOptions
     server.run (error) =>
       return @panic error if error?
