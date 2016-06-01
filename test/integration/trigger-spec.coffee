@@ -246,6 +246,9 @@ describe 'Trigger', ->
         request.post options, (error, @response, @body) =>
           done error
 
+      it 'should hit up whoami', ->
+        @whoami.done()
+        
       it 'should have a body', ->
         expect(@body).to.deep.equal
           version: '1.0'
@@ -257,6 +260,3 @@ describe 'Trigger', ->
 
       it 'should respond with 200', ->
         expect(@response.statusCode).to.equal 200
-
-      it 'should hit up whoami', ->
-        @whoami.done()

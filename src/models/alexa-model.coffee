@@ -40,6 +40,7 @@ class AlexaModel
     {intent} = alexaIntent.request
     name = intent?.slots?.Name?.value
     @validateConfig (error) =>
+      return callback new Error 'Unauthorized' if error?.code == 403
       return callback error if error?
       restService = new RestService {@meshbluConfig,@restServiceUri}
       restService.trigger name, alexaIntent.request, (error, result) =>
