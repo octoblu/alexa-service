@@ -1,6 +1,6 @@
 # Alexa Service
 
-[![Build Status](https://travis-ci.org/octoblu/alexa-service.svg?branch=master)](https://travis-ci.org/octoblu/alexa-service)
+[![Build Status](https://travis-ci.org/octoblu/alexa-service.svg)](https://travis-ci.org/octoblu/alexa-service)
 [![Code Climate](https://codeclimate.com/github/octoblu/alexa-service/badges/gpa.svg)](https://codeclimate.com/github/octoblu/alexa-service)
 [![Test Coverage](https://codeclimate.com/github/octoblu/alexa-service/badges/coverage.svg)](https://codeclimate.com/github/octoblu/alexa-service)
 [![Gitter](https://badges.gitter.im/octoblu/help.svg)](https://gitter.im/octoblu/help)
@@ -38,8 +38,8 @@ npm start
 Or by using docker. Replace tag with latest and if needed, change the exposed port.
 
 ```shell
-docker pull quay.io/octoblu/alexa-service:v4.3.4
-docker run alexa-service:v4.3.4 -p 5000:80
+docker pull quay.io/octoblu/alexa-service:v4.3.5
+docker run alexa-service:v4.3.5 -p 5000:80
 ```
 
 # Creating Custom Skill
