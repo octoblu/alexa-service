@@ -1,6 +1,6 @@
 {
   "name": "alexa-service",
-  "version": "4.3.3",
+  "version": "4.3.4",
   "description": "Alexa Service",
   "main": "server.js",
   "scripts": {
@@ -36,7 +36,7 @@
     "node-uuid": "^1.4.3",
     "request": "^2.60.0",
     "simple-benchmark": "^1.0.7",
-    "triggers-service": "^2.0.1"
+    "triggers-service": "~2.0.1"
   },
   "devDependencies": {
     "@octoblu/shmock": "^0.7.2",
