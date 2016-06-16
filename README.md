@@ -139,6 +139,7 @@ ListTriggers tell me my triggers
 1. **Privacy & Compliance**
   1. This information is specific to your skill
 
+If you are getting unauthorized, disable and re-enable your skill. This should open up another tab, authing you with Octoblu.
 # Octoblu Usage
 
 ## Flows
