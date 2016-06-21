@@ -10,6 +10,8 @@ describe 'List Triggers', ->
     meshbluConfig =
       server: 'localhost'
       port: 0xd00d
+      protocol: 'http'
+      keepAlive: false
 
     serverOptions =
       port: undefined,
@@ -38,20 +40,18 @@ describe 'List Triggers', ->
         userAuth = new Buffer('user-uuid:user-token').toString('base64')
 
         @whoami = @meshblu
-          .get '/v2/whoami'
+          .post '/authenticate'
           .set 'Authorization', "Basic #{userAuth}"
           .reply 200, uuid: 'user-uuid', token: 'user-token'
 
         @getDevices = @meshblu
-          .get '/devices'
+          .get '/v2/devices'
           .set 'Authorization', "Basic #{userAuth}"
           .query owner: 'user-uuid', type: 'octoblu:flow', online: 'true'
-          .reply 200, {
-            devices: [
-              {online: true, flow: nodes: [{name: 'sweet', type: 'operation:echo-in'}]}
-              {online: true, flow: nodes: [{name: 'yay', type: 'operation:echo-in'}]}
-            ]
-          }
+          .reply 200, [
+            {online: true, flow: nodes: [{name: 'sweet', type: 'operation:echo-in'}]}
+            {online: true, flow: nodes: [{name: 'yay', type: 'operation:echo-in'}]}
+          ]
 
         options =
           uri: '/trigger'
@@ -98,20 +98,18 @@ describe 'List Triggers', ->
         userAuth = new Buffer('user-uuid:user-token').toString('base64')
 
         @whoami = @meshblu
-          .get '/v2/whoami'
+          .post '/authenticate'
           .set 'Authorization', "Basic #{userAuth}"
           .reply 200, uuid: 'user-uuid', token: 'user-token'
 
         @getDevices = @meshblu
-          .get '/devices'
+          .get '/v2/devices'
           .set 'Authorization', "Basic #{userAuth}"
           .query owner: 'user-uuid', type: 'octoblu:flow', online: 'true'
-          .reply 200, {
-            devices: [
-              {flow: nodes: [{name: 'sweet', type: 'operation:echo-in'}]}
-              {flow: nodes: [{name: 'yay', type: 'operation:echo-in'}]}
-            ]
-          }
+          .reply 200, [
+            {flow: nodes: [{name: 'sweet', type: 'operation:echo-in'}]}
+            {flow: nodes: [{name: 'yay', type: 'operation:echo-in'}]}
+          ]
 
         options =
           uri: '/trigger'
@@ -158,17 +156,15 @@ describe 'List Triggers', ->
       userAuth = new Buffer('user-uuid:user-token').toString('base64')
 
       @whoami = @meshblu
-        .get '/v2/whoami'
+        .post '/authenticate'
         .set 'Authorization', "Basic #{userAuth}"
         .reply 200, uuid: 'user-uuid', token: 'user-token'
 
       @getDevices = @meshblu
-        .get '/devices'
+        .get '/v2/devices'
         .set 'Authorization', "Basic #{userAuth}"
         .query owner: 'user-uuid', type: 'octoblu:flow', online: 'true'
-        .reply 200, {
-          devices: []
-        }
+        .reply 200, []
 
       options =
         uri: '/trigger'

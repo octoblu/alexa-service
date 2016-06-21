@@ -10,6 +10,8 @@ describe 'Trigger', ->
     meshbluConfig =
       server: 'localhost'
       port: 0xd00d
+      protocol: 'http'
+      keepAlive: false
 
     serverOptions =
       port: undefined,
@@ -38,7 +40,7 @@ describe 'Trigger', ->
         userAuth = new Buffer('user-uuid:user-token').toString('base64')
 
         @whoami = @meshblu
-          .get '/v2/whoami'
+          .post '/authenticate'
           .set 'Authorization', "Basic #{userAuth}"
           .reply 200, uuid: 'user-uuid', token: 'user-token'
 
@@ -109,7 +111,7 @@ describe 'Trigger', ->
         userAuth = new Buffer('user-uuid:user-token').toString('base64')
 
         @whoami = @meshblu
-          .get '/v2/whoami'
+          .post '/authenticate'
           .set 'Authorization', "Basic #{userAuth}"
           .reply 200, uuid: 'user-uuid', token: 'user-token'
 
@@ -204,12 +206,13 @@ describe 'Trigger', ->
 
       it 'should have a body', ->
         expect(@body).to.deep.equal
-          version: '1.0'
+          version: "1.0"
           response:
             outputSpeech:
-              type: 'PlainText'
-              text: 'Unauthorized'
-            shouldEndSession: true
+              type: "PlainText"
+              text: "Please go to your Alexa app and link your account."
+            card:
+              type: "LinkAccount"
 
       it 'should respond with 200', ->
         expect(@response.statusCode).to.equal 200
@@ -217,7 +220,7 @@ describe 'Trigger', ->
     describe 'when invalid auth is provided', ->
       beforeEach (done) ->
         @whoami = @meshblu
-          .get '/v2/whoami'
+          .post '/authenticate'
           .reply 403, error: message: 'Unauthorized'
 
         options =
@@ -248,15 +251,16 @@ describe 'Trigger', ->
 
       it 'should hit up whoami', ->
         @whoami.done()
-        
+
       it 'should have a body', ->
         expect(@body).to.deep.equal
-          version: '1.0'
+          version: "1.0"
           response:
             outputSpeech:
-              type: 'PlainText'
-              text: 'Unauthorized'
-            shouldEndSession: true
-
+              type: "PlainText"
+              text: "Please go to your Alexa app and link your account."
+            card:
+              type: "LinkAccount"
+              
       it 'should respond with 200', ->
         expect(@response.statusCode).to.equal 200

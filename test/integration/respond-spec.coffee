@@ -9,6 +9,8 @@ describe 'Respond', ->
     meshbluConfig =
       server: 'localhost'
       port: 0xd00d
+      protocol: 'http'
+      keepAlive: false
 
     serverOptions =
       port: undefined,

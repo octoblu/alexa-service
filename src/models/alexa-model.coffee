@@ -13,6 +13,7 @@ class AlexaModel
       'AMAZON.HelpIntent': @open
 
   convertError: (error) =>
+    return error if error?.response?.outputSpeech?
     response = _.cloneDeep responses.CLOSE_RESPONSE
     response.response.outputSpeech.text = error?.message ? error
     response
@@ -23,16 +24,23 @@ class AlexaModel
     response.response.shouldEndSession = false if closeSession
     response
 
-  validateConfig: (callback)=>
-    return callback new Error 'Unauthorized' unless @meshbluConfig?
-    meshbluHttp = new MeshbluHttp @meshbluConfig
-    meshbluHttp.whoami callback
+  unauthorizedResponse: =>
+    return _.cloneDeep responses.LINK_ACCOUNT_CARD_RESPONSE
+
+  validateConfig: (callback) =>
+    return callback @unauthorizedResponse() unless @meshbluConfig?
+    meshbluConfig = _.cloneDeep @meshbluConfig
+    if meshbluConfig.server?
+      meshbluConfig.hostname = meshbluConfig.server
+      delete meshbluConfig.server
+    meshbluHttp = new MeshbluHttp meshbluConfig
+    meshbluHttp.authenticate callback
 
   intent: (alexaIntent, callback) =>
     {intent} = alexaIntent.request
     debug 'intent', intent
     return @invalidIntent callback unless @INTENTS[intent.name]?
-    debug 'intent name', intent.name
+    debug 'running intent...'
     @INTENTS[intent.name] alexaIntent, callback
 
   trigger: (alexaIntent, callback) =>
@@ -40,7 +48,7 @@ class AlexaModel
     {intent} = alexaIntent.request
     name = intent?.slots?.Name?.value
     @validateConfig (error) =>
-      return callback new Error 'Unauthorized' if error?.code == 403
+      return callback @unauthorizedResponse() if error?.code == 403
       return callback error if error?
       restService = new RestService {@meshbluConfig,@restServiceUri}
       restService.trigger name, alexaIntent.request, (error, result) =>
@@ -49,8 +57,9 @@ class AlexaModel
         callback null, @convertResponse result.data
 
   listTriggers: ({}, callback) =>
-    debug 'triggering a trigger'
+    debug 'listing triggers'
     @validateConfig (error) =>
+      debug 'valid config', { error }
       return callback error if error?
       triggers = new Triggers {@meshbluConfig}
       triggers.myTriggers {type: 'operation:echo-in'}, (error, triggers) =>
@@ -68,13 +77,15 @@ class AlexaModel
   open: ({}, callback) =>
     debug 'open'
     @listTriggers {}, (error, response) =>
+      return callback error if error?
       _responseText = response.response.outputSpeech.text
       responseText = "This skill allows you to trigger an Octoblu flow that perform a series of events or actions. Currently, #{_responseText}"
       callback null, @convertResponse {responseText, closeSession: true}
 
   invalidIntent: (callback) =>
-    debug 'open'
+    debug 'invalid intent'
     @open {}, (error, response) =>
+      return callback error if error?
       _responseText = response.response.outputSpeech.text
       responseText = "I don't understand this action. #{_responseText}"
       callback null, @convertResponse {responseText}

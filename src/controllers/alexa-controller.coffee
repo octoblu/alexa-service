@@ -28,19 +28,21 @@ class AlexaController
   trigger: (request, response) =>
     debug 'trigger request', request.body
     {type} = request.body?.request
-    debug 'request type', type
+    debug 'request', { type }
     debug 'is a valid type', @requestByType[type]?
     return @requestByType[type] request, response if @requestByType[type]?
     alexaModel = @getAlexaModel request
     return response.status(200).send alexaModel.convertError new Error("Invalid Intent Type")
 
   intent: (request, response) =>
-    {responseId} = request.body?.request
-    debug 'intent', responseId
+    {requestId} = request.body?.request
+    debug 'intent', { requestId }
     alexaModel = @getAlexaModel request
     alexaModel.intent request.body, (error, alexaResponse) =>
       debug 'responding', error: error
-      return response.status(200).send alexaModel.convertError error if error?
+      if error?
+        response.status(200).send alexaModel.convertError error
+        return
       response.status(200).send alexaResponse
 
   open: (request, response) =>
