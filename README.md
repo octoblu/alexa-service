@@ -116,7 +116,7 @@ ListTriggers tell me my triggers
     1. Add a name to the Oatuh Device
     1. Set the redirect url to the Redirect URL listed on the Configuration Page in your Alexa Skill.
     1. The Oauth device should be discoverable by everyone
-    1. The UUID and Token will of the device will be needed for the Alexa Skill. You can get the Token by generating a new one in the device configuration page in octoblu.
+    1. The UUID of the device will be needed for the Alexa Skill as the Client ID.
   1. The Skill Client ID will the UUID of the Oauth device you created.
   1. The Following need to be added to the domain list
     - twitter.com
@@ -126,10 +126,7 @@ ListTriggers tell me my triggers
     - github.com
     - octoblu.com
   1. No scope needs to be set
-  1. Set the Authorization Grant Type to "Auth Code Grant"
-  1. Set the Access Token URI to "https://oauth.octoblu.com/access_token"
-  1. Set the Client Secret to the Token of the Oauth Device
-  1. Set the Client Authentication Scheme to "HTTP Basic"
+  1. Set the Authorization Grant Type to "Implicit Grant"
   1. Set the terms to "https://app.octoblu.com/terms" or your own terms.
 1. **SSL Certificate**
   1. Select the option, "My development endpoint has a certificate from a trusted certificate authority"
