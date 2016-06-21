@@ -102,7 +102,7 @@ Trigger set my {Name}
 Trigger do my {Name}
 Trigger trigger my {Name}
 ListTriggers what are my triggers
-ListTriggers what can I do
+ListTriggers what can i do
 ListTriggers list my triggers
 ListTriggers tell me my triggers
 ```
