@@ -1,10 +1,12 @@
-request    = require 'request'
-shmock     = require '@octoblu/shmock'
-Server     = require '../../src/server'
+request       = require 'request'
+enableDestroy = require 'server-destroy'
+shmock        = require '@octoblu/shmock'
+Server        = require '../../src/server'
 
 describe 'Respond', ->
   beforeEach (done) ->
     @restService = shmock 0xbabe
+    enableDestroy(@restService)
 
     meshbluConfig =
       server: 'localhost'
@@ -17,6 +19,7 @@ describe 'Respond', ->
       disableLogging: true
       meshbluConfig: meshbluConfig
       restServiceUri: "http://localhost:#{0xbabe}"
+      disableAlexaVerification: true
 
     @server = new Server serverOptions
 
@@ -24,11 +27,9 @@ describe 'Respond', ->
       @serverPort = @server.address().port
       done()
 
-  afterEach (done) ->
-    @server.stop done
-
-  afterEach (done) ->
-    @restService.close done
+  afterEach ->
+    @restService.destroy()
+    @server.destroy()
 
   describe 'POST /respond/:responseId', ->
     beforeEach (done) ->

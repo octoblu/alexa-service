@@ -4,7 +4,9 @@ morgan             = require 'morgan'
 express            = require 'express'
 errorHandler       = require 'errorhandler'
 bodyParser         = require 'body-parser'
-verifier           = require 'alexa-verifier'
+enableDestroy      = require 'server-destroy'
+alexa              = require './middlewares/alexa'
+rawBody            = require './middlewares/raw-body'
 meshbluHealthcheck = require 'express-meshblu-healthcheck'
 Router             = require './router'
 debug              = require('debug')('alexa-service:server')
@@ -13,27 +15,10 @@ class Server
   constructor: (options)->
     {@disableLogging, @port} = options
     {@meshbluConfig,@restServiceUri} = options
+    {@disableAlexaVerification} = options
 
   address: =>
     @server.address()
-
-  getRawBody: (req, res, next) =>
-    data = ''
-    req.on 'data', (chunk) =>
-      data += chunk
-    req.on 'end', =>
-      req.rawBody = data
-    next()
-
-  verifyAlexa: (req, res, next) =>
-    return next() unless process.env.NODE_ENV == 'production'
-
-    certUrl  = req.headers.signaturecertchainurl
-    signature = req.headers.signature
-    verifier certUrl, signature, req.rawBody, (error) ->
-      return next() unless error?
-      console.error 'error validating the alexa cert:', error
-      res.status(401).json { status: 'failure', reason: error }
 
   run: (callback) =>
     app = express()
@@ -44,15 +29,20 @@ class Server
     app.use bodyParser.json limit : '1mb', defer: true
 
     app.options '*', cors()
-
-    app.use @verifyAlexa
+    app.use rawBody.generate()
+    app.use alexa.verify() unless @disableAlexaVerification
 
     router = new Router {@meshbluConfig,@restServiceUri}
     router.route app
 
     @server = app.listen @port, callback
 
+    enableDestroy(@server)
+
   stop: (callback) =>
     @server.close callback
+
+  destroy: =>
+    @server.destroy()
 
 module.exports = Server

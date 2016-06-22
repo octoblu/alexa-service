@@ -1,11 +1,14 @@
-request    = require 'request'
-shmock     = require '@octoblu/shmock'
-Server     = require '../../src/server'
+request       = require 'request'
+enableDestroy = require 'server-destroy'
+shmock        = require '@octoblu/shmock'
+Server        = require '../../src/server'
 
 describe 'Invalid Intent', ->
   beforeEach (done) ->
     @restService = shmock 0xbabe
     @meshblu = shmock 0xd00d
+    enableDestroy(@meshblu)
+    enableDestroy(@restService)
 
     meshbluConfig =
       server: 'localhost'
@@ -18,6 +21,7 @@ describe 'Invalid Intent', ->
       disableLogging: true
       meshbluConfig: meshbluConfig
       restServiceUri: "http://localhost:#{0xbabe}"
+      disableAlexaVerification: true
 
     @server = new Server serverOptions
 
@@ -25,14 +29,10 @@ describe 'Invalid Intent', ->
       @serverPort = @server.address().port
       done()
 
-  afterEach 'close server', (done) ->
-    @server.stop done
-
-  afterEach 'close rest service', (done) ->
-    @restService.close done
-
-  afterEach 'close meshblu', ->
-    @meshblu.close()
+  afterEach ->
+    @meshblu.destroy()
+    @restService.destroy()
+    @server.destroy()
 
   describe 'POST /trigger', ->
     describe 'when successful', ->

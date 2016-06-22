@@ -1,11 +1,14 @@
-request    = require 'request'
-shmock     = require '@octoblu/shmock'
-Server     = require '../../src/server'
+request       = require 'request'
+enableDestroy = require 'server-destroy'
+shmock        = require '@octoblu/shmock'
+Server        = require '../../src/server'
 
 describe 'List Triggers', ->
   beforeEach (done) ->
     @restService = shmock 0xbabe
     @meshblu = shmock 0xd00d
+    enableDestroy(@meshblu)
+    enableDestroy(@restService)
 
     meshbluConfig =
       server: 'localhost'
@@ -18,6 +21,7 @@ describe 'List Triggers', ->
       disableLogging: true
       meshbluConfig: meshbluConfig
       restServiceUri: "http://localhost:#{0xbabe}"
+      disableAlexaVerification: true
 
     @server = new Server serverOptions
 
@@ -25,14 +29,10 @@ describe 'List Triggers', ->
       @serverPort = @server.address().port
       done()
 
-  afterEach (done) ->
-    @server.stop done
-
-  afterEach (done) ->
-    @restService.close done
-
-  afterEach (done) ->
-    @meshblu.close done
+  afterEach ->
+    @meshblu.destroy()
+    @restService.destroy()
+    @server.destroy()
 
   describe 'POST /trigger', ->
     describe 'when successful', ->
