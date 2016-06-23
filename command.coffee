@@ -10,7 +10,7 @@ class Command
       disableLogging: process.env.DISABLE_LOGGING == "true"
       restServiceUri: process.env.REST_SERVICE_URI || 'https://rest.octoblu.com'
       disableAlexaVerification: process.env.DISABLE_ALEXA_VERIFICATION || false
-
+      
   panic: (error) =>
     console.error error.stack
     process.exit 1

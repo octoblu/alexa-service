@@ -16,6 +16,7 @@ class Server
     {@disableLogging, @port} = options
     {@meshbluConfig,@restServiceUri} = options
     {@disableAlexaVerification} = options
+    {@testAlexaCertObject, @alexaCert} = options
 
   address: =>
     @server.address()
@@ -26,10 +27,12 @@ class Server
     app.use morgan 'dev', immediate: false unless @disableLogging
     app.use cors()
     app.use errorHandler()
+    app.use rawBody.generate()
     app.use bodyParser.json limit : '1mb', defer: true
 
     app.options '*', cors()
-    app.use rawBody.generate()
+
+    alexa.set { @testAlexaCertObject, @alexaCert }
     app.use alexa.verify() unless @disableAlexaVerification
 
     router = new Router {@meshbluConfig,@restServiceUri}

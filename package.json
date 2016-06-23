@@ -23,8 +23,10 @@
   "homepage": "https://github.com/octoblu/alexa-service",
   "dependencies": {
     "alexa-verifier": "0.0.4",
+    "async": "^2.0.0-rc.6",
     "body-parser": "^1.15.2",
     "coffee-script": "^1.9.3",
+    "concat-stream": "^1.5.1",
     "cors": "^2.7.1",
     "debug": "^2.2.0",
     "errorhandler": "^1.4.2",
@@ -34,9 +36,12 @@
     "meshblu-config": "^5.1.1",
     "meshblu-http": "^7.0.0",
     "morgan": "^1.7.0",
+    "node-rsa": "^0.3.3",
     "node-uuid": "^1.4.3",
     "request": "^2.72.0",
-    "triggers-service": "^2.3.0"
+    "triggers-service": "^2.3.0",
+    "validator": "^5.4.0",
+    "x509": "^0.2.6"
   },
   "devDependencies": {
     "@octoblu/shmock": "^0.7.2",
