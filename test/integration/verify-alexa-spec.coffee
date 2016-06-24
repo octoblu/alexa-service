@@ -1,12 +1,10 @@
 request       = require 'request'
 enableDestroy = require 'server-destroy'
 shmock        = require '@octoblu/shmock'
-fs            = require 'fs'
-path          = require 'path'
 moment        = require 'moment'
 Encrypto      = require '../encrypto'
 Server        = require '../../src/server'
-testCerts     = require '../test-certs.json'
+certs         = require '../certs'
 
 describe 'Verify Alexa', ->
   beforeEach (done) ->
@@ -15,7 +13,7 @@ describe 'Verify Alexa', ->
     enableDestroy(@meshblu)
     enableDestroy(@restService)
 
-    @encrypto = new Encrypto testCerts
+    @encrypto = new Encrypto certs
 
     meshbluConfig =
       server: 'localhost'
@@ -23,21 +21,25 @@ describe 'Verify Alexa', ->
       protocol: 'http'
       keepAlive: false
 
-    @testAlexaCertObject = {
-      notAfter: moment().add(10, 'seconds')
-      notBefore: moment().subtract(10, 'seconds')
+    @cert = {
+      notAfter: moment().add(10, 'seconds').toISOString()
+      notBefore: moment().subtract(10, 'seconds').toISOString()
       altNames: ['echo-api.amazon.com']
-      publicKey: testCerts.publicKey
     }
 
-    serverOptions =
+    testCert = {
+      @cert,
+      body: certs.crt
+    }
+
+    serverOptions = {
       port: undefined,
-      disableLogging: true
-      meshbluConfig: meshbluConfig
-      restServiceUri: "http://localhost:#{0xbabe}"
-      disableAlexaVerification: false
-      alexaCert: testCerts.publicKey
-      testAlexaCertObject: @testAlexaCertObject
+      disableLogging: true,
+      meshbluConfig,
+      restServiceUri: "http://localhost:#{0xbabe}",
+      disableAlexaVerification: false,
+      testCert
+    }
 
     @server = new Server serverOptions
 
@@ -120,11 +122,9 @@ describe 'Verify Alexa', ->
           request.post @requestOptions, (error, @response, @body) =>
             done error
 
-        it 'should respond with a 400', ->
-          expect(@response.statusCode).to.equal 400
-
-        it 'should respond with an appropriate reason', ->
+        it 'should respond with a 400 and the correct reason', ->
           expect(@body.reason).to.equal 'missing-cert-url'
+          expect(@response.statusCode).to.equal 400
 
       describe 'when it is not https', ->
         beforeEach (done) ->
@@ -132,11 +132,9 @@ describe 'Verify Alexa', ->
           request.post @requestOptions, (error, @response, @body) =>
             done error
 
-        it 'should respond with a 400', ->
-          expect(@response.statusCode).to.equal 400
-
-        it 'should respond with an appropriate reason', ->
+        it 'should respond with a 400 and the correct reason', ->
           expect(@body.reason).to.equal 'invalid-cert-url-protocol'
+          expect(@response.statusCode).to.equal 400
 
       describe 'when it has an invalid hostname', ->
         beforeEach (done) ->
@@ -144,11 +142,9 @@ describe 'Verify Alexa', ->
           request.post @requestOptions, (error, @response, @body) =>
             done error
 
-        it 'should respond with a 400', ->
-          expect(@response.statusCode).to.equal 400
-
-        it 'should respond with an appropriate reason', ->
+        it 'should respond with a 400 and the correct reason', ->
           expect(@body.reason).to.equal 'invalid-cert-url-hostname'
+          expect(@response.statusCode).to.equal 400
 
       describe 'when it has an invalid path', ->
         beforeEach (done) ->
@@ -156,11 +152,9 @@ describe 'Verify Alexa', ->
           request.post @requestOptions, (error, @response, @body) =>
             done error
 
-        it 'should respond with a 400', ->
-          expect(@response.statusCode).to.equal 400
-
-        it 'should respond with an appropriate reason', ->
+        it 'should respond with a 400 and the correct reason', ->
           expect(@body.reason).to.equal 'invalid-cert-url-path'
+          expect(@response.statusCode).to.equal 400
 
       describe 'when it has an valid start path but different filename', ->
         beforeEach (done) ->
@@ -177,11 +171,9 @@ describe 'Verify Alexa', ->
           request.post @requestOptions, (error, @response, @body) =>
             done error
 
-        it 'should respond with a 400', ->
-          expect(@response.statusCode).to.equal 400
-
-        it 'should respond with an appropriate reason', ->
+        it 'should respond with a 400 and the correct reason', ->
           expect(@body.reason).to.equal 'invalid-cert-url-path'
+          expect(@response.statusCode).to.equal 400
 
       describe 'when it has an obvious invalid port', ->
         beforeEach (done) ->
@@ -189,48 +181,40 @@ describe 'Verify Alexa', ->
           request.post @requestOptions, (error, @response, @body) =>
             done error
 
-        it 'should respond with a 400', ->
-          expect(@response.statusCode).to.equal 400
-
-        it 'should respond with an appropriate reason', ->
+        it 'should respond with a 400 and the correct reason', ->
           expect(@body.reason).to.equal 'invalid-cert-url-port'
+          expect(@response.statusCode).to.equal 400
 
     describe 'when the request has an invalid cert', ->
       describe 'when it is not before', ->
         beforeEach (done) ->
-          @testAlexaCertObject.notBefore = moment().add(10, 'seconds')
+          @cert.notBefore = moment().add(10, 'seconds')
           request.post @requestOptions, (error, @response, @body) =>
             done error
 
-        it 'should respond with a 400', ->
-          expect(@response.statusCode).to.equal 400
-
-        it 'should respond with an appropriate reason', ->
+        it 'should respond with a 400 and the correct reason', ->
           expect(@body.reason).to.equal 'cert-not-active-yet'
+          expect(@response.statusCode).to.equal 400
 
       describe 'when it is not after', ->
         beforeEach (done) ->
-          @testAlexaCertObject.notAfter = moment().subtract(10, 'seconds')
+          @cert.notAfter = moment().subtract(10, 'seconds')
           request.post @requestOptions, (error, @response, @body) =>
             done error
 
-        it 'should respond with a 400', ->
+        it 'should respond with a 400 and the correct reason', ->
           expect(@response.statusCode).to.equal 400
-
-        it 'should respond with an appropriate reason', ->
           expect(@body.reason).to.equal 'cert-expired'
 
       describe 'when it has an invalid SANs', ->
         beforeEach (done) ->
-          @testAlexaCertObject.altNames = ['not-echo-api.amazon.com']
+          @cert.altNames = ['not-echo-api.amazon.com']
           request.post @requestOptions, (error, @response, @body) =>
             done error
 
-        it 'should respond with a 400', ->
-          expect(@response.statusCode).to.equal 400
-
-        it 'should respond with an appropriate reason', ->
+        it 'should respond with a 400 and the correct reason', ->
           expect(@body.reason).to.equal 'invalid-alt-names'
+          expect(@response.statusCode).to.equal 400
 
       describe 'when it has an invalid signature format', ->
         beforeEach (done) ->
@@ -238,11 +222,9 @@ describe 'Verify Alexa', ->
           request.post @requestOptions, (error, @response, @body) =>
             done error
 
-        it 'should respond with a 400', ->
-          expect(@response.statusCode).to.equal 400
-
-        it 'should respond with an appropriate reason', ->
+        it 'should respond with a 400 and the correct reason', ->
           expect(@body.reason).to.equal 'invalid-signature-format'
+          expect(@response.statusCode).to.equal 400
 
       describe 'when it has a invalid signature', ->
         beforeEach (done) ->
@@ -250,11 +232,9 @@ describe 'Verify Alexa', ->
           request.post @requestOptions, (error, @response, @body) =>
             done error
 
-        it 'should respond with a 400', ->
-          expect(@response.statusCode).to.equal 400
-
-        it 'should respond with an appropriate reason', ->
+        it 'should respond with a 400 and the correct reason', ->
           expect(@body.reason).to.equal 'invalid-signature'
+          expect(@response.statusCode).to.equal 400
 
       describe 'when it has a valid signature', ->
         beforeEach (done) ->
@@ -282,8 +262,6 @@ describe 'Verify Alexa', ->
           request.post @requestOptions, (error, @response, @body) =>
             done error
 
-        it 'should respond with a 400', ->
-          expect(@response.statusCode).to.equal 400
-
-        it 'should respond with an appropriate reason', ->
+        it 'should respond with a 400 and the correct reason', ->
           expect(@body.reason).to.equal 'timestamp-is-outside-of-tolerance'
+          expect(@response.statusCode).to.equal 400

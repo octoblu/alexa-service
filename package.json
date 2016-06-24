@@ -1,6 +1,6 @@
 {
   "name": "alexa-service",
-  "version": "6.0.7",
+  "version": "6.0.8",
   "description": "Alexa Service",
   "main": "command.js",
   "scripts": {
@@ -37,8 +37,8 @@
     "meshblu-http": "^7.0.0",
     "moment": "^2.13.0",
     "morgan": "^1.7.0",
-    "node-rsa": "^0.3.3",
     "node-uuid": "^1.4.3",
+    "normalize-url": "^1.5.3",
     "request": "^2.72.0",
     "server-destroy": "^1.0.1",
     "triggers-service": "^2.3.0",
