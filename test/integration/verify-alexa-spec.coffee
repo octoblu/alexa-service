@@ -24,7 +24,8 @@ describe 'Verify Alexa', ->
       keepAlive: false
 
     @testAlexaCertObject = {
-      notAfter: new Date(Date.now() + (10 * 1000))
+      notAfter: moment().add(10, 'seconds')
+      notBefore: moment().subtract(10, 'seconds')
       altNames: ['echo-api.amazon.com']
       publicKey: testCerts.publicKey
     }
@@ -188,7 +189,7 @@ describe 'Verify Alexa', ->
     describe 'when the request has an invalid cert', ->
       describe 'when it is not before', ->
         beforeEach (done) ->
-          @testAlexaCertObject.notBefore = new Date(Date.now() + (10 * 1000))
+          @testAlexaCertObject.notBefore = moment().add(10, 'seconds')
           request.post @requestOptions, (error, @response, @body) =>
             done error
 
@@ -200,7 +201,7 @@ describe 'Verify Alexa', ->
 
       describe 'when it is not after', ->
         beforeEach (done) ->
-          @testAlexaCertObject.notAfter = new Date(Date.now() - (10 * 1000))
+          @testAlexaCertObject.notAfter = moment().subtract(10, 'seconds')
           request.post @requestOptions, (error, @response, @body) =>
             done error
 
