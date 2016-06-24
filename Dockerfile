@@ -1,6 +1,8 @@
 FROM node:5
 MAINTAINER Octoblu, Inc. <docker@octoblu.com>
 
+ENV NPM_CONFIG_LOGLEVEL error
+
 EXPOSE 80
 
 RUN mkdir -p /usr/src/app

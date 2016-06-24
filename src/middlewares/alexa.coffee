@@ -3,6 +3,7 @@ url       = require 'url'
 async     = require 'async'
 x509      = require 'x509'
 validator = require 'validator'
+moment    = require 'moment'
 NodeRSA   = require 'node-rsa'
 
 class Alexa
@@ -15,11 +16,13 @@ class Alexa
     certUrl = req.headers.signaturecertchainurl
     signature = req.headers.signature
     rawBody = req.rawBody
+    jsonBody = req.body
     @getCert { certUrl }, (error, cert) =>
       return res.status(400).send @convertError error if error?
       async.series [
         async.apply @validateCert, { cert }
         async.apply @validateSignature, { cert, signature, rawBody }
+        async.apply @validateTimestamp, { jsonBody }
       ], (error) =>
         return res.status(400).send @convertError error if error?
         next()
@@ -34,8 +37,8 @@ class Alexa
     callback()
 
   validateCert: ({ cert }, callback) =>
-    return callback 'cert-not-active-yet' if cert.notBefore > new Date()
-    return callback 'cert-expired' if cert.notAfter < new Date()
+    return callback 'cert-not-active-yet' if moment().isBefore cert.notBefore
+    return callback 'cert-expired' if moment().isAfter cert.notAfter
     return callback 'invalid-alt-names' unless 'echo-api.amazon.com' in cert.altNames
     callback null
 
@@ -57,6 +60,13 @@ class Alexa
         return callback 'cert-retrieval-error' if error?
         return callback 'cert-retrieval-invalid-response' unless response.statusCode == 200
         callback null, x509.parseCert body.toString()
+
+  validateTimestamp: ({ jsonBody={} }, callback) =>
+    { timestamp } = jsonBody.request ? {}
+    return callback() unless timestamp?
+    tolerance = moment().subtract(150, 'seconds')
+    return callback 'timestamp-is-outside-of-tolerance' if moment(timestamp).isBefore tolerance
+    callback()
 
   convertError: (error) =>
     return status: 'failure', reason: error

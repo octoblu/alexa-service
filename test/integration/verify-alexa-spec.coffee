@@ -3,19 +3,10 @@ enableDestroy = require 'server-destroy'
 shmock        = require '@octoblu/shmock'
 fs            = require 'fs'
 path          = require 'path'
-x509          = require 'x509'
-NodeRSA       = require 'node-rsa'
-crypto        = require 'crypto'
+moment        = require 'moment'
+Encrypto      = require '../encrypto'
 Server        = require '../../src/server'
 testCerts     = require '../test-certs.json'
-
-encryptIt = (buffer) =>
-  key = new NodeRSA(testCerts.privateKey)
-  return key.encryptPrivate(buffer)
-
-signIt = (buffer) =>
-  key = new NodeRSA(testCerts.privateKey)
-  return new Buffer(key.sign(buffer)).toString('base64')
 
 describe 'Verify Alexa', ->
   beforeEach (done) ->
@@ -23,6 +14,8 @@ describe 'Verify Alexa', ->
     @meshblu = shmock 0xd00d
     enableDestroy(@meshblu)
     enableDestroy(@restService)
+
+    @encrypto = new Encrypto testCerts
 
     meshbluConfig =
       server: 'localhost'
@@ -42,7 +35,7 @@ describe 'Verify Alexa', ->
       meshbluConfig: meshbluConfig
       restServiceUri: "http://localhost:#{0xbabe}"
       disableAlexaVerification: false
-      alexaCert: testCerts.public
+      alexaCert: testCerts.publicKey
       testAlexaCertObject: @testAlexaCertObject
 
     @server = new Server serverOptions
@@ -56,7 +49,7 @@ describe 'Verify Alexa', ->
     @restService.destroy()
     @server.destroy()
 
-  describe 'POST /trigger', ->
+  describe 'POST /verify/trigger', ->
     beforeEach ->
       userAuth = new Buffer('user-uuid:user-token').toString('base64')
 
@@ -75,7 +68,7 @@ describe 'Verify Alexa', ->
         ]
 
       @requestOptions =
-        uri: '/trigger'
+        uri: '/verify/trigger'
         baseUrl: "http://localhost:#{@serverPort}"
         headers: {
           'SignatureCertChainUrl': 'https://s3.amazonaws.com/echo.api/echo-api-cert.pem'
@@ -92,9 +85,11 @@ describe 'Verify Alexa', ->
           request:
             type: "LaunchRequest",
             requestId: "request-id",
-            timestamp: "2016-02-12T19:28:15Z"
+            timestamp: moment().toISOString()
 
-    xdescribe 'when it is successful', ->
+      @requestOptions.headers.Signature = @encrypto.sign @requestOptions.json
+
+    describe 'when it is successful', ->
       beforeEach (done) ->
         request.post @requestOptions, (error, @response, @body) =>
           done error
@@ -241,10 +236,7 @@ describe 'Verify Alexa', ->
 
       describe 'when it has a invalid signature', ->
         beforeEach (done) ->
-          bodySignature = crypto.createHash('sha1')
-            .update JSON.stringify('ya-no')
-            .digest 'hex'
-          @requestOptions.headers.Signature = signIt bodySignature
+          @requestOptions.headers.Signature = @encrypto.sign '{"this.will":"fail"}'
           request.post @requestOptions, (error, @response, @body) =>
             done error
 
@@ -256,12 +248,32 @@ describe 'Verify Alexa', ->
 
       describe 'when it has a valid signature', ->
         beforeEach (done) ->
-          bodySignature = crypto.createHash('sha1')
-            .update JSON.stringify(@requestOptions.json)
-            .digest 'hex'
-          @requestOptions.headers.Signature = signIt bodySignature
           request.post @requestOptions, (error, @response, @body) =>
             done error
 
         it 'should respond with a 200', ->
           expect(@response.statusCode).to.equal 200
+
+    describe 'when the request has an invalid timestamp', ->
+      describe 'when it is missing', ->
+        beforeEach (done) ->
+          delete @requestOptions.json.request.timestamp
+          @requestOptions.headers.Signature = @encrypto.sign @requestOptions.json
+          request.post @requestOptions, (error, @response, @body) =>
+            done error
+
+        it 'should respond with a 200', ->
+          expect(@response.statusCode).to.equal 200
+
+      describe 'when it is more than 150 seconds ago', ->
+        beforeEach (done) ->
+          @requestOptions.json.request.timestamp = moment().subtract('151', 'seconds').toISOString()
+          @requestOptions.headers.Signature = @encrypto.sign @requestOptions.json
+          request.post @requestOptions, (error, @response, @body) =>
+            done error
+
+        it 'should respond with a 400', ->
+          expect(@response.statusCode).to.equal 400
+
+        it 'should respond with an appropriate reason', ->
+          expect(@body.reason).to.equal 'timestamp-is-outside-of-tolerance'
