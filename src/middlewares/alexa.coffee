@@ -32,11 +32,11 @@ class Alexa
 
   validateCertUrl: ({ certUrl }, callback) =>
     return callback 'missing-cert-url' unless certUrl
-    urlObject = url.parse certUrl
-    return callback 'invalid-cert-url-protocol' unless urlObject.protocol == 'https:'
-    return callback 'invalid-cert-url-hostname' unless urlObject.hostname == 's3.amazonaws.com'
-    return callback 'invalid-cert-url-path' unless urlObject.pathname == '/echo.api/echo-api-cert.pem'
-    return callback 'invalid-cert-url-port' if urlObject.port? && urlObject.port != 443
+    {protocol,hostname,pathname,port} = url.parse certUrl
+    return callback 'invalid-cert-url-protocol' unless protocol == 'https:'
+    return callback 'invalid-cert-url-hostname' unless hostname == 's3.amazonaws.com'
+    return callback 'invalid-cert-url-path' unless pathname.indexOf('/echo.api/') == 0
+    return callback 'invalid-cert-url-port' if port? && port != 443
     callback()
 
   validateCert: ({ cert }, callback) =>

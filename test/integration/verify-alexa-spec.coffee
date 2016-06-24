@@ -162,6 +162,15 @@ describe 'Verify Alexa', ->
         it 'should respond with an appropriate reason', ->
           expect(@body.reason).to.equal 'invalid-cert-url-path'
 
+      describe 'when it has an valid start path but different filename', ->
+        beforeEach (done) ->
+          @requestOptions.headers['SignatureCertChainUrl'] = 'https://s3.amazonaws.com/echo.api/echo-api-cert-3.pem'
+          request.post @requestOptions, (error, @response, @body) =>
+            done error
+
+        it 'should respond with a 200', ->
+          expect(@response.statusCode).to.equal 200
+
       describe 'when it has an obvious invalid path', ->
         beforeEach (done) ->
           @requestOptions.headers['SignatureCertChainUrl'] = 'https://s3.amazonaws.com/invalid.path/echo-api-cert.pem'
