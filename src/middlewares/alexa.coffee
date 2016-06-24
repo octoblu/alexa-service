@@ -3,6 +3,7 @@ url       = require 'url'
 async     = require 'async'
 x509      = require 'x509'
 validator = require 'validator'
+request   = require 'request'
 moment    = require 'moment'
 NodeRSA   = require 'node-rsa'
 debug     = require('debug')('alexa-service:validate-alexa-requests')
