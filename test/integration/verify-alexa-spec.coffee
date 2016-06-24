@@ -52,7 +52,7 @@ describe 'Verify Alexa', ->
     @restService.destroy()
     @server.destroy()
 
-  describe 'POST /verify/trigger', ->
+  describe 'POST /trigger', ->
     beforeEach ->
       userAuth = new Buffer('user-uuid:user-token').toString('base64')
 
@@ -71,7 +71,7 @@ describe 'Verify Alexa', ->
         ]
 
       @requestOptions =
-        uri: '/verify/trigger'
+        uri: '/trigger'
         baseUrl: "http://localhost:#{@serverPort}"
         headers: {
           'SignatureCertChainUrl': 'https://s3.amazonaws.com/echo.api/echo-api-cert.pem'

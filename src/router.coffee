@@ -18,7 +18,6 @@ class Router
 
   route: (app) =>
     app.post '/trigger', @doAndHandleErrors @alexaController.trigger
-    app.post '/verify/trigger', @doAndHandleErrors @alexaController.trigger
     app.post '/respond/:responseId', @doAndHandleErrors @alexaController.respond
     app.post '/dev/blow-up', @doAndHandleErrors () =>
       throw new Error('Oh No')
