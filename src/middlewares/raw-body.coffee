@@ -2,12 +2,12 @@ class RawBody
   generate: =>
     return @middleware
 
-  middleware: (req, res, next) =>
+  middleware: (request, response, next) =>
     data = ''
-    req.on 'data', (chunk) =>
+    request.on 'data', (chunk) =>
       data += chunk
-    req.on 'end', =>
-      req.rawBody = data
+    request.on 'end', =>
+      request.rawBody = data
     next()
 
 module.exports = new RawBody
