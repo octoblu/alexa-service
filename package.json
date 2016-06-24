@@ -1,6 +1,6 @@
 {
   "name": "alexa-service",
-  "version": "6.0.1",
+  "version": "6.0.2",
   "description": "Alexa Service",
   "main": "command.js",
   "scripts": {
@@ -40,6 +40,7 @@
     "node-rsa": "^0.3.3",
     "node-uuid": "^1.4.3",
     "request": "^2.72.0",
+    "server-destroy": "^1.0.1",
     "triggers-service": "^2.3.0",
     "validator": "^5.4.0",
     "x509": "^0.2.6"
@@ -51,7 +52,6 @@
     "istanbul": "^0.4.4",
     "mocha": "^2.5.3",
     "mocha-istanbul": "^0.2.0",
-    "server-destroy": "^1.0.1",
     "sinon": "^1.17.4",
     "sinon-chai": "^2.8.0"
   }
