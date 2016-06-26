@@ -32,7 +32,7 @@ class Server
 
     app.options '*', cors()
 
-    app.use alexa.verify { @testCert } unless @disableAlexaVerification
+    app.use '/trigger', alexa.verify { @testCert } unless @disableAlexaVerification
 
     router = new Router {@meshbluConfig,@restServiceUri}
     router.route app

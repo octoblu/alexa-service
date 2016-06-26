@@ -19,7 +19,7 @@ describe 'Respond', ->
       disableLogging: true
       meshbluConfig: meshbluConfig
       restServiceUri: "http://localhost:#{0xbabe}"
-      disableAlexaVerification: true
+      disableAlexaVerification: false
 
     @server = new Server serverOptions
 
