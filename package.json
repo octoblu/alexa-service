@@ -5,6 +5,7 @@
   "main": "command.js",
   "scripts": {
     "test": "istanbul cover _mocha -- -R spec --require coffee-coverage/register-istanbul",
+    "test:watch": "istanbul cover _mocha -- -R spec --require coffee-coverage/register-istanbul --watch",
     "start": "node command.js"
   },
   "repository": {

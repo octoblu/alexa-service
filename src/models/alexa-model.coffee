@@ -10,7 +10,8 @@ class AlexaModel
     @INTENTS =
       'Trigger': @trigger
       'ListTriggers': @listTriggers
-      'AMAZON.HelpIntent': @open
+      'AMAZON.HelpIntent': @help
+      'AMAZON.StopIntent': @close
 
   convertError: (error) =>
     return error if error?.response?.outputSpeech?
@@ -81,6 +82,11 @@ class AlexaModel
       _responseText = response.response.outputSpeech.text
       responseText = "This skill allows you to trigger an Octoblu flow that perform a series of events or actions. Currently, #{_responseText}"
       callback null, @convertResponse {responseText, closeSession: true}
+
+  help: ({}, callback) =>
+    debug 'help'
+    responseText = "Tell Alexa to trigger a flow by saying the name of your Echo in thing. If you are experiencing problems, make sure that your Octoblu account is properly linked and that you have your triggers named properly"
+    callback null, @convertResponse {responseText, closeSession: true}
 
   invalidIntent: (callback) =>
     debug 'invalid intent'
