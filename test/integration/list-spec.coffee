@@ -82,6 +82,9 @@ describe 'List Triggers', ->
             outputSpeech:
               type: 'PlainText'
               text: 'Your triggers are sweet, and yay. Say a trigger name to perform the action'
+            reprompt:
+              type: "PlainText"
+              text: "Please say the name of a trigger associated with your account"
             shouldEndSession: true
 
       it 'should respond with 200', ->
@@ -126,6 +129,9 @@ describe 'List Triggers', ->
             outputSpeech:
               type: 'PlainText'
               text: 'Tell Alexa to trigger a flow by saying the name of your Echo in thing. If you are experiencing problems, make sure that your Octoblu account is properly linked and that you have your triggers named properly'
+            reprompt:
+              type: "PlainText"
+              text: "Please say the name of a trigger associated with your account"
             shouldEndSession: false
 
       it 'should respond with 200', ->
@@ -213,6 +219,9 @@ describe 'List Triggers', ->
           outputSpeech:
             type: 'PlainText'
             text: "You don't have any echo-in triggers. Get started by importing one or more alexa bluprints."
+          reprompt:
+            type: "PlainText"
+            text: "Please say the name of a trigger associated with your account"
           shouldEndSession: true
 
     it 'should respond with 200', ->

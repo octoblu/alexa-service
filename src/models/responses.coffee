@@ -13,6 +13,9 @@ responses.SUCCESS_RESPONSE  =
     outputSpeech:
       type: "PlainText"
       text: "Success"
+    reprompt:
+      type: "PlainText"
+      text: "Please say the name of a trigger associated with your account"
     shouldEndSession: true
 
 responses.CARD_RESPONSE =

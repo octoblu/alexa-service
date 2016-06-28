@@ -95,6 +95,9 @@ describe 'Trigger', ->
             outputSpeech:
               type: 'PlainText'
               text: 'THIS IS THE RESPONSE TEXT'
+            reprompt:
+              type: "PlainText"
+              text: "Please say the name of a trigger associated with your account"
             shouldEndSession: true
 
       it 'should respond with 200', ->
