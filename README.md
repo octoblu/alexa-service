@@ -115,6 +115,7 @@ ListTriggers tell me my triggers
     1. Select and create a new Oauth Device
     1. Add a name to the Oatuh Device
     1. Set the callbackUrl to the Redirect URL listed on the Configuration Page in your Alexa Skill.
+        - **NOTE:** When authenticating, Amazon is currently sending the incorrect URL. They are sending the Implicit Grant redirect URL which looks like this: `https://pitangui.amazon.com/spa/skill/account-linking-status.html?vendorId=****`. You'll this URL to be set on your Oauth Application until the bug is fixed.
     1. The Oauth device creating in Octoblu should be discoverable by everyone. This can be set on the permissions tab.
     1. The UUID and Token will of the device will be needed for the Alexa Skill. You can get the Token by generating a new one in the device configuration page in octoblu.
   1. The Skill Client ID will the UUID of the Oauth device you created.
