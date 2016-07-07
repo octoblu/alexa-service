@@ -109,7 +109,7 @@ ListTriggers tell me my triggers
 1. **Configuration**
   1. Set the Endpoint to HTTPS and `https://alexa.octoblu.com/trigger` or the url of your hosted Alexa Service.
   1. Set Account Linking to "Yes"
-  1. Set the Authorization URL to `https://oauth.octoblu.com/authorize`
+  1. Set the Authorization URL to `https://oauth.octoblu.com/alexa/authorize`
   1. Create a Oauth Device / Application in Octoblu
     1. Go to your [all things](https://app.octoblu.com/things/all) page.
     1. Select and create a new Oauth Device
