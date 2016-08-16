@@ -77,30 +77,26 @@ docker run alexa-service:v4.3.5 -p 5000:80
   1. Create a Custom Slot with a type of "TRIGGER" and the values will be the name of the tasks you want to run. The values should be the same of the "echo-in" node name in your flow (these are currently case sensitive. Also be aware that the Amazon Alexa service may change chase. IE, it was noticed that "ipad" became "iPad", this is easily checked by reading the JSON data).
   1. Add the following generic Sample Utterances
 ```txt
-Trigger {Name}
-Trigger the {Name}
-Trigger a {Name}
-Trigger get {Name}
-Trigger get a {Name}
-Trigger get the {Name}
+Trigger give me the {Name}
+Trigger give me {Name}
+Trigger give me a {Name}
+Trigger get me the {Name}
+Trigger get me {Name}
+Trigger get me a {Name}
+Trigger could you set {Name}
+Trigger could you please set {Name}
+Trigger i need {Name}
+Trigger i need {Name} please
+Trigger tell me my {Name}
 Trigger list {Name}
-Trigger list a {Name}
-Trigger list the {Name}
-Trigger set {Name}
-Trigger set a {Name}
-Trigger set the {Name}
-Trigger do {Name}
-Trigger do a {Name}
-Trigger do the {Name}
-Trigger trigger {Name}
-Trigger trigger a {Name}
-Trigger trigger the {Name}
-Trigger my {Name}
-Trigger get my {Name}
-Trigger list my {Name}
-Trigger set my {Name}
-Trigger do my {Name}
-Trigger trigger my {Name}
+Trigger i want {Name}
+ListTriggers what my triggers are
+ListTriggers give me a list of my triggers
+ListTriggers get me a list of my triggers
+ListTriggers a list of my triggers
+ListTriggers my triggers
+ListTriggers the triggers i have
+ListTriggers what triggers do i have
 ListTriggers what are my triggers
 ListTriggers what can i do
 ListTriggers list my triggers

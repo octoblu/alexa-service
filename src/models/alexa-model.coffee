@@ -1,5 +1,4 @@
 _           = require 'lodash'
-responses   = require './responses'
 RestService = require '../services/rest-service'
 MeshbluHttp = require 'meshblu-http'
 Triggers    = require 'triggers-service'

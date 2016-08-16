@@ -1,74 +1,37 @@
-_          = require 'lodash'
-AlexaModel = require '../models/alexa-model'
-debug      = require('debug')('alexa-service:controller')
+_           = require 'lodash'
+Alexa       = require 'alexa-app'
+TypeHandler = require '../handlers/type-handler'
+debug       = require('debug')('alexa-service:controller')
 
 class AlexaController
-  constructor: ({@meshbluConfig,@restServiceUri}) ->
-    @requestByType =
-      'LaunchRequest': @open
-      'IntentRequest': @intent
-      'SessionEndedRequest': @close
+  constructor: ({ @meshbluConfig }) ->
+    throw new Error 'Missing meshbluConfig argument' unless @meshbluConfig?
 
-  getMeshbluConfigFromRequest: (request) =>
-    accessToken = request.body?.session?.user?.accessToken
-    return unless accessToken?
-    parsedToken = new Buffer(accessToken, 'base64').toString('utf8')
-    [uuid, token] = parsedToken.split(':')
-    meshbluConfig = _.clone @meshbluConfig
-    meshbluConfig.uuid = uuid
-    meshbluConfig.token = token
-    return meshbluConfig
+  trigger: (req, res) =>
+    debug 'trigger request', req.body
+    { request, response } = @createRequestAndResponse req
+    handler = new TypeHandler { @meshbluConfig, request, response }
+    handler.handle (error) =>
+      return @handleError res, response, error if error?
+      res.status(200).send response.response
 
-  getAlexaModel: (request, response) =>
-    meshbluConfig = @meshbluConfig
-    meshbluConfig = @getMeshbluConfigFromRequest request if request?
-    alexaModel = new AlexaModel {meshbluConfig,@restServiceUri}
-    return alexaModel
+  createRequestAndResponse: (req) =>
+    json = req.body
+    json.session ?= {}
+    json.session.user ?= {}
+    json.session.application ?= {}
+    request = new Alexa.request json
+    response = new Alexa.response()
+    _.each _.keys(request.sessionAttributes), (key) =>
+      response.session key, request.sessionAttributes[key]
+    return { request, response }
 
-  trigger: (request, response) =>
-    debug 'trigger request', request.body
-    {type} = request.body?.request
-    debug 'request', { type }
-    debug 'is a valid type', @requestByType[type]?
-    return @requestByType[type] request, response if @requestByType[type]?
-    alexaModel = @getAlexaModel request
-    return response.status(200).send alexaModel.convertError new Error("Invalid Intent Type")
+  handleError: (res, response, error) =>
+    response.say error?.toString()
+    response.shouldEndSession true
+    return res.status(500).send response.response
 
-  intent: (request, response) =>
-    {requestId} = request.body?.request
-    debug 'intent', { requestId }
-    alexaModel = @getAlexaModel request
-    alexaModel.intent request.body, (error, alexaResponse) =>
-      debug 'responding', error: error
-      if error?
-        response.status(200).send alexaModel.convertError error
-        return
-      response.status(200).send alexaResponse
-
-  open: (request, response) =>
-    debug 'opening session'
-    alexaModel = @getAlexaModel request
-    alexaModel.open request.body, (error, alexaResponse) =>
-      debug 'responding', error: error, response: alexaResponse
-      return response.status(200).send alexaModel.convertError error if error?
-      return response.status(200).send alexaResponse
-
-  close: (request, response) =>
-    debug 'closing session'
-    alexaModel = @getAlexaModel request
-    alexaModel.close request.body, (error, alexaResponse) =>
-      debug 'responding', error: error, response: alexaResponse
-      return response.status(200).send alexaModel.convertError error if error?
-      return response.status(200).send alexaResponse
-
-  respond: (request, response) =>
-    {responseId} = request.params
-    return response.status(412).end() unless responseId?
-
-    alexaModel = @getAlexaModel request
-    alexaModel.respond responseId, request.body, (error, result) =>
-      debug 'responding', error: error
-      return response.status(500).send error: error if error?
-      response.status(result.code).send result.data
+  respond: (req, res) =>
+    res.sendStatus 204
 
 module.exports = AlexaController

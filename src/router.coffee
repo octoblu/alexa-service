@@ -1,6 +1,5 @@
 _                  = require 'lodash'
 AlexaController    = require './controllers/alexa-controller'
-{ CLOSE_RESPONSE } = require './models/responses'
 
 class Router
   constructor: ({@meshbluConfig,@restServiceUri}) ->
@@ -12,9 +11,8 @@ class Router
         route req, res
       catch error
         console.error error
-        response = _.cloneDeep CLOSE_RESPONSE
-        response.response.outputSpeech.text = error?.message ? error
-        res.status(200).send response
+        { response } = @alexaController.createRequestAndResponse req
+        @alexaController.handleError res, response, error
 
   route: (app) =>
     app.post '/trigger', @doAndHandleErrors @alexaController.trigger

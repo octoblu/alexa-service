@@ -34,40 +34,34 @@
 
 ## Sample Utterances
 
-* Trigger {Name}
-* Trigger the {Name}
-* Trigger a {Name}
-* Trigger get {Name}
-* Trigger get a {Name}
-* Trigger get the {Name}
-* Trigger list {Name}
-* Trigger list a {Name}
-* Trigger list the {Name}
-* Trigger set {Name}
-* Trigger set a {Name}
-* Trigger set the {Name}
-* Trigger do {Name}
-* Trigger do a {Name}
-* Trigger do the {Name}
-* Trigger trigger {Name}
-* Trigger trigger a {Name}
-* Trigger trigger the {Name}
-* Trigger my {Name}
-* Trigger get my {Name}
-* Trigger list my {Name}
-* Trigger set my {Name}
-* Trigger do my {Name}
-* Trigger trigger my {Name}
-* ListTriggers what are my triggers
-* ListTriggers what can I do
-* ListTriggers list my triggers
-* ListTriggers tell me my triggers
+```txt
+Trigger give me the {Name}
+Trigger give me {Name}
+Trigger give me a {Name}
+Trigger get me the {Name}
+Trigger get me {Name}
+Trigger get me a {Name}
+Trigger could you set {Name}
+Trigger could you please set {Name}
+Trigger i need {Name}
+Trigger i need {Name} please
+Trigger tell me my {Name}
+Trigger list {Name}
+Trigger i want {Name}
+ListTriggers what my triggers are
+ListTriggers give me a list of my triggers
+ListTriggers get me a list of my triggers
+ListTriggers a list of my triggers
+ListTriggers my triggers
+ListTriggers the triggers i have
+ListTriggers what triggers do i have
+```
 
 ### Example commands
 
-* Alexa ask Citrix to list my tasks
-* Alexa ask Citrix to list my meetings
-* Alexa ask Citrix to create meeting
-* Alexa ask Citrix to get my notifications
-* Alexa ask Citrix what can I do
+* Alexa ask Citrix list my tasks
+* Alexa ask Citrix list my meetings
+* Alexa ask Citrix create meeting
+* Alexa ask Citrix get my notifications
+* Alexa ask Citrix what are my triggers
 * Alexa ask Citrix help

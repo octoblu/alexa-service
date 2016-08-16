@@ -50,9 +50,10 @@ describe 'HandleErrors', ->
           version: '1.0'
           response:
             outputSpeech:
-              type: 'PlainText'
-              text: 'Oh No'
+              type: 'SSML'
+              ssml: '<speak>Error: Oh No</speak>'
             shouldEndSession: true
+          sessionAttributes: {}
 
-      it 'should respond with 200', ->
-        expect(@response.statusCode).to.equal 200
+      it 'should respond with 500', ->
+        expect(@response.statusCode).to.equal 500

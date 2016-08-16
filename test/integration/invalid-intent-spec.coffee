@@ -78,13 +78,15 @@ describe 'Invalid Intent', ->
       it 'should have a body', ->
         expect(@body).to.deep.equal
           version: '1.0'
+          sessionAttributes: {}
           response:
             outputSpeech:
-              type: 'PlainText'
-              text: 'I don\'t understand this action. This skill allows you to trigger an Octoblu flow that perform a series of events or actions. Currently, Your triggers are sweet, and yay. Say a trigger name to perform the action'
+              type: 'SSML'
+              ssml: "<speak>Sorry, the application didn't know what to do with that intent.</speak>"
             reprompt:
-              type: "PlainText"
-              text: "Please say the name of a trigger associated with your account"
+              outputSpeech:
+                type: "SSML"
+                ssml: "<speak>Please say the name of a trigger associated with your account</speak>"
             shouldEndSession: true
 
       it 'should respond with 200', ->

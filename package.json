@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/octoblu/alexa-service",
   "dependencies": {
+    "alexa-app": "^2.3.4",
     "alexa-verifier": "0.0.4",
     "async": "^2.0.0-rc.6",
     "body-parser": "^1.15.2",
