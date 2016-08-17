@@ -16,7 +16,7 @@ describe 'Respond', ->
       port: undefined,
       disableLogging: true
       meshbluConfig: meshbluConfig
-      jobTimeoutSeconds: 2
+      jobTimeoutSeconds: 1
       namespace: 'alexa-service:test'
       jobLogQueue: 'alexa-service:job-log'
       jobLogRedisUri: 'redis://localhost:6379'
@@ -36,24 +36,40 @@ describe 'Respond', ->
     @server.destroy()
 
   describe 'POST /respond/:responseId', ->
-    beforeEach (done) ->
-      options =
-        uri: '/respond/my-response-id'
-        baseUrl: "http://localhost:#{@serverPort}"
-        json:
-          name: 'Freedom'
+    describe 'when successful', ->
+      beforeEach (done) ->
+        options =
+          uri: '/respond/my-response-id'
+          baseUrl: "http://localhost:#{@serverPort}"
+          json:
+            name: 'Freedom'
 
-      request.post options, (error, @response, @body) =>
-        throw error if error?
-        @jobManager.getResponse 'response', 'my-response-id', (error, @result) =>
-          done error
+        request.post options, (error, @response, @body) =>
+          throw error if error?
+          @jobManager.getResponse 'response', 'my-response-id', (error, @result) =>
+            done error
 
-    it 'should respond with 200', ->
-      expect(@response.statusCode).to.equal 200
+      it 'should respond with 200', ->
+        expect(@response.statusCode).to.equal 200
 
-    it 'should have a body', ->
-      expect(@body).to.deep.equal success: true
+      it 'should have a body', ->
+        expect(@body).to.deep.equal success: true
 
-    it 'should have the response of Freedom', ->
-      expect(JSON.parse(@result.rawData).name).to.equal 'Freedom'
+      it 'should have the response of Freedom', ->
+        expect(JSON.parse(@result.rawData).name).to.equal 'Freedom'
 
+    describe 'when incorrect job key', ->
+      beforeEach (done) ->
+        options =
+          uri: '/respond/wrong-response-id'
+          baseUrl: "http://localhost:#{@serverPort}"
+          json:
+            name: 'Freedom'
+
+        request.post options, (error, @response, @body) =>
+          throw error if error?
+          @jobManager.getResponse 'response', 'right-response-id', (@error) =>
+            done()
+
+      it 'should have a timeout error', ->
+        expect(@error.message).to.equal 'Response timeout exceeded'

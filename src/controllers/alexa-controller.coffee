@@ -43,11 +43,8 @@ class AlexaController
       metadata: { code, responseId }
       data: req.body
     }
-    console.log 'hi'
     @jobManager.createResponse 'response', message, (error) =>
-      console.log 'howdy', { error }
       return res.sendError error if error?
-      console.log 'creating response', { responseId }
       res.status(200).send { success: true }
 
 module.exports = AlexaController

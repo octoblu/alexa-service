@@ -52,12 +52,11 @@ class Server
 
     jobLogger = new JobLogger
       jobLogQueue: @jobLogQueue
-      indexPrefix: 'metric:rest-service'
-      type: 'rest-service:request'
+      indexPrefix: 'metric:alexa-service'
+      type: 'alexa-service:request'
       client: redis.createClient(@jobLogRedisUri)
 
     connectionPool = @_createConnectionPool()
-    console.log { @jobTimeoutSeconds }
     jobManager = new PooledJobManager
       timeoutSeconds: @jobTimeoutSeconds
       jobLogSampleRate: @jobLogSampleRate || 1

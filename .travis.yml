@@ -4,6 +4,8 @@ node_js:
 branches:
   only:
   - "/^v[0-9]/"
+services:
+- redis
 addons:
   code_climate:
     repo_token: "7a120486a7e0f5153102b5b74f5211e3330eebcb62f777e2eb1367d7233dfe37"
