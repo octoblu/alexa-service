@@ -1,5 +1,8 @@
-request       = require 'request'
-Server        = require '../../src/server'
+request    = require 'request'
+redis      = require 'redis'
+RedisNs    = require '@octoblu/redis-ns'
+JobManager = require 'meshblu-core-job-manager'
+Server     = require '../../src/server'
 
 describe 'Respond', ->
   beforeEach (done) ->
@@ -13,6 +16,10 @@ describe 'Respond', ->
       port: undefined,
       disableLogging: true
       meshbluConfig: meshbluConfig
+      jobTimeoutSeconds: 2
+      namespace: 'alexa-service:test'
+      jobLogQueue: 'alexa-service:job-log'
+      jobLogRedisUri: 'redis://localhost:6379'
       alexaServiceUri: 'https://alexa.octoblu.dev'
       disableAlexaVerification: false
 
@@ -21,6 +28,9 @@ describe 'Respond', ->
     @server.run =>
       @serverPort = @server.address().port
       done()
+
+    client = new RedisNs 'alexa-service:test', redis.createClient()
+    @jobManager = new JobManager { client, timeoutSeconds: 1, jobLogSampleRate: 1 }
 
   afterEach ->
     @server.destroy()
@@ -34,10 +44,16 @@ describe 'Respond', ->
           name: 'Freedom'
 
       request.post options, (error, @response, @body) =>
-        done error
+        throw error if error?
+        @jobManager.getResponse 'response', 'my-response-id', (error, @result) =>
+          done error
 
     it 'should respond with 200', ->
       expect(@response.statusCode).to.equal 200
 
     it 'should have a body', ->
       expect(@body).to.deep.equal success: true
+
+    it 'should have the response of Freedom', ->
+      expect(JSON.parse(@result.rawData).name).to.equal 'Freedom'
+

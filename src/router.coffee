@@ -2,8 +2,11 @@ _                  = require 'lodash'
 AlexaController    = require './controllers/alexa-controller'
 
 class Router
-  constructor: ({@meshbluConfig,@alexaServiceUri}) ->
-    @alexaController = new AlexaController {@meshbluConfig,@alexaServiceUri}
+  constructor: ({jobManager, meshbluConfig, alexaServiceUri}) ->
+    throw new Error 'Missing meshbluConfig' unless meshbluConfig?
+    throw new Error 'Missing alexaServiceUri' unless alexaServiceUri?
+    throw new Error 'Missing jobManager' unless jobManager?
+    @alexaController = new AlexaController {jobManager, meshbluConfig, alexaServiceUri}
 
   doAndHandleErrors: (route) =>
     return (req, res) =>

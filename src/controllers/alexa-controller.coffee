@@ -4,9 +4,10 @@ TypeHandler = require '../handlers/type-handler'
 debug       = require('debug')('alexa-service:controller')
 
 class AlexaController
-  constructor: ({ @meshbluConfig, @alexaServiceUri }) ->
-    throw new Error 'Missing meshbluConfig argument' unless @meshbluConfig?
-    throw new Error 'Missing alexaServiceUri argument' unless @alexaServiceUri?
+  constructor: ({ @jobManager, @meshbluConfig, @alexaServiceUri }) ->
+    throw new Error 'Missing meshbluConfig' unless @meshbluConfig?
+    throw new Error 'Missing alexaServiceUri' unless @alexaServiceUri?
+    throw new Error 'Missing jobManager' unless @jobManager?
 
   trigger: (req, res) =>
     debug 'trigger request', req.body
@@ -35,6 +36,18 @@ class AlexaController
     return res.status(500).send response.response
 
   respond: (req, res) =>
-    res.sendStatus 204
+    code = parseInt code if code?
+    code ?= 200
+    { responseId } = req.params
+    message = {
+      metadata: { code, responseId }
+      data: req.body
+    }
+    console.log 'hi'
+    @jobManager.createResponse 'response', message, (error) =>
+      console.log 'howdy', { error }
+      return res.sendError error if error?
+      console.log 'creating response', { responseId }
+      res.status(200).send { success: true }
 
 module.exports = AlexaController
