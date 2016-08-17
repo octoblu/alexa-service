@@ -5,10 +5,8 @@ Server        = require '../../src/server'
 
 describe 'Open Intent', ->
   beforeEach (done) ->
-    @restService = shmock 0xbabe
     @meshblu = shmock 0xd00d
     enableDestroy(@meshblu)
-    enableDestroy(@restService)
 
     meshbluConfig =
       server: 'localhost'
@@ -20,8 +18,8 @@ describe 'Open Intent', ->
       port: undefined,
       disableLogging: true
       meshbluConfig: meshbluConfig
-      restServiceUri: "http://localhost:#{0xbabe}"
       disableAlexaVerification: true
+      alexaServiceUri: 'https://alexa.octoblu.dev'
 
     @server = new Server serverOptions
 
@@ -31,7 +29,6 @@ describe 'Open Intent', ->
 
   afterEach ->
     @meshblu.destroy()
-    @restService.destroy()
     @server.destroy()
 
   describe 'POST /trigger', ->
@@ -44,10 +41,11 @@ describe 'Open Intent', ->
           .set 'Authorization', "Basic #{userAuth}"
           .reply 200, uuid: 'user-uuid', token: 'user-token'
 
-        @getDevices = @meshblu
-          .get '/v2/devices'
+        @searchDevices = @meshblu
+          .post '/search/devices'
           .set 'Authorization', "Basic #{userAuth}"
-          .query owner: 'user-uuid', type: 'octoblu:flow', online: 'true'
+          .set 'X-MESHBLU-PROJECTION', JSON.stringify { uuid: true, 'flow.nodes': true }
+          .send owner: 'user-uuid', type: 'octoblu:flow', online: true
           .reply 200, [
             {online: true, flow: nodes: [{name: 'sweet', type: 'operation:echo-in'}]}
             {online: true, flow: nodes: [{name: 'yay', type: 'operation:echo-in'}]}
@@ -76,20 +74,22 @@ describe 'Open Intent', ->
       it 'should have a body', ->
         expect(@body).to.deep.equal
           version: '1.0'
+          sessionAttributes: {}
           response:
             outputSpeech:
-              type: 'PlainText'
-              text: 'This skill allows you to trigger an Octoblu flow that perform a series of events or actions. Currently, Your triggers are sweet, and yay. Say a trigger name to perform the action'
+              type: 'SSML'
+              ssml: '<speak>This skill allows you to trigger an Octoblu flow that perform a series of events or actions. Currently, Your triggers are sweet, and yay. Say a trigger name to perform the action</speak>'
             reprompt:
-              type: "PlainText"
-              text: "Please say the name of a trigger associated with your account"
+              outputSpeech:
+                type: "SSML"
+                ssml: "<speak>Please say the name of a trigger associated with your account</speak>"
             shouldEndSession: false
 
       it 'should respond with 200', ->
         expect(@response.statusCode).to.equal 200
 
-      it 'should hit up the rest service', ->
-        @getDevices.done()
+      it 'should hit up search for flows', ->
+        @searchDevices.done()
 
       it 'should hit up whoami', ->
         @whoami.done()
@@ -103,10 +103,11 @@ describe 'Open Intent', ->
         .set 'Authorization', "Basic #{userAuth}"
         .reply 200, uuid: 'user-uuid', token: 'user-token'
 
-      @getDevices = @meshblu
-        .get '/v2/devices'
+      @searchDevices = @meshblu
+        .post '/search/devices'
         .set 'Authorization', "Basic #{userAuth}"
-        .query owner: 'user-uuid', type: 'octoblu:flow', online: 'true'
+        .set 'X-MESHBLU-PROJECTION', JSON.stringify { uuid: true, 'flow.nodes': true }
+        .send owner: 'user-uuid', type: 'octoblu:flow', online: true
         .reply 200, {
           devices: []
         }
@@ -136,20 +137,22 @@ describe 'Open Intent', ->
     it 'should have a body', ->
       expect(@body).to.deep.equal
         version: '1.0'
+        sessionAttributes: {}
         response:
           outputSpeech:
-            type: 'PlainText'
-            text: "This skill allows you to trigger an Octoblu flow that perform a series of events or actions. Currently, You don't have any echo-in triggers. Get started by importing one or more alexa bluprints."
+            type: 'SSML'
+            ssml: "<speak>This skill allows you to trigger an Octoblu flow that perform a series of events or actions. Currently, You don't have any echo-in triggers. Get started by importing one or more alexa bluprints.</speak>"
           reprompt:
-            type: "PlainText"
-            text: "Please say the name of a trigger associated with your account"
+            outputSpeech:
+              type: "SSML"
+              ssml: "<speak>Please say the name of a trigger associated with your account</speak>"
           shouldEndSession: false
 
     it 'should respond with 200', ->
       expect(@response.statusCode).to.equal 200
 
-    it 'should hit up the rest service', ->
-      @getDevices.done()
+    it 'should search for flows', ->
+      @searchDevices.done()
 
     it 'should hit up whoami', ->
       @whoami.done()

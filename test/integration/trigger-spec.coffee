@@ -5,10 +5,8 @@ Server        = require '../../src/server'
 
 describe 'Trigger', ->
   beforeEach (done) ->
-    @restService = shmock 0xbabe
     @meshblu = shmock 0xd00d
     enableDestroy(@meshblu)
-    enableDestroy(@restService)
 
     meshbluConfig =
       server: 'localhost'
@@ -20,7 +18,7 @@ describe 'Trigger', ->
       port: undefined,
       disableLogging: true
       meshbluConfig: meshbluConfig
-      restServiceUri: "http://localhost:#{0xbabe}"
+      alexaServiceUri: 'https://alexa.octoblu.dev'
       disableAlexaVerification: true
 
     @server = new Server serverOptions
@@ -31,7 +29,6 @@ describe 'Trigger', ->
 
   afterEach ->
     @meshblu.destroy()
-    @restService.destroy()
     @server.destroy()
 
   describe 'POST /trigger', ->
@@ -44,23 +41,70 @@ describe 'Trigger', ->
           .set 'Authorization', "Basic #{userAuth}"
           .reply 200, uuid: 'user-uuid', token: 'user-token'
 
-        @respondWithRestService = @restService
-          .post '/flows/triggers/the%20weather'
+        @searchDevices = @meshblu
+          .post '/search/devices'
           .set 'Authorization', "Basic #{userAuth}"
-          .set 'X-RESPONSE-BASE-URI', 'https://alexa.octoblu.com'
-          .query type: 'operation:echo-in'
-          .send {
-            type: "IntentRequest",
-            requestId: "request-id",
-            timestamp: "2016-02-12T19:28:15Z",
-            intent:
-              name: "Trigger",
-              slots:
-                Name:
-                  name: "Name",
-                  value: "the weather"
+          .set 'X-MESHBLU-PROJECTION', JSON.stringify { uuid: true, 'flow.nodes': true }
+          .send { owner: 'user-uuid', online: true, type: 'octoblu:flow' }
+          .reply 200, [
+            {
+              uuid: 'hello',
+              flow: {
+                nodes: [
+                  {
+                    id: 'weather',
+                    type: 'operation:echo-in',
+                    name: 'the weather'
+                  }
+                  {
+                    id: 'trip-report',
+                    type: 'operation:echo-in',
+                    name: 'the trip report'
+                  }
+                ]
+              }
+            }
+            {
+              uuid: 'bye',
+              flow: {
+                nodes: [
+                  {
+                    id: 'stock',
+                    type: 'operation:echo-in',
+                    name: 'the stock price'
+                  }
+                ]
+              }
+            }
+          ]
+
+        data = {
+          type: "IntentRequest",
+          requestId: "request-id",
+          timestamp: "2016-02-12T19:28:15Z",
+          intent:
+            name: "Trigger",
+            slots:
+              Name:
+                name: "Name",
+                value: "the weather"
           }
-          .reply 200, responseText: 'THIS IS THE RESPONSE TEXT'
+
+        @message = @meshblu
+          .post '/message'
+          .set 'Authorization', "Basic #{userAuth}"
+          .send {
+            devices: ['hello']
+            topic: 'alexa-service'
+            payload:
+              callbackUrl: "https://alexa.octoblu.dev/respond/request-id"
+              callbackMethod: "POST"
+              responseId: 'request-id'
+              from: 'weather'
+              params: data
+              payload: data
+          }
+          .reply 200
 
         options =
           uri: '/trigger'
@@ -91,25 +135,26 @@ describe 'Trigger', ->
       it 'should have a body', ->
         expect(@body).to.deep.equal
           version: '1.0'
+          sessionAttributes: {}
           response:
             outputSpeech:
-              type: 'PlainText'
-              text: 'THIS IS THE RESPONSE TEXT'
-            reprompt:
-              type: "PlainText"
-              text: "Please say the name of a trigger associated with your account"
+              type: 'SSML'
+              ssml: '<speak>THIS IS THE RESPONSE TEXT</speak>'
             shouldEndSession: true
 
       it 'should respond with 200', ->
         expect(@response.statusCode).to.equal 200
 
-      it 'should hit up the rest service', ->
-        @respondWithRestService.done()
-
       it 'should hit up whoami', ->
         @whoami.done()
 
-    describe 'when rest service times out', ->
+      it 'should search for flows', ->
+        @searchDevices.done()
+
+      it 'should message the flow', ->
+        @message.done()
+
+    xdescribe 'when rest service times out', ->
       beforeEach (done) ->
         userAuth = new Buffer('user-uuid:user-token').toString('base64')
 
@@ -133,7 +178,7 @@ describe 'Trigger', ->
                   name: "Name",
                   value: "the weather"
           }
-          .reply 408, error: 'Request timeout'
+            .reply 408, error: 'Request timeout'
 
         options =
           uri: '/trigger'
@@ -180,7 +225,7 @@ describe 'Trigger', ->
         @whoami.done()
 
 
-    describe 'when missing auth', ->
+    xdescribe 'when missing auth', ->
       beforeEach (done) ->
         options =
           uri: '/trigger'
@@ -220,7 +265,7 @@ describe 'Trigger', ->
       it 'should respond with 200', ->
         expect(@response.statusCode).to.equal 200
 
-    describe 'when invalid auth is provided', ->
+    xdescribe 'when invalid auth is provided', ->
       beforeEach (done) ->
         @whoami = @meshblu
           .post '/authenticate'

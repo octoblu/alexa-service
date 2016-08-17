@@ -20,7 +20,6 @@ class EchoInService
     }
     projection = {
       'uuid': true
-      'name': true
       'flow.nodes': true
     }
     debug 'querying for echo ins', { query, projection }

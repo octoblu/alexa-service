@@ -14,7 +14,7 @@ debug              = require('debug')('alexa-service:server')
 class Server
   constructor: (options)->
     {@disableLogging, @port} = options
-    {@meshbluConfig,@restServiceUri} = options
+    {@meshbluConfig,@alexaServiceUri} = options
     {@disableAlexaVerification} = options
     {@testCert} = options
 
@@ -34,7 +34,7 @@ class Server
 
     app.use '/trigger', alexa.verify { @testCert } unless @disableAlexaVerification
 
-    router = new Router {@meshbluConfig,@restServiceUri}
+    router = new Router {@meshbluConfig,@alexaServiceUri}
     router.route app
 
     @server = app.listen @port, callback

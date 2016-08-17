@@ -1,5 +1,4 @@
 request       = require 'request'
-enableDestroy = require 'server-destroy'
 shmock        = require 'shmock'
 moment        = require 'moment'
 Encrypto      = require '../encrypto'
@@ -8,10 +7,8 @@ certs         = require '../certs'
 
 describe 'Verify Alexa', ->
   beforeEach (done) ->
-    @restService = shmock 0xbabe
     @meshblu = shmock 0xd00d
     enableDestroy(@meshblu)
-    enableDestroy(@restService)
 
     @encrypto = new Encrypto certs
 
@@ -36,7 +33,7 @@ describe 'Verify Alexa', ->
       port: undefined,
       disableLogging: true,
       meshbluConfig,
-      restServiceUri: "http://localhost:#{0xbabe}",
+      alexaServiceUri: "https://alexa.octoblu.dev",
       disableAlexaVerification: false,
       testCert
     }
@@ -49,7 +46,6 @@ describe 'Verify Alexa', ->
 
   afterEach ->
     @meshblu.destroy()
-    @restService.destroy()
     @server.destroy()
 
   describe 'POST /trigger', ->
@@ -61,13 +57,14 @@ describe 'Verify Alexa', ->
         .set 'Authorization', "Basic #{userAuth}"
         .reply 200, uuid: 'user-uuid', token: 'user-token'
 
-      @getDevices = @meshblu
-        .get '/v2/devices'
+      @searchDevices = @meshblu
+        .post '/search/devices'
         .set 'Authorization', "Basic #{userAuth}"
-        .query owner: 'user-uuid', type: 'octoblu:flow', online: 'true'
+        .set 'X-MESHBLU-PROJECTION', JSON.stringify { uuid: true, 'flow.nodes': true }
+        .send owner: 'user-uuid', type: 'octoblu:flow', online: 'true'
         .reply 200, [
-          {online: true, flow: nodes: [{name: 'sweet', type: 'operation:echo-in'}]}
-          {online: true, flow: nodes: [{name: 'yay', type: 'operation:echo-in'}]}
+          {uuid: 'hi', flow: nodes: [{name: 'sweet', type: 'operation:echo-in'}]}
+          {uuid: 'hello', online: true, flow: nodes: [{name: 'yay', type: 'operation:echo-in'}]}
         ]
 
       @requestOptions =
@@ -100,20 +97,22 @@ describe 'Verify Alexa', ->
       it 'should have the correct body response', ->
         expect(@body).to.deep.equal
           version: '1.0'
+          sessionAttributes: {}
           response:
             outputSpeech:
-              type: 'PlainText'
-              text: 'This skill allows you to trigger an Octoblu flow that perform a series of events or actions. Currently, Your triggers are sweet, and yay. Say a trigger name to perform the action'
+              type: 'SSML'
+              ssml: '<speak>This skill allows you to trigger an Octoblu flow that perform a series of events or actions. Currently, Your triggers are sweet, and yay. Say a trigger name to perform the action</speak>'
             reprompt:
-              type: "PlainText"
-              text: "Please say the name of a trigger associated with your account"
+              outputSpeech:
+                type: "SSML"
+                ssml: "<speak>Please say the name of a trigger associated with your account</speak>"
             shouldEndSession: false
 
       it 'should respond with 200', ->
         expect(@response.statusCode).to.equal 200
 
-      it 'should hit up the rest service', ->
-        @getDevices.done()
+      it 'should search for flows', ->
+        @searchDevices.done()
 
       it 'should hit up whoami', ->
         @whoami.done()

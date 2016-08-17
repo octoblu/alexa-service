@@ -8,7 +8,7 @@ class Command
       meshbluConfig : new MeshbluConfig().toJSON()
       port          : process.env.PORT || 80
       disableLogging: process.env.DISABLE_LOGGING == "true"
-      restServiceUri: process.env.REST_SERVICE_URI || 'https://rest.octoblu.com'
+      alexaServiceUri: process.env.ALEXA_SERVICE_URI
       disableAlexaVerification: process.env.DISABLE_ALEXA_VERIFICATION || false
 
   panic: (error) =>

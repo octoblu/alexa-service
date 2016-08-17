@@ -13,7 +13,7 @@ class HandleLaunchRequest
       @echoInService.list (error, list) =>
         return callback error if error?
         @response.say "#{OPEN_MESSAGE}. Currently, #{list.toString()}"
-        @response.shouldEndSession true
+        @response.shouldEndSession false, "Please say the name of a trigger associated with your account"
         callback null
 
 module.exports = HandleLaunchRequest

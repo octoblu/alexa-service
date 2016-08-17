@@ -4,8 +4,9 @@ TypeHandler = require '../handlers/type-handler'
 debug       = require('debug')('alexa-service:controller')
 
 class AlexaController
-  constructor: ({ @meshbluConfig }) ->
+  constructor: ({ @meshbluConfig, @alexaServiceUri }) ->
     throw new Error 'Missing meshbluConfig argument' unless @meshbluConfig?
+    throw new Error 'Missing alexaServiceUri argument' unless @alexaServiceUri?
 
   trigger: (req, res) =>
     debug 'trigger request', req.body

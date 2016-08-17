@@ -5,10 +5,8 @@ Server        = require '../../src/server'
 
 describe 'List Triggers', ->
   beforeEach (done) ->
-    @restService = shmock 0xbabe
     @meshblu = shmock 0xd00d
     enableDestroy(@meshblu)
-    enableDestroy(@restService)
 
     meshbluConfig =
       server: 'localhost'
@@ -20,7 +18,7 @@ describe 'List Triggers', ->
       port: undefined,
       disableLogging: true
       meshbluConfig: meshbluConfig
-      restServiceUri: "http://localhost:#{0xbabe}"
+      alexaServiceUri: 'https://alexa.octoblu.dev'
       disableAlexaVerification: true
 
     @server = new Server serverOptions
@@ -31,7 +29,6 @@ describe 'List Triggers', ->
 
   afterEach ->
     @meshblu.destroy()
-    @restService.destroy()
     @server.destroy()
 
   describe 'POST /trigger', ->
@@ -47,7 +44,7 @@ describe 'List Triggers', ->
         @searchDevices = @meshblu
           .post '/search/devices'
           .set 'Authorization', "Basic #{userAuth}"
-          .set 'X-MESHBLU-PROJECTION', JSON.stringify { uuid: true, name: true, 'flow.nodes': true }
+          .set 'X-MESHBLU-PROJECTION', JSON.stringify { uuid: true, 'flow.nodes': true }
           .send { owner: 'user-uuid', type: 'octoblu:flow', online: true }
           .reply 200, [
             {online: true, flow: nodes: [{name: 'sweet', type: 'operation:echo-in'}]}
@@ -93,7 +90,7 @@ describe 'List Triggers', ->
       it 'should respond with 200', ->
         expect(@response.statusCode).to.equal 200
 
-      it 'should hit up the rest service', ->
+      it 'should hit up search your flows', ->
         @searchDevices.done()
 
       it 'should hit up whoami', ->
@@ -128,13 +125,15 @@ describe 'List Triggers', ->
       it 'should have a body', ->
         expect(@body).to.deep.equal
           version: '1.0'
+          sessionAttributes: {}
           response:
             outputSpeech:
-              type: 'PlainText'
-              text: 'Tell Alexa to trigger a flow by saying the name of your Echo in thing. If you are experiencing problems, make sure that your Octoblu account is properly linked and that you have your triggers named properly'
+              type: 'SSML'
+              ssml: '<speak>Tell Alexa to trigger a flow by saying the name of your Echo in thing. If you are experiencing problems, make sure that your Octoblu account is properly linked and that you have your triggers named properly</speak>'
             reprompt:
-              type: "PlainText"
-              text: "Please say the name of a trigger associated with your account"
+              outputSpeech:
+                type: "SSML"
+                ssml: "<speak>Please say the name of a trigger associated with your account</speak>"
             shouldEndSession: false
 
       it 'should respond with 200', ->
@@ -169,10 +168,11 @@ describe 'List Triggers', ->
       it 'should have a body', ->
         expect(@body).to.deep.equal
           version: '1.0'
+          sessionAttributes: {}
           response:
             outputSpeech:
-              type: 'PlainText'
-              text: 'Closing session'
+              type: 'SSML'
+              ssml: '<speak>Closing session</speak>'
             shouldEndSession: true
 
       it 'should respond with 200', ->
@@ -187,10 +187,11 @@ describe 'List Triggers', ->
         .set 'Authorization', "Basic #{userAuth}"
         .reply 200, uuid: 'user-uuid', token: 'user-token'
 
-      @getDevices = @meshblu
-        .get '/v2/devices'
+      @searchDevices = @meshblu
+        .post '/search/devices'
         .set 'Authorization', "Basic #{userAuth}"
-        .query owner: 'user-uuid', type: 'octoblu:flow', online: 'true'
+        .set 'X-MESHBLU-PROJECTION', JSON.stringify { uuid: true, 'flow.nodes': true }
+        .send owner: 'user-uuid', type: 'octoblu:flow', online: true
         .reply 200, []
 
       options =
@@ -218,20 +219,22 @@ describe 'List Triggers', ->
     it 'should have a body', ->
       expect(@body).to.deep.equal
         version: '1.0'
+        sessionAttributes: {}
         response:
           outputSpeech:
-            type: 'PlainText'
-            text: "You don't have any echo-in triggers. Get started by importing one or more alexa bluprints."
+            type: 'SSML'
+            ssml: "<speak>You don't have any echo-in triggers. Get started by importing one or more alexa bluprints.</speak>"
           reprompt:
-            type: "PlainText"
-            text: "Please say the name of a trigger associated with your account"
+            outputSpeech:
+              type: "SSML"
+              ssml: "<speak>Please say the name of a trigger associated with your account</speak>"
           shouldEndSession: true
 
     it 'should respond with 200', ->
       expect(@response.statusCode).to.equal 200
 
-    it 'should hit up the rest service', ->
-      @getDevices.done()
+    it 'should hit up get a list of flows', ->
+      @searchDevices.done()
 
     it 'should hit up whoami', ->
       @whoami.done()
