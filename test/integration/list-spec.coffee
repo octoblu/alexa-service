@@ -1,6 +1,6 @@
 request       = require 'request'
 enableDestroy = require 'server-destroy'
-shmock        = require '@octoblu/shmock'
+shmock        = require 'shmock'
 Server        = require '../../src/server'
 
 describe 'List Triggers', ->
@@ -44,10 +44,11 @@ describe 'List Triggers', ->
           .set 'Authorization', "Basic #{userAuth}"
           .reply 200, uuid: 'user-uuid', token: 'user-token'
 
-        @getDevices = @meshblu
-          .get '/v2/devices'
+        @searchDevices = @meshblu
+          .post '/search/devices'
           .set 'Authorization', "Basic #{userAuth}"
-          .query owner: 'user-uuid', type: 'octoblu:flow', online: 'true'
+          .set 'X-MESHBLU-PROJECTION', JSON.stringify { uuid: true, name: true, 'flow.nodes': true }
+          .send { owner: 'user-uuid', type: 'octoblu:flow', online: true }
           .reply 200, [
             {online: true, flow: nodes: [{name: 'sweet', type: 'operation:echo-in'}]}
             {online: true, flow: nodes: [{name: 'yay', type: 'operation:echo-in'}]}
@@ -78,20 +79,22 @@ describe 'List Triggers', ->
       it 'should have a body', ->
         expect(@body).to.deep.equal
           version: '1.0'
+          sessionAttributes: {}
           response:
             outputSpeech:
-              type: 'PlainText'
-              text: 'Your triggers are sweet, and yay. Say a trigger name to perform the action'
+              type: 'SSML'
+              ssml: '<speak>Your triggers are sweet, and yay. Say a trigger name to perform the action</speak>'
             reprompt:
-              type: "PlainText"
-              text: "Please say the name of a trigger associated with your account"
+              outputSpeech:
+                type: "SSML"
+                ssml: "<speak>Please say the name of a trigger associated with your account</speak>"
             shouldEndSession: true
 
       it 'should respond with 200', ->
         expect(@response.statusCode).to.equal 200
 
       it 'should hit up the rest service', ->
-        @getDevices.done()
+        @searchDevices.done()
 
       it 'should hit up whoami', ->
         @whoami.done()

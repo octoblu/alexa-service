@@ -10,6 +10,8 @@ class AlexaController
   trigger: (req, res) =>
     debug 'trigger request', req.body
     { request, response } = @createRequestAndResponse req
+    debug 'alexa request', request
+    debug 'alexa response', response
     handler = new TypeHandler { @meshbluConfig, request, response }
     handler.handle (error) =>
       return @handleError res, response, error if error?

@@ -48,12 +48,12 @@
     "x509": "^0.2.6"
   },
   "devDependencies": {
-    "@octoblu/shmock": "^0.7.2",
     "chai": "^3.5.0",
     "coffee-coverage": "^1.0.1",
     "istanbul": "^0.4.4",
     "mocha": "^2.5.3",
     "mocha-istanbul": "^0.2.0",
+    "shmock": "^0.8.1",
     "sinon": "^1.17.4",
     "sinon-chai": "^2.8.0"
   }

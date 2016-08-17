@@ -1,15 +1,20 @@
-_ = require 'lodash'
+_     = require 'lodash'
+debug = require('debug')('alexa-service:alexa-meshblu-config')
 
 class AlexaMeshbluConfig
   constructor: ({ meshbluConfig, request }) ->
     { accessToken } = request.sessionDetails ? {}
-    try
-      { uuid, token } = @_parseAccessToken accessToken
-    catch
-      return
-    return unless uuid?
-    return unless token?
-    @_meshbluConfig = _.cloneDeep meshbluConfig
+    @_originalMeshbluConfig = meshbluConfig
+    debug 'got access token', accessToken
+    @createNewConfig accessToken
+
+  createNewConfig: (accessToken) =>
+    { uuid, token } = @_parseAccessToken accessToken
+    return unless uuid? || token?
+    @_meshbluConfig = _.cloneDeep @_originalMeshbluConfig
+    if @_meshbluConfig.server?
+      @_meshbluConfig.hostname = @_meshbluConfig.server
+      delete @_meshbluConfig.server
     @_meshbluConfig.uuid = uuid
     @_meshbluConfig.token = token
 
@@ -17,8 +22,13 @@ class AlexaMeshbluConfig
     return @_meshbluConfig
 
   _parseAccessToken: (accessToken) =>
-    parsedToken = new Buffer(accessToken, 'base64').toString('utf8')
-    [ uuid, token ] = parsedToken.split ':'
+    try
+      parsedToken = new Buffer(accessToken, 'base64').toString('utf8')
+      [ uuid, token ] = parsedToken.split ':'
+    catch error
+      console.error "Error parsing access token:", { error, accessToken }
+      return {}
+
     return { uuid, token }
 
 module.exports = AlexaMeshbluConfig

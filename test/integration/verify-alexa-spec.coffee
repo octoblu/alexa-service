@@ -1,6 +1,6 @@
 request       = require 'request'
 enableDestroy = require 'server-destroy'
-shmock        = require '@octoblu/shmock'
+shmock        = require 'shmock'
 moment        = require 'moment'
 Encrypto      = require '../encrypto'
 Server        = require '../../src/server'

@@ -1,6 +1,6 @@
 request       = require 'request'
 enableDestroy = require 'server-destroy'
-shmock        = require '@octoblu/shmock'
+shmock        = require 'shmock'
 Server        = require '../../src/server'
 
 describe 'HandleErrors', ->

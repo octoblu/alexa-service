@@ -19,13 +19,13 @@ class EchoInList
       echoIn.fromNode { flowId, node }
       @_nodes.push echoIn
 
-  names: =>
-    list = _.map @echoIns, (echoIn) =>
-      return echoIn.name
-    return list.join ', and '
-
   toString: =>
-    return EMPTY_LIST if _.isEmpty @echoIns
+    return EMPTY_LIST if _.isEmpty @_nodes
     return "Your triggers are #{@_names()}. Say a trigger name to perform the action"
+
+  _names: =>
+    list = _.map @_nodes, (echoIn) =>
+      return echoIn.name()
+    return list.join ', and '
 
 module.exports = EchoInList

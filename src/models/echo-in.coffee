@@ -1,6 +1,9 @@
 class EchoIn
   fromNode: ({ @flowId, @node }) =>
 
+  name: =>
+    return @node.name
+
   message: (data, callback) =>
     throw Error 'Missing flowId' unless @flowId
     throw Error 'Missing Echo-In ID' unless @node?.id
