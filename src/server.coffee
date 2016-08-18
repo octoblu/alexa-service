@@ -26,6 +26,7 @@ class Server
     {@redisUri, @namespace, @jobTimeoutSeconds} = options
     {@jobLogRedisUri, @jobLogQueue} = options
     {@jobLogSampleRate} = options
+    {@logError} = options
     throw new Error 'Missing meshbluConfig' unless @meshbluConfig?
     throw new Error 'Missing alexaServiceUri' unless @alexaServiceUri?
     throw new Error 'Missing jobLogRedisUri' unless @jobLogRedisUri?
@@ -63,7 +64,7 @@ class Server
       pool: connectionPool
       jobLogger: jobLogger
 
-    router = new Router {@meshbluConfig,@alexaServiceUri,jobManager}
+    router = new Router {@logError, @meshbluConfig,@alexaServiceUri,jobManager}
     router.route app
 
     @server = app.listen @port, callback

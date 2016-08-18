@@ -5,6 +5,10 @@ OPEN_MESSAGE="This skill allows you to trigger an Octoblu flow that perform a se
 
 class HandleLaunchRequest
   constructor: ({ meshbluConfig, request, @response }) ->
+    throw new Error 'Missing meshbluConfig' unless meshbluConfig?
+    throw new Error 'Missing request' unless request?
+    throw new Error 'Missing response' unless @response?
+
     @echoInService = new EchoInService { meshbluConfig }
     @authenticatedHandler = new AuthenticatedHandler { meshbluConfig, request, @response }
 

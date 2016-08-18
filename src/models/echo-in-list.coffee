@@ -28,4 +28,13 @@ class EchoInList
       return echoIn.name()
     return list.join ', and '
 
+  findByName: (name) =>
+    name = @sanifyStr name
+    return _.find @_nodes, (node) =>
+      return node.saneName() == name
+
+  sanifyStr: (str) =>
+    return '' unless _.isString str
+    return str.trim().toLowerCase()
+
 module.exports = EchoInList

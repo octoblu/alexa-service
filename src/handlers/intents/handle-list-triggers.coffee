@@ -4,6 +4,10 @@ debug                = require('debug')('alexa-service:handle-list-triggers')
 
 class HandleListTriggers
   constructor: ({ meshbluConfig, request, @response }) ->
+    throw new Error 'Missing meshbluConfig' unless meshbluConfig?
+    throw new Error 'Missing request' unless request?
+    throw new Error 'Missing response' unless @response?
+
     @echoInService = new EchoInService { meshbluConfig }
     @authenticatedHandler = new AuthenticatedHandler { meshbluConfig, request, @response }
 

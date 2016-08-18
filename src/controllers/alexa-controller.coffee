@@ -14,7 +14,7 @@ class AlexaController
     { request, response } = @createRequestAndResponse req
     debug 'alexa request', request
     debug 'alexa response', response
-    handler = new TypeHandler { @meshbluConfig, request, response }
+    handler = new TypeHandler { @meshbluConfig, request, response, @jobManager, @alexaServiceUri }
     handler.handle (error) =>
       return @handleError res, response, error if error?
       res.status(200).send response.response

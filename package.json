@@ -41,7 +41,7 @@
     "lodash": "^4.13.1",
     "meshblu-config": "^5.1.1",
     "meshblu-core-job-manager": "^7.1.0",
-    "meshblu-core-pooled-job-manager": "^2.3.0",
+    "meshblu-core-pooled-job-manager": "^2.4.0",
     "meshblu-http": "^7.0.0",
     "moment": "^2.13.0",
     "morgan": "^1.7.0",

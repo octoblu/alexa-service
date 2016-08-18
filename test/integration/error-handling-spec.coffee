@@ -16,6 +16,7 @@ describe 'HandleErrors', ->
 
     serverOptions =
       port: undefined,
+      logError: sinon.spy()
       disableLogging: true
       meshbluConfig: meshbluConfig
       alexaServiceUri: 'https://alexa.octoblu.dev'

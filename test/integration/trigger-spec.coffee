@@ -1,6 +1,9 @@
 request       = require 'request'
 enableDestroy = require 'server-destroy'
 shmock        = require 'shmock'
+redis         = require 'redis'
+RedisNs       = require '@octoblu/redis-ns'
+JobManager    = require 'meshblu-core-job-manager'
 Server        = require '../../src/server'
 
 describe 'Trigger', ->
@@ -30,6 +33,9 @@ describe 'Trigger', ->
     @server.run =>
       @serverPort = @server.address().port
       done()
+
+    client = new RedisNs 'alexa-service:test', redis.createClient()
+    @jobManager = new JobManager { client, timeoutSeconds: 1, jobLogSampleRate: 1 }
 
   afterEach ->
     @meshblu.destroy()
@@ -95,7 +101,7 @@ describe 'Trigger', ->
           }
 
         @message = @meshblu
-          .post '/message'
+          .post '/messages'
           .set 'Authorization', "Basic #{userAuth}"
           .send {
             devices: ['hello']
@@ -110,31 +116,46 @@ describe 'Trigger', ->
           }
           .reply 200
 
-        options =
-          uri: '/trigger'
-          baseUrl: "http://localhost:#{@serverPort}"
-          json:
-            session:
-              sessionId: "session-id",
-              application:
-                applicationId: "application-id"
-              user:
-                userId: "user-id",
-                accessToken: userAuth
-              new: true
-            request:
-              type: "IntentRequest",
-              requestId: "request-id",
-              timestamp: "2016-02-12T19:28:15Z",
-              intent:
-                name: "Trigger",
-                slots:
-                  Name:
-                    name: "Name",
-                    value: "the weather"
+        message = {
+          metadata: { code: 200, responseId: 'request-id'  }
+          data: {
+            commands: {
+              say: [
+                'THIS IS THE RESPONSE TEXT'
+              ]
+              shouldEndSession: [
+                true
+              ]
+            }
+          }
+        }
+        @jobManager.createResponse 'response', message, (error) =>
+          return done error if error?
+          options =
+            uri: '/trigger'
+            baseUrl: "http://localhost:#{@serverPort}"
+            json:
+              session:
+                sessionId: "session-id",
+                application:
+                  applicationId: "application-id"
+                user:
+                  userId: "user-id",
+                  accessToken: userAuth
+                new: true
+              request:
+                type: "IntentRequest",
+                requestId: "request-id",
+                timestamp: "2016-02-12T19:28:15Z",
+                intent:
+                  name: "Trigger",
+                  slots:
+                    Name:
+                      name: "Name",
+                      value: "the weather"
 
-        request.post options, (error, @response, @body) =>
-          done error
+          request.post options, (error, @response, @body) =>
+            done error
 
       it 'should have a body', ->
         expect(@body).to.deep.equal
