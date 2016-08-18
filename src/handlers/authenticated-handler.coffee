@@ -2,13 +2,13 @@ AuthService   = require '../services/auth-service'
 debug         = require('debug')('alexa-service:authenticated-handler')
 
 class AuthenticatedHandler
-  constructor: ({ meshbluConfig, request, @response }) ->
-    throw new Error 'Missing meshbluConfig' unless meshbluConfig?
+  constructor: ({ @meshbluConfig, request, @response }) ->
     throw new Error 'Missing request' unless request?
     throw new Error 'Missing response' unless @response?
-    @authService  = new AuthService { meshbluConfig, request }
+    @authService  = new AuthService { @meshbluConfig, request }
 
   handle: (callback, next) =>
+    return @_handleInvalidAuth callback unless @meshbluConfig?
     @authService.validate (error, valid) =>
       return callback error if error?
       return @_handleInvalidAuth callback unless valid

@@ -179,8 +179,9 @@ describe 'Trigger', ->
       it 'should message the flow', ->
         @message.done()
 
-    xdescribe 'when rest service times out', ->
+    describe 'when rest service times out', ->
       beforeEach (done) ->
+        @timeout 3000
         userAuth = new Buffer('user-uuid:user-token').toString('base64')
 
         @whoami = @meshblu
@@ -188,22 +189,53 @@ describe 'Trigger', ->
           .set 'Authorization', "Basic #{userAuth}"
           .reply 200, uuid: 'user-uuid', token: 'user-token'
 
-        @respondWithRestService = @restService
-          .post '/flows/triggers/the%20weather'
+        @searchDevices = @meshblu
+          .post '/search/devices'
           .set 'Authorization', "Basic #{userAuth}"
-          .set 'X-RESPONSE-BASE-URI', 'https://alexa.octoblu.com'
-          .send {
-            type: "IntentRequest",
-            requestId: "request-id",
-            timestamp: "2016-02-12T19:28:15Z",
-            intent:
-              name: "Trigger",
-              slots:
-                Name:
-                  name: "Name",
-                  value: "the weather"
+          .set 'X-MESHBLU-PROJECTION', JSON.stringify { uuid: true, 'flow.nodes': true }
+          .send { owner: 'user-uuid', online: true, type: 'octoblu:flow' }
+          .reply 200, [
+            {
+              uuid: 'hello',
+              flow: {
+                nodes: [
+                  {
+                    id: 'weather',
+                    type: 'operation:echo-in',
+                    name: 'the weather'
+                  }
+                ]
+              }
+            }
+          ]
+
+        data = {
+          type: "IntentRequest",
+          requestId: "request-id",
+          timestamp: "2016-02-12T19:28:15Z",
+          intent:
+            name: "Trigger",
+            slots:
+              Name:
+                name: "Name",
+                value: "the weather"
           }
-            .reply 408, error: 'Request timeout'
+
+        @message = @meshblu
+          .post '/messages'
+          .set 'Authorization', "Basic #{userAuth}"
+          .send {
+            devices: ['hello']
+            topic: 'alexa-service'
+            payload:
+              callbackUrl: "https://alexa.octoblu.dev/respond/request-id"
+              callbackMethod: "POST"
+              responseId: 'request-id'
+              from: 'weather'
+              params: data
+              payload: data
+          }
+          .reply 200
 
         options =
           uri: '/trigger'
@@ -234,63 +266,26 @@ describe 'Trigger', ->
       it 'should have a body', ->
         expect(@body).to.deep.equal
           version: '1.0'
+          sessionAttributes: {}
           response:
             outputSpeech:
-              type: 'PlainText'
-              text: 'Request timeout'
+              type: 'SSML'
+              ssml: '<speak>Response timeout exceeded</speak>'
             shouldEndSession: true
 
       it 'should respond with 200', ->
         expect(@response.statusCode).to.equal 200
 
-      it 'should hit up the rest service', ->
-        @respondWithRestService.done()
-
       it 'should hit up whoami', ->
         @whoami.done()
 
+      it 'should search for flows', ->
+        @searchDevices.done()
 
-    xdescribe 'when missing auth', ->
-      beforeEach (done) ->
-        options =
-          uri: '/trigger'
-          baseUrl: "http://localhost:#{@serverPort}"
-          json:
-            session:
-              sessionId: "session-id",
-              application:
-                applicationId: "application-id"
-              user:
-                userId: "user-id"
-              new: true
-            request:
-              type: "IntentRequest",
-              requestId: "request-id",
-              timestamp: "2016-02-12T19:28:15Z",
-              intent:
-                name: "Trigger",
-                slots:
-                  Name:
-                    name: "Name",
-                    value: "the weather"
+      it 'should message the flow', ->
+        @message.done()
 
-        request.post options, (error, @response, @body) =>
-          done error
-
-      it 'should have a body', ->
-        expect(@body).to.deep.equal
-          version: "1.0"
-          response:
-            outputSpeech:
-              type: "PlainText"
-              text: "Please go to your Alexa app and link your account."
-            card:
-              type: "LinkAccount"
-
-      it 'should respond with 200', ->
-        expect(@response.statusCode).to.equal 200
-
-    xdescribe 'when invalid auth is provided', ->
+    describe 'when missing auth', ->
       beforeEach (done) ->
         @whoami = @meshblu
           .post '/authenticate'
@@ -305,8 +300,7 @@ describe 'Trigger', ->
               application:
                 applicationId: "application-id"
               user:
-                userId: "user-id"
-                accessToken: new Buffer('invalid-uuid:invalid-token').toString('base64')
+                userId: "user-id",
               new: true
             request:
               type: "IntentRequest",
@@ -322,18 +316,18 @@ describe 'Trigger', ->
         request.post options, (error, @response, @body) =>
           done error
 
-      it 'should hit up whoami', ->
-        @whoami.done()
-
       it 'should have a body', ->
         expect(@body).to.deep.equal
-          version: "1.0"
+          version: '1.0'
+          sessionAttributes: {}
           response:
             outputSpeech:
-              type: "PlainText"
-              text: "Please go to your Alexa app and link your account."
+              type: 'SSML'
+              ssml: '<speak>Please go to your Alexa app and link your account.</speak>'
             card:
-              type: "LinkAccount"
+              type: 'LinkAccount'
+            shouldEndSession: true
 
       it 'should respond with 200', ->
         expect(@response.statusCode).to.equal 200
+

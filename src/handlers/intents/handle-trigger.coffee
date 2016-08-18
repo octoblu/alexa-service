@@ -4,18 +4,17 @@ EchoInService        = require '../../services/echo-in-service'
 debug                = require('debug')('alexa-service:handle-trigger')
 
 class HandleTrigger
-  constructor: ({ @alexaServiceUri, @jobManager, meshbluConfig, @request, @response }) ->
+  constructor: ({ @alexaServiceUri, @jobManager, @meshbluConfig, @request, @response }) ->
     throw new Error 'Missing jobManager' unless @jobManager?
     throw new Error 'Missing alexaServiceUri' unless @alexaServiceUri?
-    throw new Error 'Missing meshbluConfig' unless meshbluConfig?
     throw new Error 'Missing request' unless @request?
     throw new Error 'Missing response' unless @response?
-    @authenticatedHandler = new AuthenticatedHandler { meshbluConfig, @request, @response }
-    @echoInService = new EchoInService { meshbluConfig }
+    @authenticatedHandler = new AuthenticatedHandler { @meshbluConfig, @request, @response }
 
   handle: (callback) =>
     debug 'handling trigger'
     @authenticatedHandler.handle callback, =>
+      @echoInService = new EchoInService { @meshbluConfig }
       @_trigger callback, =>
         @_waitForResponse callback
 
@@ -23,8 +22,9 @@ class HandleTrigger
     { requestId } = @request.data.request
     debug 'waiting for response', { requestId }
     @jobManager.getResponse 'response', requestId, (error, result) =>
+      debug 'got job response', { error, result }
+      return @_requestTimeout callback if error?.code == 504
       return callback error if error?
-      debug 'got job response', result
       @_convertResultToResponse result
       debug 'calling it done'
       callback null
@@ -70,6 +70,12 @@ class HandleTrigger
   _invalidName: (callback) =>
     debug 'invalid name'
     @response.say "Missing Name slot for Trigger intent"
+    @response.shouldEndSession true
+    callback null
+
+  _requestTimeout: (callback) =>
+    debug 'request timeout'
+    @response.say "Response timeout exceeded"
     @response.shouldEndSession true
     callback null
 

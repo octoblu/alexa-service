@@ -3,6 +3,7 @@ shmock        = require 'shmock'
 moment        = require 'moment'
 Encrypto      = require '../encrypto'
 Server        = require '../../src/server'
+enableDestroy = require 'server-destroy'
 certs         = require '../certs'
 
 describe 'Verify Alexa', ->
@@ -65,7 +66,7 @@ describe 'Verify Alexa', ->
         .post '/search/devices'
         .set 'Authorization', "Basic #{userAuth}"
         .set 'X-MESHBLU-PROJECTION', JSON.stringify { uuid: true, 'flow.nodes': true }
-        .send owner: 'user-uuid', type: 'octoblu:flow', online: 'true'
+        .send owner: 'user-uuid', type: 'octoblu:flow', online: true
         .reply 200, [
           {uuid: 'hi', flow: nodes: [{name: 'sweet', type: 'operation:echo-in'}]}
           {uuid: 'hello', online: true, flow: nodes: [{name: 'yay', type: 'operation:echo-in'}]}

@@ -33,7 +33,7 @@ class AlexaController
   handleError: (res, response, error) =>
     response.say error?.toString()
     response.shouldEndSession true
-    return res.status(500).send response.response
+    return res.status(error?.code ? 500).send response.response
 
   respond: (req, res) =>
     code = parseInt code if code?
