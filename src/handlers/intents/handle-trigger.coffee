@@ -29,25 +29,26 @@ class HandleTrigger
       debug 'calling it done'
       callback null
 
-  _convertResultToResponse: (result={}) =>
-    return @_convertLegacyResult result if result.responseText?
-    return @_convertJobResult result
-
   _convertLegacyResult: (result={}) =>
     { responseText } = result
     @response.say responseText
     @response.shouldEndSession true
 
-  _convertJobResult: (result={}) =>
+  _parseJobResult: (result={}) =>
     try
       data = JSON.parse result.rawData
     catch error
       throw error if error?
+    return data
 
-    { commands } = data
+  _convertJobResult: () =>
+    { response } = data
+    @response.response = response
 
-    _.each commands, (values, command) =>
-      @response?[command] values...
+  _convertResultToResponse: (result={}) =>
+    data = @_parseJobResult result
+    return @_convertLegacyResult data if data.responseText?
+    return @_convertJobResult data
 
   _trigger: (callback, next) =>
     name = @request.slot 'Name'

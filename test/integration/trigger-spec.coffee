@@ -119,14 +119,7 @@ describe 'Trigger', ->
         message = {
           metadata: { code: 200, responseId: 'request-id'  }
           data: {
-            commands: {
-              say: [
-                'THIS IS THE RESPONSE TEXT'
-              ]
-              shouldEndSession: [
-                true
-              ]
-            }
+            responseText: 'THIS IS THE RESPONSE TEXT'
           }
         }
         @jobManager.createResponse 'response', message, (error) =>
