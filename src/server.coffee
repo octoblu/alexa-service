@@ -6,6 +6,7 @@ errorHandler       = require 'errorhandler'
 bodyParser         = require 'body-parser'
 enableDestroy      = require 'server-destroy'
 sendError          = require 'express-send-error'
+expressVersion     = require 'express-package-version'
 alexa              = require './middlewares/alexa'
 rawBody            = require './middlewares/raw-body'
 RedisNs            = require '@octoblu/redis-ns'
@@ -40,6 +41,7 @@ class Server
   run: (callback) =>
     app = express()
     app.use meshbluHealthcheck()
+    app.use expressVersion { format: '{"version": "%s"}' }
     app.use sendError()
     app.use morgan 'dev', immediate: false unless @disableLogging
     app.use cors()
