@@ -30,13 +30,13 @@ class HandleTrigger
       callback null
 
   _convertResultToResponse: (result={}) =>
-    return @_convertLegacyResult result if result.responseText? && result.closeSession?
+    return @_convertLegacyResult result if result.responseText?
     return @_convertJobResult result
 
   _convertLegacyResult: (result={}) =>
-    { responseText, closeSession } = result
+    { responseText } = result
     @response.say responseText
-    @response.shouldEndSession !!closeSession
+    @response.shouldEndSession true
 
   _convertJobResult: (result={}) =>
     try

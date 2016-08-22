@@ -13,10 +13,16 @@
       ]
     },
     {
+      "intent": "ListTriggers"
+    },
+    {
       "intent": "AMAZON.HelpIntent"
     },
     {
-      "intent": "ListTriggers"
+      "intent": "AMAZON.StopIntent"
+    },
+    {
+      "intent": "AMAZON.CancelIntent"
     }
   ]
 }
@@ -48,6 +54,8 @@ Trigger i need {Name} please
 Trigger tell me my {Name}
 Trigger list {Name}
 Trigger i want {Name}
+Trigger create {Name}
+Trigger create a {Name}
 ListTriggers what my triggers are
 ListTriggers give me a list of my triggers
 ListTriggers get me a list of my triggers
@@ -62,6 +70,6 @@ ListTriggers what triggers do i have
 * Alexa ask Citrix list my tasks
 * Alexa ask Citrix list my meetings
 * Alexa ask Citrix create meeting
-* Alexa ask Citrix get my notifications
-* Alexa ask Citrix what are my triggers
+* Alexa ask Citrix get me my notifications
+* Alexa ask Citrix my triggers
 * Alexa ask Citrix help
