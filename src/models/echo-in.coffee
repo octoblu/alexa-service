@@ -25,7 +25,7 @@ class EchoIn
     }
     return {
       devices: [ @flowId ]
-      topic: 'alexa-service'
+      topic: 'triggers-service'
       payload
     }
 

@@ -105,7 +105,7 @@ describe 'Trigger', ->
           .set 'Authorization', "Basic #{userAuth}"
           .send {
             devices: ['hello']
-            topic: 'alexa-service'
+            topic: 'triggers-service'
             payload:
               callbackUrl: "https://alexa.octoblu.dev/respond/request-id"
               callbackMethod: "POST"
@@ -226,7 +226,7 @@ describe 'Trigger', ->
           .set 'Authorization', "Basic #{userAuth}"
           .send {
             devices: ['hello']
-            topic: 'alexa-service'
+            topic: 'triggers-service'
             payload:
               callbackUrl: "https://alexa.octoblu.dev/respond/request-id"
               callbackMethod: "POST"
