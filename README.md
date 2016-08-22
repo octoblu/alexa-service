@@ -96,6 +96,8 @@ Trigger i need {Name} please
 Trigger tell me my {Name}
 Trigger list {Name}
 Trigger i want {Name}
+Trigger create {Name}
+Trigger create a {Name}
 ListTriggers what my triggers are
 ListTriggers give me a list of my triggers
 ListTriggers get me a list of my triggers
@@ -103,10 +105,6 @@ ListTriggers a list of my triggers
 ListTriggers my triggers
 ListTriggers the triggers i have
 ListTriggers what triggers do i have
-ListTriggers what are my triggers
-ListTriggers what can i do
-ListTriggers list my triggers
-ListTriggers tell me my triggers
 ```
 1. **Configuration**
   1. Set the Endpoint to HTTPS and `https://alexa.octoblu.com/trigger` or the url of your hosted Alexa Service.
