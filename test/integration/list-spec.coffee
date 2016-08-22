@@ -89,7 +89,7 @@ describe 'List Triggers', ->
               outputSpeech:
                 type: "SSML"
                 ssml: "<speak>Please say the name of a trigger associated with your account</speak>"
-            shouldEndSession: true
+            shouldEndSession: false
 
       it 'should respond with 200', ->
         expect(@response.statusCode).to.equal 200
@@ -99,88 +99,6 @@ describe 'List Triggers', ->
 
       it 'should hit up whoami', ->
         @whoami.done()
-
-    describe 'when the AMAZON.HelpIntent', ->
-      beforeEach (done) ->
-        userAuth = new Buffer('user-uuid:user-token').toString('base64')
-
-        options =
-          uri: '/trigger'
-          baseUrl: "http://localhost:#{@serverPort}"
-          json:
-            session:
-              sessionId: "session-id",
-              application:
-                applicationId: "application-id"
-              user:
-                userId: "user-id",
-                accessToken: userAuth
-              new: true
-            request:
-              type: "IntentRequest",
-              requestId: "request-id",
-              timestamp: "2016-02-12T19:28:15Z",
-              intent:
-                name: "AMAZON.HelpIntent"
-
-        request.post options, (error, @response, @body) =>
-          done error
-
-      it 'should have a body', ->
-        expect(@body).to.deep.equal
-          version: '1.0'
-          sessionAttributes: {}
-          response:
-            outputSpeech:
-              type: 'SSML'
-              ssml: '<speak>Tell Alexa to trigger a flow by saying the name of your Echo in thing. If you are experiencing problems, make sure that your Octoblu account is properly linked and that you have your triggers named properly</speak>'
-            reprompt:
-              outputSpeech:
-                type: "SSML"
-                ssml: "<speak>Please say the name of a trigger associated with your account</speak>"
-            shouldEndSession: false
-
-      it 'should respond with 200', ->
-        expect(@response.statusCode).to.equal 200
-
-    describe 'when the AMAZON.StopIntent', ->
-      beforeEach (done) ->
-        userAuth = new Buffer('user-uuid:user-token').toString('base64')
-
-        options =
-          uri: '/trigger'
-          baseUrl: "http://localhost:#{@serverPort}"
-          json:
-            session:
-              sessionId: "session-id",
-              application:
-                applicationId: "application-id"
-              user:
-                userId: "user-id",
-                accessToken: userAuth
-              new: true
-            request:
-              type: "IntentRequest",
-              requestId: "request-id",
-              timestamp: "2016-02-12T19:28:15Z",
-              intent:
-                name: "AMAZON.StopIntent"
-
-        request.post options, (error, @response, @body) =>
-          done error
-
-      it 'should have a body', ->
-        expect(@body).to.deep.equal
-          version: '1.0'
-          sessionAttributes: {}
-          response:
-            outputSpeech:
-              type: 'SSML'
-              ssml: '<speak>Closing session</speak>'
-            shouldEndSession: true
-
-      it 'should respond with 200', ->
-        expect(@response.statusCode).to.equal 200
 
   describe 'when missing any triggers', ->
     beforeEach (done) ->
@@ -232,7 +150,7 @@ describe 'List Triggers', ->
             outputSpeech:
               type: "SSML"
               ssml: "<speak>Please say the name of a trigger associated with your account</speak>"
-          shouldEndSession: true
+          shouldEndSession: false
 
     it 'should respond with 200', ->
       expect(@response.statusCode).to.equal 200

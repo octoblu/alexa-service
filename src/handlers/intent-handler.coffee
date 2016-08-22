@@ -18,7 +18,7 @@ class IntentHandler
     @intent.handle callback
 
   _invalidIntent: (callback) =>
-    console.error "invalid intent: #{@intentName}"
+    debug "invalid intent: #{@intentName}"
     message = "Sorry, the application didn't know what to do with that intent."
     @response.say message
     @response.shouldEndSession true, "Please say the name of a trigger associated with your account"
