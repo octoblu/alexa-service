@@ -41,7 +41,7 @@ class HandleTrigger
       throw error if error?
     return data
 
-  _convertJobResult: () =>
+  _convertJobResult: (data={}) =>
     { response } = data
     @response.response = response
 
