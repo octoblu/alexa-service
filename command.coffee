@@ -10,9 +10,6 @@ class Command
       disableLogging   : process.env.DISABLE_LOGGING == "true"
       redisUri         : process.env.REDIS_URI
       namespace        : process.env.NAMESPACE || 'alexa-service'
-      jobTimeoutSeconds: process.env.JOB_TIMEOUT_SECONDS || 9
-      jobLogRedisUri   : process.env.JOB_LOG_REDIS_URI
-      jobLogQueue      : process.env.JOB_LOG_QUEUE
       alexaServiceUri  : process.env.ALEXA_SERVICE_URI
       disableAlexaVerification: process.env.DISABLE_ALEXA_VERIFICATION || false
 
@@ -30,6 +27,7 @@ class Command
 
     process.on 'SIGTERM', =>
       console.log 'SIGTERM caught, exiting'
+      return process.exit 0 unless server?.stop?
       server.stop =>
         process.exit 0
 

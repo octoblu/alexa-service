@@ -4,8 +4,8 @@ EchoInService        = require '../../services/echo-in-service'
 debug                = require('debug')('alexa-service:handle-trigger')
 
 class HandleTrigger
-  constructor: ({ @alexaServiceUri, @jobManager, @meshbluConfig, @request, @response }) ->
-    throw new Error 'Missing jobManager' unless @jobManager?
+  constructor: ({ @alexaServiceUri, @sessionHandler, @meshbluConfig, @request, @response }) ->
+    throw new Error 'Missing sessionHandler' unless @sessionHandler?
     throw new Error 'Missing alexaServiceUri' unless @alexaServiceUri?
     throw new Error 'Missing request' unless @request?
     throw new Error 'Missing response' unless @response?
@@ -21,7 +21,7 @@ class HandleTrigger
   _waitForResponse: (callback) =>
     { requestId } = @request.data.request
     debug 'waiting for response', { requestId }
-    @jobManager.getResponse 'response', requestId, (error, result) =>
+    @sessionHandler.listen { requestId }, (error, result) =>
       debug 'got job response', { error, result }
       return @_requestTimeout callback if error?.code == 504
       return callback error if error?
@@ -34,19 +34,11 @@ class HandleTrigger
     @response.say responseText
     @response.shouldEndSession true
 
-  _parseJobResult: (result={}) =>
-    try
-      data = JSON.parse result.rawData
-    catch error
-      throw error if error?
-    return data
-
   _convertJobResult: (data={}) =>
     { response } = data
     @response.response = response
 
-  _convertResultToResponse: (result={}) =>
-    data = @_parseJobResult result
+  _convertResultToResponse: (data={}) =>
     return @_convertLegacyResult data if data.responseText?
     return @_convertJobResult data
 

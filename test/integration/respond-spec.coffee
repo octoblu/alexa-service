@@ -1,8 +1,9 @@
-request    = require 'request'
-redis      = require 'redis'
-RedisNs    = require '@octoblu/redis-ns'
-JobManager = require 'meshblu-core-job-manager'
-Server     = require '../../src/server'
+request        = require 'request'
+redis          = require 'redis'
+RedisNs        = require '@octoblu/redis-ns'
+
+Server         = require '../../src/server'
+SessionHandler = require '../../src/handlers/session-handler'
 
 describe 'Respond', ->
   beforeEach (done) ->
@@ -16,10 +17,8 @@ describe 'Respond', ->
       port: undefined,
       disableLogging: true
       meshbluConfig: meshbluConfig
-      jobTimeoutSeconds: 1
+      timeoutSeconds: 1
       namespace: 'alexa-service:test'
-      jobLogQueue: 'alexa-service:job-log'
-      jobLogRedisUri: 'redis://localhost:6379'
       alexaServiceUri: 'https://alexa.octoblu.dev'
       disableAlexaVerification: false
 
@@ -30,7 +29,7 @@ describe 'Respond', ->
       done()
 
     client = new RedisNs 'alexa-service:test', redis.createClient()
-    @jobManager = new JobManager { client, timeoutSeconds: 1, jobLogSampleRate: 1 }
+    @sessionHandler = new SessionHandler { timeoutSeconds: 1, client }
 
   afterEach ->
     @server.destroy()
@@ -39,14 +38,14 @@ describe 'Respond', ->
     describe 'when successful', ->
       beforeEach (done) ->
         options =
-          uri: '/respond/my-response-id'
+          uri: '/respond/request-id'
           baseUrl: "http://localhost:#{@serverPort}"
           json:
             name: 'Freedom'
 
         request.post options, (error, @response, @body) =>
           throw error if error?
-          @jobManager.getResponse 'response', 'my-response-id', (error, @result) =>
+          @sessionHandler.listen { requestId: 'request-id' }, (error, @result) =>
             done error
 
       it 'should respond with 200', ->
@@ -56,7 +55,7 @@ describe 'Respond', ->
         expect(@body).to.deep.equal success: true
 
       it 'should have the response of Freedom', ->
-        expect(JSON.parse(@result.rawData).name).to.equal 'Freedom'
+        expect(@result.name).to.equal 'Freedom'
 
     describe 'when incorrect job key', ->
       beforeEach (done) ->
@@ -68,7 +67,7 @@ describe 'Respond', ->
 
         request.post options, (error, @response, @body) =>
           throw error if error?
-          @jobManager.getResponse 'response', 'right-response-id', (@error) =>
+          @sessionHandler.listen { requestId: 'right-response-id' }, (@error) =>
             done()
 
       it 'should have a timeout error', ->

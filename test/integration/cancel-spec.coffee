@@ -19,10 +19,7 @@ describe 'Cancel Intent', ->
       disableLogging: true
       meshbluConfig: meshbluConfig
       alexaServiceUri: 'https://alexa.octoblu.dev'
-      jobTimeoutSeconds: 1
-      namespace: 'alexa-service:test'
-      jobLogQueue: 'alexa-service:job-log'
-      jobLogRedisUri: 'redis://localhost:6379'
+      namespace: 'alexa-service'
       disableAlexaVerification: true
 
     @server = new Server serverOptions

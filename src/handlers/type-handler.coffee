@@ -3,9 +3,9 @@ Types       = require './types'
 AlexaConfig = require '../models/alexa-meshblu-config'
 
 class TypeHandler
-  constructor: ({ alexaServiceUri, jobManager, meshbluConfig, request, response }) ->
+  constructor: ({ alexaServiceUri, sessionHandler, meshbluConfig, request, response }) ->
     throw new Error 'Missing alexaServiceUri' unless alexaServiceUri?
-    throw new Error 'Missing jobManager' unless jobManager?
+    throw new Error 'Missing sessionHandler' unless sessionHandler?
     throw new Error 'Missing meshbluConfig' unless meshbluConfig?
     throw new Error 'Missing request' unless request?
     throw new Error 'Missing response' unless response?
@@ -13,7 +13,7 @@ class TypeHandler
     meshbluConfig = new AlexaConfig({ meshbluConfig, request }).get()
     @options = {
       alexaServiceUri,
-      jobManager,
+      sessionHandler,
       meshbluConfig,
       request,
       response

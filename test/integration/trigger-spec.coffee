@@ -1,10 +1,11 @@
-request       = require 'request'
-enableDestroy = require 'server-destroy'
-shmock        = require 'shmock'
-redis         = require 'redis'
-RedisNs       = require '@octoblu/redis-ns'
-JobManager    = require 'meshblu-core-job-manager'
-Server        = require '../../src/server'
+request        = require 'request'
+enableDestroy  = require 'server-destroy'
+shmock         = require 'shmock'
+redis          = require 'redis'
+RedisNs        = require '@octoblu/redis-ns'
+
+Server         = require '../../src/server'
+SessionHandler = require '../../src/handlers/session-handler'
 
 describe 'Trigger', ->
   beforeEach (done) ->
@@ -22,10 +23,8 @@ describe 'Trigger', ->
       disableLogging: true
       meshbluConfig: meshbluConfig
       alexaServiceUri: 'https://alexa.octoblu.dev'
-      jobTimeoutSeconds: 1
       namespace: 'alexa-service:test'
-      jobLogQueue: 'alexa-service:job-log'
-      jobLogRedisUri: 'redis://localhost:6379'
+      timeoutSeconds: 1
       disableAlexaVerification: true
 
     @server = new Server serverOptions
@@ -35,7 +34,7 @@ describe 'Trigger', ->
       done()
 
     client = new RedisNs 'alexa-service:test', redis.createClient()
-    @jobManager = new JobManager { client, timeoutSeconds: 1, jobLogSampleRate: 1 }
+    @sessionHandler = new SessionHandler { timeoutSeconds: 1, client }
 
   afterEach ->
     @meshblu.destroy()
@@ -116,13 +115,11 @@ describe 'Trigger', ->
           }
           .reply 200
 
-        message = {
-          metadata: { code: 200, responseId: 'request-id'  }
-          data: {
-            responseText: 'THIS IS THE RESPONSE TEXT'
-          }
+        response = {
+          responseText: 'THIS IS THE RESPONSE TEXT'
         }
-        @jobManager.createResponse 'response', message, (error) =>
+        responseId = 'request-id'
+        @sessionHandler.respond { responseId, response }, (error) =>
           return done error if error?
           options =
             uri: '/trigger'

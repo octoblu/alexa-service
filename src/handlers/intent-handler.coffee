@@ -3,14 +3,14 @@ debug   = require('debug')('alexa-service:intent-handler')
 Intents = require './intents'
 
 class IntentHandler
-  constructor: ({ alexaServiceUri, jobManager, meshbluConfig, request, @response }) ->
+  constructor: ({ alexaServiceUri, sessionHandler, meshbluConfig, request, @response }) ->
     throw new Error 'Missing alexaServiceUri' unless alexaServiceUri?
-    throw new Error 'Missing jobManager' unless jobManager?
+    throw new Error 'Missing sessionHandler' unless sessionHandler?
     throw new Error 'Missing request' unless request?
     throw new Error 'Missing response' unless @response?
     @intentName = _.get request, 'data.request.intent.name'
     debug 'received intent', { @intentName }
-    @options = { alexaServiceUri, jobManager, meshbluConfig, request, @response }
+    @options = { alexaServiceUri, sessionHandler, meshbluConfig, request, @response }
 
   handle: (callback) =>
     return @_invalidIntent callback unless Intents[@intentName]?

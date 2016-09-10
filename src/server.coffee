@@ -1,39 +1,33 @@
-_                  = require 'lodash'
+redis              = require 'redis'
 cors               = require 'cors'
+_                  = require 'lodash'
 morgan             = require 'morgan'
 express            = require 'express'
-errorHandler       = require 'errorhandler'
+onFinished         = require 'on-finished'
 bodyParser         = require 'body-parser'
+errorHandler       = require 'errorhandler'
+{ Pool }           = require 'generic-pool'
 enableDestroy      = require 'server-destroy'
+RedisNs            = require '@octoblu/redis-ns'
 sendError          = require 'express-send-error'
 expressVersion     = require 'express-package-version'
+meshbluHealthcheck = require 'express-meshblu-healthcheck'
+
+Router             = require './router'
 alexa              = require './middlewares/alexa'
 rawBody            = require './middlewares/raw-body'
-RedisNs            = require '@octoblu/redis-ns'
-redis              = require 'redis'
-JobLogger          = require 'job-logger'
-{ Pool }           = require 'generic-pool'
-PooledJobManager   = require 'meshblu-core-pooled-job-manager'
-meshbluHealthcheck = require 'express-meshblu-healthcheck'
-Router             = require './router'
 debug              = require('debug')('alexa-service:server')
 
 class Server
   constructor: (options)->
-    {@disableLogging, @port} = options
+    {@disableLogging,@port} = options
     {@meshbluConfig,@alexaServiceUri} = options
     {@disableAlexaVerification} = options
+    {@timeoutSeconds,@redisUri, @namespace} = options
     {@testCert} = options
-    {@redisUri, @namespace, @jobTimeoutSeconds} = options
-    {@jobLogRedisUri, @jobLogQueue} = options
-    {@jobLogSampleRate} = options
-    {@logError} = options
     throw new Error 'Missing meshbluConfig' unless @meshbluConfig?
-    throw new Error 'Missing alexaServiceUri' unless @alexaServiceUri?
-    throw new Error 'Missing jobLogRedisUri' unless @jobLogRedisUri?
-    throw new Error 'Missing jobLogQueue' unless @jobLogQueue?
     throw new Error 'Missing namespace' unless @namespace?
-    throw new Error 'Missing jobTimeoutSeconds' unless @jobTimeoutSeconds?
+    throw new Error 'Missing alexaServiceUri' unless @alexaServiceUri?
 
   address: =>
     @server.address()
@@ -53,20 +47,18 @@ class Server
 
     app.use '/trigger', alexa.verify { @testCert } unless @disableAlexaVerification
 
-    jobLogger = new JobLogger
-      jobLogQueue: @jobLogQueue
-      indexPrefix: 'metric:alexa-service'
-      type: 'alexa-service:request'
-      client: redis.createClient(@jobLogRedisUri)
+    pool = @_createConnectionPool()
 
-    connectionPool = @_createConnectionPool()
-    jobManager = new PooledJobManager
-      timeoutSeconds: @jobTimeoutSeconds
-      jobLogSampleRate: @jobLogSampleRate || 1
-      pool: connectionPool
-      jobLogger: jobLogger
+    app.use (request, response, next) =>
+      pool.acquire (error, client) =>
+        delete error.code if error?
+        return next error if error?
+        request.redisClient = client
+        onFinished response, =>
+          pool.release client
+        next()
 
-    router = new Router {@logError, @meshbluConfig,@alexaServiceUri,jobManager}
+    router = new Router {@timeoutSeconds, @meshbluConfig, @alexaServiceUri }
     router.route app
 
     @server = app.listen @port, callback
@@ -80,7 +72,6 @@ class Server
       returnToHead: true # sets connection pool to stack instead of queue behavior
       create: (callback) =>
         client = _.bindAll new RedisNs @namespace, redis.createClient(@redisUri)
-
         client.on 'end', ->
           client.hasError = new Error 'ended'
 
