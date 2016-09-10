@@ -36,7 +36,7 @@ class HandleTrigger
     @response.shouldEndSession true
 
   _convertJobResult: (data) =>
-    @response.response = _.assign @response, data
+    @response.response = _.assign @response.response, data
 
   _convertResultToResponse: (data={}) =>
     return @_convertLegacyResult data if data.responseText?
