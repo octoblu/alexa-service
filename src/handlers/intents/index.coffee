@@ -1,4 +1,5 @@
 module.exports = {
+  default: require('./handle-trigger')
   Trigger: require('./handle-trigger')
   ListTriggers: require('./handle-list-triggers')
   'AMAZON.HelpIntent': require('./handle-help')

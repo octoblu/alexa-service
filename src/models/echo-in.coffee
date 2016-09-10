@@ -1,6 +1,12 @@
 _ = require 'lodash'
 
 class EchoIn
+  fromJSON: (str) =>
+    { @flowId, @node } = JSON.parse str
+
+  toJSON: =>
+    return JSON.stringify { @flowId, @node }
+
   fromNode: ({ @flowId, @node }) =>
 
   name: =>
@@ -10,7 +16,7 @@ class EchoIn
     return '' unless _.isString @node.name
     return @node.name.trim().toLowerCase()
 
-  buildMessage: ({responseId, baseUrl}, data) =>
+  buildMessage: ({sessionId, responseId, baseUrl}, data) =>
     throw Error 'Missing responseId' unless responseId?
     throw Error 'Missing baseUrl' unless baseUrl?
     throw Error 'Missing flowId' unless @flowId?
@@ -19,6 +25,7 @@ class EchoIn
       callbackUrl: "#{baseUrl}/respond/#{responseId}"
       callbackMethod: "POST"
       responseId,
+      sessionId,
       from: @node.id
       payload: data
       params: data

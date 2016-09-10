@@ -63,6 +63,7 @@
     "mocha-istanbul": "^0.2.0",
     "shmock": "^0.8.1",
     "sinon": "^1.17.4",
-    "sinon-chai": "^2.8.0"
+    "sinon-chai": "^2.8.0",
+    "uuid": "^2.0.2"
   }
 }

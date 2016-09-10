@@ -1,6 +1,7 @@
 request       = require 'request'
 enableDestroy = require 'server-destroy'
 shmock        = require 'shmock'
+uuid          = require 'uuid'
 Server        = require '../../src/server'
 
 describe 'Stop Intent', ->
@@ -35,6 +36,8 @@ describe 'Stop Intent', ->
   describe 'POST /trigger', ->
     describe 'when the AMAZON.StopIntent', ->
       beforeEach (done) ->
+        requestId = uuid.v1()
+        sessionId = uuid.v1()
         userAuth = new Buffer('user-uuid:user-token').toString('base64')
 
         options =
@@ -42,7 +45,7 @@ describe 'Stop Intent', ->
           baseUrl: "http://localhost:#{@serverPort}"
           json:
             session:
-              sessionId: "session-id",
+              sessionId: sessionId,
               application:
                 applicationId: "application-id"
               user:
@@ -51,7 +54,7 @@ describe 'Stop Intent', ->
               new: true
             request:
               type: "IntentRequest",
-              requestId: "request-id",
+              requestId: requestId,
               timestamp: "2016-02-12T19:28:15Z",
               intent:
                 name: "AMAZON.StopIntent"

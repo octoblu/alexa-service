@@ -9,11 +9,12 @@ class IntentHandler
     throw new Error 'Missing request' unless request?
     throw new Error 'Missing response' unless @response?
     @intentName = _.get request, 'data.request.intent.name'
+    @intentName = 'default' unless Intents[@intentName]?
+    @intentName ?= 'default'
     debug 'received intent', { @intentName }
     @options = { alexaServiceUri, sessionHandler, meshbluConfig, request, @response }
 
   handle: (callback) =>
-    return @_invalidIntent callback unless Intents[@intentName]?
     @intent = new Intents[@intentName] @options
     @intent.handle callback
 

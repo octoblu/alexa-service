@@ -28,9 +28,8 @@ class AlexaController
 
   respond: (req, res) =>
     { responseId } = req.params
-    response       = req.body
     sessionHandler = new SessionHandler { @timeoutSeconds, client: req.redisClient }
-    sessionHandler.respond { responseId, response }, (error) =>
+    sessionHandler.respond { responseId, body: req.body }, (error) =>
       return res.sendError error if error?
       res.status(200).send { success: true }
 

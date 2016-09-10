@@ -1,6 +1,7 @@
 request       = require 'request'
 enableDestroy = require 'server-destroy'
 shmock        = require 'shmock'
+uuid          = require 'uuid'
 Server        = require '../../src/server'
 
 describe 'List Triggers', ->
@@ -35,6 +36,8 @@ describe 'List Triggers', ->
   describe 'POST /trigger', ->
     describe 'when successful', ->
       beforeEach (done) ->
+        sessionId = uuid.v1()
+        requestId = uuid.v1()
         userAuth = new Buffer('user-uuid:user-token').toString('base64')
 
         @whoami = @meshblu
@@ -57,7 +60,7 @@ describe 'List Triggers', ->
           baseUrl: "http://localhost:#{@serverPort}"
           json:
             session:
-              sessionId: "session-id",
+              sessionId: sessionId,
               application:
                 applicationId: "application-id"
               user:
@@ -66,7 +69,7 @@ describe 'List Triggers', ->
               new: true
             request:
               type: "IntentRequest",
-              requestId: "request-id",
+              requestId: requestId,
               timestamp: "2016-02-12T19:28:15Z",
               intent:
                 name: "ListTriggers"
@@ -99,6 +102,8 @@ describe 'List Triggers', ->
 
   describe 'when missing any triggers', ->
     beforeEach (done) ->
+      sessionId = uuid.v1()
+      requestId = uuid.v1()
       userAuth = new Buffer('user-uuid:user-token').toString('base64')
 
       @whoami = @meshblu
@@ -118,7 +123,7 @@ describe 'List Triggers', ->
         baseUrl: "http://localhost:#{@serverPort}"
         json:
           session:
-            sessionId: "session-id",
+            sessionId: sessionId,
             application:
               applicationId: "application-id"
             user:
@@ -127,7 +132,7 @@ describe 'List Triggers', ->
             new: true
           request:
             type: "IntentRequest",
-            requestId: "request-id",
+            requestId: requestId,
             timestamp: "2016-02-12T19:28:15Z",
             intent:
               name: "ListTriggers"

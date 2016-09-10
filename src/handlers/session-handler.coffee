@@ -1,5 +1,6 @@
 _      = require 'lodash'
 Alexa  = require 'alexa-app'
+EchoIn = require '../models/echo-in'
 
 class SessionHandler
   constructor: ({ timeoutSeconds, @client }) ->
@@ -32,19 +33,19 @@ class SessionHandler
 
   leave: ({ shouldEndSession, sessionId }, callback) =>
     return callback null if shouldEndSession
-    key = "session:#{sessionId}"
-    @client.del key, callback
+    @client.del "session:#{sessionId}", (error) =>
+      return callback error if error?
+      @client.del "session:#{sessionId}:echo-in", callback
 
-  respond: ({ response, responseId }, callback) =>
+  respond: ({ body, responseId }, callback) =>
     key = "response:#{responseId}"
-    @client.lpush key, @_stringify(response), (error) =>
+    @client.lpush key, @_stringify(body), (error) =>
       return callback error if error?
       @client.expire key, @RESPONSE_TTL, callback
 
   listen: ({ requestId }, callback) =>
     key = "response:#{requestId}"
     @client.brpop key, @RESPONSE_TTL, (error, result) =>
-      delete error.code if error?
       return callback error if error?
       unless result?
         error = new Error 'Response timeout exceeded'
@@ -52,6 +53,19 @@ class SessionHandler
         return callback error
       [ channel, rawResponse ] = result
       callback null, @_parse rawResponse
+
+  getEchoIn: ({ sessionId }, callback) =>
+    key = "session:#{sessionId}:echo-in"
+    @client.get key, (error, rawEchoIn) =>
+      return callback error if error?
+      return callback null unless rawEchoIn?
+      echoIn = new EchoIn()
+      echoIn.fromJSON rawEchoIn
+      callback null, echoIn
+
+  saveEchoIn: ({ sessionId, echoIn }, callback) =>
+    key = "session:#{sessionId}:echo-in"
+    @client.set key, echoIn.toJSON(), callback
 
   _stringify: (obj) =>
     return JSON.stringify obj

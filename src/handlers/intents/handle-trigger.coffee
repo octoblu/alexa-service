@@ -9,6 +9,7 @@ class HandleTrigger
     throw new Error 'Missing alexaServiceUri' unless @alexaServiceUri?
     throw new Error 'Missing request' unless @request?
     throw new Error 'Missing response' unless @response?
+    { @sessionId } = @request.sessionDetails
     @authenticatedHandler = new AuthenticatedHandler { @meshbluConfig, @request, @response }
 
   handle: (callback) =>
@@ -34,35 +35,55 @@ class HandleTrigger
     @response.say responseText
     @response.shouldEndSession true
 
-  _convertJobResult: (data={}) =>
-    { response } = data
-    @response.response = response
+  _convertJobResult: (data) =>
+    @response.response = _.assign @response.response, data
 
   _convertResultToResponse: (data={}) =>
     return @_convertLegacyResult data if data.responseText?
     return @_convertJobResult data
 
+  _intentName: =>
+    return @request.data?.request?.intent?.name
+
   _trigger: (callback, next) =>
+    return @_triggerLast callback, next unless @_intentName() == 'Trigger'
     name = @request.slot 'Name'
-    return @_invalidName callback unless name
+    return @_invalidRequest callback unless name
     { requestId } = @request.data.request
     debug 'triggering', { name, requestId }
     @echoInService.list (error, list) =>
       return callback error if error?
       echoIn = list.findByName name
       return @_missingEchoIn callback unless echoIn?
-      debug 'got echo-in', echoIn.name()
-      options = { responseId: requestId, baseUrl: @alexaServiceUri }
+      @sessionHandler.saveEchoIn { @sessionId, echoIn }, (error) =>
+        return callback error if error?
+        debug 'got echo-in', echoIn.name()
+        options = { @sessionId, responseId: requestId, baseUrl: @alexaServiceUri }
+        message = echoIn.buildMessage options, @request.data.request
+        debug 'sending message', { message }
+        @echoInService.message message, (error) =>
+          return callback error if error?
+          debug 'sent message'
+          next null
+
+  _triggerLast: (callback, next) =>
+    { requestId } = @request.data.request
+    debug 'triggering last', { requestId }
+    @sessionHandler.getEchoIn { @sessionId }, (error, echoIn) =>
+      return callback error if error?
+      return @_invalidRequest callback unless echoIn?
+      debug 'got last echo-in', echoIn.name()
+      options = { @sessionId, responseId: requestId, baseUrl: @alexaServiceUri }
       message = echoIn.buildMessage options, @request.data.request
-      debug 'sending message', { message }
+      debug 'sending message to last echo-in', { message }
       @echoInService.message message, (error) =>
         return callback error if error?
-        debug 'sent message'
+        debug 'sent message to last echo-in'
         next null
 
-  _invalidName: (callback) =>
-    debug 'invalid name'
-    @response.say "Missing Name slot for Trigger intent"
+  _invalidRequest: (callback) =>
+    debug 'invalid request'
+    @response.say "Invalid request"
     @response.shouldEndSession true
     callback null
 

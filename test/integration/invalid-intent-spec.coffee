@@ -1,6 +1,7 @@
 request       = require 'request'
 enableDestroy = require 'server-destroy'
 shmock        = require 'shmock'
+uuid          = require 'uuid'
 Server        = require '../../src/server'
 
 describe 'Invalid Intent', ->
@@ -35,17 +36,25 @@ describe 'Invalid Intent', ->
   describe 'POST /trigger', ->
     describe 'when successful', ->
       beforeEach (done) ->
+        sessionId = uuid.v1()
+        userAuth = new Buffer('user-uuid:user-token').toString('base64')
+
+        @whoami = @meshblu
+          .post '/authenticate'
+          .set 'Authorization', "Basic #{userAuth}"
+          .reply 200, uuid: 'user-uuid', token: 'user-token'
+
         options =
           uri: '/trigger'
           baseUrl: "http://localhost:#{@serverPort}"
           json:
             session:
-              sessionId: "session-id",
+              sessionId: sessionId,
               application:
                 applicationId: "application-id"
               user:
                 userId: "user-id",
-                accessToken: "should-not-matter"
+                accessToken: userAuth
               new: true
             request:
               type: "IntentRequest",
@@ -64,52 +73,7 @@ describe 'Invalid Intent', ->
           response:
             outputSpeech:
               type: 'SSML'
-              ssml: "<speak>Sorry, the application didn't know what to do with that intent.</speak>"
-            reprompt:
-              outputSpeech:
-                type: "SSML"
-                ssml: "<speak>Please say the name of a trigger associated with your account</speak>"
-            shouldEndSession: true
-
-      it 'should respond with 200', ->
-        expect(@response.statusCode).to.equal 200
-
-    describe 'when missing any triggers', ->
-      beforeEach (done) ->
-        options =
-          uri: '/trigger'
-          baseUrl: "http://localhost:#{@serverPort}"
-          json:
-            session:
-              sessionId: "session-id",
-              application:
-                applicationId: "application-id"
-              user:
-                userId: "user-id",
-                accessToken: "should-not-matter"
-              new: true
-            request:
-              type: "IntentRequest",
-              requestId: "request-id",
-              timestamp: "2016-02-12T19:28:15Z",
-              intent:
-                name: "Something"
-
-        request.post options, (error, @response, @body) =>
-          done error
-
-      it 'should have a body', ->
-        expect(@body).to.deep.equal
-          version: '1.0'
-          sessionAttributes: {}
-          response:
-            outputSpeech:
-              type: 'SSML'
-              ssml: "<speak>Sorry, the application didn't know what to do with that intent.</speak>"
-            reprompt:
-              outputSpeech:
-                type: "SSML"
-                ssml: "<speak>Please say the name of a trigger associated with your account</speak>"
+              ssml: "<speak>Invalid request</speak>"
             shouldEndSession: true
 
       it 'should respond with 200', ->

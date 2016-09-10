@@ -1,7 +1,12 @@
 request       = require 'request'
 enableDestroy = require 'server-destroy'
 shmock        = require 'shmock'
-Server        = require '../../src/server'
+uuid          = require 'uuid'
+RedisNs       = require '@octoblu/redis-ns'
+redis         = require 'redis'
+
+Server         = require '../../src/server'
+SessionHandler = require '../../src/handlers/session-handler'
 
 describe 'Cancel Intent', ->
   beforeEach (done) ->
@@ -19,7 +24,8 @@ describe 'Cancel Intent', ->
       disableLogging: true
       meshbluConfig: meshbluConfig
       alexaServiceUri: 'https://alexa.octoblu.dev'
-      namespace: 'alexa-service'
+      namespace: 'alexa-service:test'
+      timeoutSeconds: 1
       disableAlexaVerification: true
 
     @server = new Server serverOptions
@@ -28,21 +34,61 @@ describe 'Cancel Intent', ->
       @serverPort = @server.address().port
       done()
 
+    client = new RedisNs 'alexa-service:test', redis.createClient()
+    @sessionHandler = new SessionHandler { client, timeoutSeconds: 1 }
+
   afterEach ->
     @meshblu.destroy()
     @server.destroy()
 
   describe 'POST /trigger', ->
     describe 'when the AMAZON.CancelIntent', ->
-      beforeEach (done) ->
-        userAuth = new Buffer('user-uuid:user-token').toString('base64')
+      describe 'when a session does NOT exist', ->
+        beforeEach (done) ->
+          userAuth = new Buffer('user-uuid:user-token').toString('base64')
 
-        options =
-          uri: '/trigger'
-          baseUrl: "http://localhost:#{@serverPort}"
-          json:
+          options =
+            uri: '/trigger'
+            baseUrl: "http://localhost:#{@serverPort}"
+            json:
+              session:
+                sessionId: uuid.v1(),
+                application:
+                  applicationId: "application-id"
+                user:
+                  userId: "user-id",
+                  accessToken: userAuth
+                new: true
+              request:
+                type: "IntentRequest",
+                requestId: uuid.v1(),
+                timestamp: "2016-02-12T19:28:15Z",
+                intent:
+                  name: "AMAZON.CancelIntent"
+
+          request.post options, (error, @response, @body) =>
+            done error
+
+        it 'should have a body', ->
+          expect(@body).to.deep.equal
+            version: '1.0'
+            sessionAttributes: {}
+            response:
+              outputSpeech:
+                type: 'SSML'
+                ssml: '<speak>Closing session</speak>'
+              shouldEndSession: true
+
+        it 'should respond with 200', ->
+          expect(@response.statusCode).to.equal 200
+
+      describe 'when a session does exist', ->
+        beforeEach (done) ->
+          @sessionId = uuid.v1()
+          userAuth = new Buffer('user-uuid:user-token').toString('base64')
+          options =
             session:
-              sessionId: "session-id",
+              sessionId: @sessionId,
               application:
                 applicationId: "application-id"
               user:
@@ -50,25 +96,48 @@ describe 'Cancel Intent', ->
                 accessToken: userAuth
               new: true
             request:
-              type: "IntentRequest",
-              requestId: "request-id",
+              type: "Something",
+              requestId: uuid.v1(),
               timestamp: "2016-02-12T19:28:15Z",
               intent:
-                name: "AMAZON.CancelIntent"
+                name: "Something"
+          @sessionHandler.create options, done
 
-        request.post options, (error, @response, @body) =>
-          done error
+        beforeEach (done) ->
+          userAuth = new Buffer('user-uuid:user-token').toString('base64')
 
-      it 'should have a body', ->
-        expect(@body).to.deep.equal
-          version: '1.0'
-          sessionAttributes: {}
-          response:
-            outputSpeech:
-              type: 'SSML'
-              ssml: '<speak>Closing session</speak>'
-            shouldEndSession: true
+          options =
+            uri: '/trigger'
+            baseUrl: "http://localhost:#{@serverPort}"
+            json:
+              session:
+                sessionId: @sessionId,
+                application:
+                  applicationId: "application-id"
+                user:
+                  userId: "user-id",
+                  accessToken: userAuth
+                new: false
+              request:
+                type: "IntentRequest",
+                requestId: uuid.v1(),
+                timestamp: "2016-02-12T19:28:15Z",
+                intent:
+                  name: "AMAZON.CancelIntent"
 
-      it 'should respond with 200', ->
-        expect(@response.statusCode).to.equal 200
+          request.post options, (error, @response, @body) =>
+            done error
+
+        it 'should have a body', ->
+          expect(@body).to.deep.equal
+            version: '1.0'
+            sessionAttributes: {}
+            response:
+              outputSpeech:
+                type: 'SSML'
+                ssml: '<speak>Closing session</speak>'
+              shouldEndSession: true
+
+        it 'should respond with 200', ->
+          expect(@response.statusCode).to.equal 200
 

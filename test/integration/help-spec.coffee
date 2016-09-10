@@ -1,6 +1,7 @@
 request       = require 'request'
 enableDestroy = require 'server-destroy'
 shmock        = require 'shmock'
+uuid          = require 'uuid'
 Server        = require '../../src/server'
 
 describe 'Help', ->
@@ -42,7 +43,7 @@ describe 'Help', ->
           baseUrl: "http://localhost:#{@serverPort}"
           json:
             session:
-              sessionId: "session-id",
+              sessionId: uuid.v1(),
               application:
                 applicationId: "application-id"
               user:
@@ -51,7 +52,7 @@ describe 'Help', ->
               new: true
             request:
               type: "IntentRequest",
-              requestId: "request-id",
+              requestId: uuid.v1(),
               timestamp: "2016-02-12T19:28:15Z",
               intent:
                 name: "AMAZON.HelpIntent"

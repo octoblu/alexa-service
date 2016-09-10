@@ -1,6 +1,7 @@
 request        = require 'request'
 enableDestroy  = require 'server-destroy'
 shmock         = require 'shmock'
+uuid           = require 'uuid'
 redis          = require 'redis'
 RedisNs        = require '@octoblu/redis-ns'
 
@@ -43,6 +44,8 @@ describe 'Trigger', ->
   describe 'POST /trigger', ->
     describe 'when successful', ->
       beforeEach (done) ->
+        sessionId = uuid.v1()
+        requestId = uuid.v1()
         userAuth = new Buffer('user-uuid:user-token').toString('base64')
 
         @whoami = @meshblu
@@ -89,7 +92,7 @@ describe 'Trigger', ->
 
         data = {
           type: "IntentRequest",
-          requestId: "request-id",
+          requestId: requestId,
           timestamp: "2016-02-12T19:28:15Z",
           intent:
             name: "Trigger",
@@ -97,7 +100,7 @@ describe 'Trigger', ->
               Name:
                 name: "Name",
                 value: "the weather"
-          }
+        }
 
         @message = @meshblu
           .post '/messages'
@@ -106,27 +109,27 @@ describe 'Trigger', ->
             devices: ['hello']
             topic: 'triggers-service'
             payload:
-              callbackUrl: "https://alexa.octoblu.dev/respond/request-id"
+              callbackUrl: "https://alexa.octoblu.dev/respond/#{requestId}"
               callbackMethod: "POST"
-              responseId: 'request-id'
+              sessionId: sessionId
+              responseId: requestId
               from: 'weather'
               params: data
               payload: data
           }
           .reply 200
 
-        response = {
+        body = {
           responseText: 'THIS IS THE RESPONSE TEXT'
         }
-        responseId = 'request-id'
-        @sessionHandler.respond { responseId, response }, (error) =>
+        @sessionHandler.respond { responseId: requestId, body }, (error) =>
           return done error if error?
           options =
             uri: '/trigger'
             baseUrl: "http://localhost:#{@serverPort}"
             json:
               session:
-                sessionId: "session-id",
+                sessionId: sessionId,
                 application:
                   applicationId: "application-id"
                 user:
@@ -135,7 +138,7 @@ describe 'Trigger', ->
                 new: true
               request:
                 type: "IntentRequest",
-                requestId: "request-id",
+                requestId: requestId,
                 timestamp: "2016-02-12T19:28:15Z",
                 intent:
                   name: "Trigger",
@@ -171,6 +174,8 @@ describe 'Trigger', ->
 
     describe 'when rest service times out', ->
       beforeEach (done) ->
+        sessionId = uuid.v1()
+        requestId = uuid.v1()
         @timeout 3000
         userAuth = new Buffer('user-uuid:user-token').toString('base64')
 
@@ -201,7 +206,7 @@ describe 'Trigger', ->
 
         data = {
           type: "IntentRequest",
-          requestId: "request-id",
+          requestId: requestId,
           timestamp: "2016-02-12T19:28:15Z",
           intent:
             name: "Trigger",
@@ -209,7 +214,7 @@ describe 'Trigger', ->
               Name:
                 name: "Name",
                 value: "the weather"
-          }
+        }
 
         @message = @meshblu
           .post '/messages'
@@ -218,9 +223,10 @@ describe 'Trigger', ->
             devices: ['hello']
             topic: 'triggers-service'
             payload:
-              callbackUrl: "https://alexa.octoblu.dev/respond/request-id"
+              callbackUrl: "https://alexa.octoblu.dev/respond/#{requestId}"
               callbackMethod: "POST"
-              responseId: 'request-id'
+              responseId: requestId
+              sessionId: sessionId
               from: 'weather'
               params: data
               payload: data
@@ -232,7 +238,7 @@ describe 'Trigger', ->
           baseUrl: "http://localhost:#{@serverPort}"
           json:
             session:
-              sessionId: "session-id",
+              sessionId: sessionId,
               application:
                 applicationId: "application-id"
               user:
@@ -241,7 +247,7 @@ describe 'Trigger', ->
               new: true
             request:
               type: "IntentRequest",
-              requestId: "request-id",
+              requestId: requestId,
               timestamp: "2016-02-12T19:28:15Z",
               intent:
                 name: "Trigger",
@@ -277,6 +283,8 @@ describe 'Trigger', ->
 
     describe 'when missing auth', ->
       beforeEach (done) ->
+        sessionId = uuid.v1()
+        requestId = uuid.v1()
         @whoami = @meshblu
           .post '/authenticate'
           .reply 403, error: message: 'Unauthorized'
@@ -286,7 +294,7 @@ describe 'Trigger', ->
           baseUrl: "http://localhost:#{@serverPort}"
           json:
             session:
-              sessionId: "session-id",
+              sessionId: sessionId,
               application:
                 applicationId: "application-id"
               user:
@@ -294,7 +302,7 @@ describe 'Trigger', ->
               new: true
             request:
               type: "IntentRequest",
-              requestId: "request-id",
+              requestId: requestId,
               timestamp: "2016-02-12T19:28:15Z",
               intent:
                 name: "Trigger",
