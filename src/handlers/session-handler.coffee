@@ -1,6 +1,7 @@
-_      = require 'lodash'
-Alexa  = require 'alexa-app'
-EchoIn = require '../models/echo-in'
+_          = require 'lodash'
+Alexa      = require 'alexa-app'
+EchoIn     = require '../models/echo-in'
+AlexaError = require '../models/alexa-error'
 
 class SessionHandler
   constructor: ({ timeoutSeconds, @client }) ->
@@ -20,6 +21,7 @@ class SessionHandler
     key = "session:#{session.sessionId}"
     @client.get key, (error, rawSession) =>
       return callback error if error?
+      return callback new AlexaError 'Unable to find session' unless rawSession?
       session = @_parse rawSession
       callback null, @_getResult { session, request }
 
@@ -65,7 +67,9 @@ class SessionHandler
 
   saveEchoIn: ({ sessionId, echoIn }, callback) =>
     key = "session:#{sessionId}:echo-in"
-    @client.set key, echoIn.toJSON(), callback
+    @client.set key, echoIn.toJSON(), (error) =>
+      return callback error if error?
+      @client.expire key, @SESSION_TTL, callback
 
   _stringify: (obj) =>
     return JSON.stringify obj

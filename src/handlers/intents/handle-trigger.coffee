@@ -1,6 +1,7 @@
 _                    = require 'lodash'
 AuthenticatedHandler = require '../authenticated-handler'
 EchoInService        = require '../../services/echo-in-service'
+AlexaError           = require '../../models/alexa-error'
 debug                = require('debug')('alexa-service:handle-trigger')
 
 class HandleTrigger
@@ -48,7 +49,7 @@ class HandleTrigger
   _trigger: (callback, next) =>
     return @_triggerLast callback, next unless @_intentName() == 'Trigger'
     name = @request.slot 'Name'
-    return @_invalidRequest callback unless name
+    return callback new AlexaError 'Invalid trigger request' unless name
     { requestId } = @request.data.request
     debug 'triggering', { name, requestId }
     @echoInService.list (error, list) =>
@@ -57,29 +58,33 @@ class HandleTrigger
       return @_missingEchoIn callback unless echoIn?
       @sessionHandler.saveEchoIn { @sessionId, echoIn }, (error) =>
         return callback error if error?
-        debug 'got echo-in', echoIn.name()
-        options = { @sessionId, responseId: requestId, baseUrl: @alexaServiceUri }
+        options = {
+          @sessionId,
+          responseId: requestId,
+          baseUrl: @alexaServiceUri
+          type: 'new'
+        }
         message = echoIn.buildMessage options, @request.data.request
-        debug 'sending message', { message }
         @echoInService.message message, (error) =>
           return callback error if error?
-          debug 'sent message'
-          next null
+          next()
 
   _triggerLast: (callback, next) =>
     { requestId } = @request.data.request
     debug 'triggering last', { requestId }
     @sessionHandler.getEchoIn { @sessionId }, (error, echoIn) =>
       return callback error if error?
-      return @_invalidRequest callback unless echoIn?
-      debug 'got last echo-in', echoIn.name()
-      options = { @sessionId, responseId: requestId, baseUrl: @alexaServiceUri }
+      return callback new AlexaError 'No trigger to reply to' unless echoIn?
+      options = {
+        @sessionId,
+        responseId: requestId,
+        baseUrl: @alexaServiceUri
+        type: 'reply'
+      }
       message = echoIn.buildMessage options, @request.data.request
-      debug 'sending message to last echo-in', { message }
       @echoInService.message message, (error) =>
         return callback error if error?
-        debug 'sent message to last echo-in'
-        next null
+        next()
 
   _invalidRequest: (callback) =>
     debug 'invalid request'

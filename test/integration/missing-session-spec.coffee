@@ -4,7 +4,7 @@ shmock        = require 'shmock'
 uuid          = require 'uuid'
 Server        = require '../../src/server'
 
-describe 'Invalid Intent', ->
+describe 'Missing Session', ->
   beforeEach (done) ->
     @meshblu = shmock 0xd00d
     enableDestroy(@meshblu)
@@ -34,32 +34,25 @@ describe 'Invalid Intent', ->
     @server.destroy()
 
   describe 'POST /trigger', ->
-    describe 'when successful', ->
       beforeEach (done) ->
-        sessionId = uuid.v1()
         userAuth = new Buffer('user-uuid:user-token').toString('base64')
-
-        @whoami = @meshblu
-          .post '/authenticate'
-          .set 'Authorization', "Basic #{userAuth}"
-          .reply 200, uuid: 'user-uuid', token: 'user-token'
 
         options =
           uri: '/trigger'
           baseUrl: "http://localhost:#{@serverPort}"
           json:
             session:
-              sessionId: sessionId,
+              sessionId: uuid.v1(),
               application:
                 applicationId: "application-id"
               user:
                 userId: "user-id",
                 accessToken: userAuth
-              new: true
+              new: false
             request:
               type: "IntentRequest",
               requestId: uuid.v1(),
-              timestamp: "2016-02-12T19:28:15Z"
+              timestamp: "2016-02-12T19:28:15Z",
               intent:
                 name: "Something"
 
@@ -73,7 +66,7 @@ describe 'Invalid Intent', ->
           response:
             outputSpeech:
               type: 'SSML'
-              ssml: "<speak>No trigger to reply to</speak>"
+              ssml: '<speak>Unable to find session</speak>'
             shouldEndSession: true
 
       it 'should respond with 200', ->

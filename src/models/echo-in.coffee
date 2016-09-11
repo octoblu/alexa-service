@@ -16,8 +16,10 @@ class EchoIn
     return '' unless _.isString @node.name
     return @node.name.trim().toLowerCase()
 
-  buildMessage: ({sessionId, responseId, baseUrl}, data) =>
+  buildMessage: ({ type, sessionId, responseId, baseUrl}, data) =>
     throw Error 'Missing responseId' unless responseId?
+    throw Error 'Missing sessionId' unless sessionId?
+    throw Error 'Missing type' unless type?
     throw Error 'Missing baseUrl' unless baseUrl?
     throw Error 'Missing flowId' unless @flowId?
     throw Error 'Missing Echo-In ID' unless @node?.id?
@@ -26,6 +28,7 @@ class EchoIn
       callbackMethod: "POST"
       responseId,
       sessionId,
+      type,
       from: @node.id
       payload: data
       params: data

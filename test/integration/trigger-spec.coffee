@@ -114,6 +114,7 @@ describe 'Trigger', ->
               sessionId: sessionId
               responseId: requestId
               from: 'weather'
+              type: 'new'
               params: data
               payload: data
           }
@@ -228,6 +229,7 @@ describe 'Trigger', ->
               responseId: requestId
               sessionId: sessionId
               from: 'weather'
+              type: 'new'
               params: data
               payload: data
           }
@@ -259,7 +261,8 @@ describe 'Trigger', ->
         request.post options, (error, @response, @body) =>
           done error
 
-      it 'should have a body', ->
+      it 'should have the right response', ->
+        expect(@response.statusCode).to.equal 200
         expect(@body).to.deep.equal
           version: '1.0'
           sessionAttributes: {}
@@ -269,16 +272,9 @@ describe 'Trigger', ->
               ssml: '<speak>Response timeout exceeded</speak>'
             shouldEndSession: true
 
-      it 'should respond with 200', ->
-        expect(@response.statusCode).to.equal 200
-
-      it 'should hit up whoami', ->
+      it 'should hit up meshblu stuff', ->
         @whoami.done()
-
-      it 'should search for flows', ->
         @searchDevices.done()
-
-      it 'should message the flow', ->
         @message.done()
 
     describe 'when missing auth', ->

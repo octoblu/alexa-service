@@ -1,4 +1,5 @@
 _              = require 'lodash'
+AlexaError     = require '../models/alexa-error'
 SessionHandler = require '../handlers/session-handler'
 TypeHandler    = require '../handlers/type-handler'
 debug          = require('debug')('alexa-service:controller')
@@ -12,7 +13,7 @@ class AlexaController
     debug 'trigger request', req.body
     sessionHandler = new SessionHandler { @timeoutSeconds, client: req.redisClient }
     sessionHandler.start req.body, (error, { request, response } = {}) =>
-      return res.sendError error if error?
+      return @handleError res, error if error?
       typeHandler = new TypeHandler {
         @meshbluConfig,
         @alexaServiceUri,
@@ -21,10 +22,14 @@ class AlexaController
         sessionHandler
       }
       typeHandler.handle (error) =>
-        return res.sendError error if error?
+        return @handleError res, error if error?
         sessionHandler.leave response.response, (error) =>
-          return res.sendError error if error?
+          return @handleError res, error if error?
           res.status(200).send response.response
+
+  handleError: (res, error) =>
+    return res.status(200).send error.response if error instanceof AlexaError
+    res.sendError error
 
   respond: (req, res) =>
     { responseId } = req.params
