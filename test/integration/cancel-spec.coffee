@@ -3,7 +3,7 @@ enableDestroy = require 'server-destroy'
 shmock        = require 'shmock'
 uuid          = require 'uuid'
 RedisNs       = require '@octoblu/redis-ns'
-redis         = require 'redis'
+redis         = require 'ioredis'
 
 Server         = require '../../src/server'
 SessionHandler = require '../../src/handlers/session-handler'
@@ -34,7 +34,7 @@ describe 'Cancel Intent', ->
       @serverPort = @server.address().port
       done()
 
-    client = new RedisNs 'alexa-service:test', redis.createClient()
+    client = new RedisNs 'alexa-service:test', redis.createClient(undefined, dropBufferSupport: true)
     @sessionHandler = new SessionHandler { client, timeoutSeconds: 1 }
 
   afterEach ->

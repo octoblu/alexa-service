@@ -2,7 +2,7 @@ request        = require 'request'
 enableDestroy  = require 'server-destroy'
 shmock         = require 'shmock'
 uuid           = require 'uuid'
-redis          = require 'redis'
+redis          = require 'ioredis'
 RedisNs        = require '@octoblu/redis-ns'
 
 Server         = require '../../src/server'
@@ -34,7 +34,7 @@ describe 'Trigger', ->
       @serverPort = @server.address().port
       done()
 
-    client = new RedisNs 'alexa-service:test', redis.createClient()
+    client = new RedisNs 'alexa-service:test', redis.createClient(undefined, dropBufferSupport: true)
     @sessionHandler = new SessionHandler { timeoutSeconds: 1, client }
 
   afterEach ->

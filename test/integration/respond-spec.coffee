@@ -1,5 +1,5 @@
 request        = require 'request'
-redis          = require 'redis'
+redis          = require 'ioredis'
 RedisNs        = require '@octoblu/redis-ns'
 
 Server         = require '../../src/server'
@@ -28,7 +28,7 @@ describe 'Respond', ->
       @serverPort = @server.address().port
       done()
 
-    client = new RedisNs 'alexa-service:test', redis.createClient()
+    client = new RedisNs 'alexa-service:test', redis.createClient(undefined, dropBufferSupport: true)
     @sessionHandler = new SessionHandler { timeoutSeconds: 1, client }
 
   afterEach ->
@@ -59,6 +59,7 @@ describe 'Respond', ->
 
     describe 'when incorrect job key', ->
       beforeEach (done) ->
+        @timeout 3000
         options =
           uri: '/respond/wrong-response-id'
           baseUrl: "http://localhost:#{@serverPort}"
