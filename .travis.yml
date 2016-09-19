@@ -1,9 +1,6 @@
 language: node_js
 node_js:
 - '5'
-branches:
-  only:
-  - "/^v[0-9]/"
 services:
 - redis
 addons:
@@ -20,3 +17,5 @@ before_script:
 - npm install -g codeclimate-test-reporter
 after_script:
 - codeclimate-test-reporter < coverage/lcov.info
+after_success:
+- bash <(curl -s https://codecov.io/bash)

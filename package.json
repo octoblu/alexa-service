@@ -4,7 +4,7 @@
   "description": "Alexa Service",
   "main": "command.js",
   "scripts": {
-    "test": "istanbul cover _mocha -- -R spec --require coffee-coverage/register-istanbul",
+    "test": "env NODE_ENV=test istanbul cover _mocha -- -R spec --require coffee-coverage/register-istanbul && env NODE_ENV=test mocha --reporter json > coverage/mocha.json",
     "test:watch": "istanbul cover _mocha -- -R spec --require coffee-coverage/register-istanbul --watch",
     "start": "node command.js"
   },
