@@ -4,9 +4,11 @@
   "description": "Alexa Service",
   "main": "command.js",
   "scripts": {
-    "test": "env NODE_ENV=test istanbul cover _mocha -- -R spec --require coffee-coverage/register-istanbul && env NODE_ENV=test mocha --reporter json > coverage/mocha.json",
-    "test:watch": "istanbul cover _mocha -- -R spec --require coffee-coverage/register-istanbul --watch",
-    "start": "node command.js"
+    "test": "mocha",
+    "test:watch": "mocha -w -R mocha-multi --reporter-options spec=-,mocha-osx-reporter=-",
+    "start": "node command.js",
+    "coverage": "nyc npm test",
+    "mocha:json": "env NPM_ENV=test mocha --reporter json > coverage/mocha.json"
   },
   "repository": {
     "type": "git",
@@ -57,13 +59,24 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "coffee-coverage": "^1.0.1",
-    "istanbul": "^0.4.4",
     "mocha": "^2.5.3",
-    "mocha-istanbul": "^0.2.0",
+    "mocha-multi": "^0.9.1",
+    "mocha-osx-reporter": "^0.1.2",
+    "nyc": "^8.3.0",
     "shmock": "^0.8.1",
     "sinon": "^1.17.4",
     "sinon-chai": "^2.8.0",
     "uuid": "^2.0.2"
+  },
+  "nyc": {
+    "cache": true,
+    "reporter": [
+      "text-summary",
+      "lcov",
+      "json"
+    ],
+    "extension": [
+      ".coffee"
+    ]
   }
 }
