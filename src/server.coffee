@@ -45,7 +45,8 @@ class Server
     app.use bodyParser.json limit : '1mb', defer: true
 
     redisPool = new RedisPooledClient {@namespace, @maxConnections, @minConnections,@redisUri}
-    app.use redisPool.middleware
+    app.use redisPool.middleware()
+    app.use '/proofoflife', redisPool.proofoflife()
 
     app.options '*', cors()
 

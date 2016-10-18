@@ -1,5 +1,6 @@
 --bail
 --recursive
 --compilers coffee:coffee-script
+--require env-test
 --require coffee-script/register
 --require test/test_helper.coffee
