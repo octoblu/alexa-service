@@ -1,3 +1,4 @@
+{describe,beforeEach,afterEach,expect,it} = global
 request       = require 'request'
 enableDestroy = require 'server-destroy'
 shmock        = require 'shmock'
@@ -63,8 +64,8 @@ describe 'Help', ->
       it 'should have a body', ->
         expect(@body).to.deep.equal
           version: '1.0'
-          sessionAttributes: {}
           response:
+            directives: []
             outputSpeech:
               type: 'SSML'
               ssml: '<speak>Tell Alexa to trigger a flow by saying the name of your Echo in thing. If you are experiencing problems, make sure that your Octoblu account is properly linked and that you have your triggers named properly</speak>'
@@ -76,4 +77,3 @@ describe 'Help', ->
 
       it 'should respond with 200', ->
         expect(@response.statusCode).to.equal 200
-

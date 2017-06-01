@@ -1,3 +1,4 @@
+{describe,beforeEach,afterEach,expect,it} = global
 request       = require 'request'
 enableDestroy = require 'server-destroy'
 shmock        = require 'shmock'
@@ -80,8 +81,8 @@ describe 'List Triggers', ->
       it 'should have a body', ->
         expect(@body).to.deep.equal
           version: '1.0'
-          sessionAttributes: {}
           response:
+            directives: []
             outputSpeech:
               type: 'SSML'
               ssml: '<speak>Your triggers are sweet, and yay. Say a trigger name to perform the action</speak>'
@@ -143,8 +144,8 @@ describe 'List Triggers', ->
     it 'should have a body', ->
       expect(@body).to.deep.equal
         version: '1.0'
-        sessionAttributes: {}
         response:
+          directives: []
           outputSpeech:
             type: 'SSML'
             ssml: "<speak>You don't have any echo-in triggers. Get started by importing one or more alexa bluprints.</speak>"

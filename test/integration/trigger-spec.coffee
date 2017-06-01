@@ -1,3 +1,4 @@
+{describe,beforeEach,afterEach,expect,it} = global
 request        = require 'request'
 enableDestroy  = require 'server-destroy'
 shmock         = require 'shmock'
@@ -154,8 +155,8 @@ describe 'Trigger', ->
       it 'should have a body', ->
         expect(@body).to.deep.equal
           version: '1.0'
-          sessionAttributes: {}
           response:
+            directives: []
             outputSpeech:
               type: 'SSML'
               ssml: '<speak>THIS IS THE RESPONSE TEXT</speak>'
@@ -265,8 +266,8 @@ describe 'Trigger', ->
         expect(@response.statusCode).to.equal 200
         expect(@body).to.deep.equal
           version: '1.0'
-          sessionAttributes: {}
           response:
+            directives: []
             outputSpeech:
               type: 'SSML'
               ssml: '<speak>Response timeout exceeded</speak>'
@@ -313,8 +314,8 @@ describe 'Trigger', ->
       it 'should have a body', ->
         expect(@body).to.deep.equal
           version: '1.0'
-          sessionAttributes: {}
           response:
+            directives: []
             outputSpeech:
               type: 'SSML'
               ssml: '<speak>Please go to your Alexa app and link your account.</speak>'
@@ -324,4 +325,3 @@ describe 'Trigger', ->
 
       it 'should respond with 200', ->
         expect(@response.statusCode).to.equal 200
-

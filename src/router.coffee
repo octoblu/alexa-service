@@ -1,4 +1,3 @@
-_                  = require 'lodash'
 AlexaController    = require './controllers/alexa-controller'
 
 class Router

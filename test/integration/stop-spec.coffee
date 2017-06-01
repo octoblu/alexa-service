@@ -1,3 +1,4 @@
+{describe,beforeEach,afterEach,expect,it} = global
 request       = require 'request'
 enableDestroy = require 'server-destroy'
 shmock        = require 'shmock'
@@ -65,8 +66,8 @@ describe 'Stop Intent', ->
       it 'should have a body', ->
         expect(@body).to.deep.equal
           version: '1.0'
-          sessionAttributes: {}
           response:
+            directives: []
             outputSpeech:
               type: 'SSML'
               ssml: '<speak>Closing session</speak>'
@@ -74,4 +75,3 @@ describe 'Stop Intent', ->
 
       it 'should respond with 200', ->
         expect(@response.statusCode).to.equal 200
-

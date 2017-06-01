@@ -24,6 +24,7 @@ class SessionHandler
       return callback new AlexaError 'Unable to find session' unless rawSession?
       session = @_parse rawSession
       callback null, @_getResult { session, request }
+    return # redis fix
 
   create: ({ session, request }, callback) =>
     key = "session:#{session.sessionId}"
@@ -32,18 +33,21 @@ class SessionHandler
       @client.expire key, @SESSION_TTL, (error) =>
         return callback error if error?
         callback null, @_getResult { session, request }
+    return # redis fix
 
   leave: ({ shouldEndSession, sessionId }, callback) =>
     return callback null if shouldEndSession
     @client.del "session:#{sessionId}", (error) =>
       return callback error if error?
       @client.del "session:#{sessionId}:echo-in", callback
+    return # redis fix
 
   respond: ({ body, responseId }, callback) =>
     key = "response:#{responseId}"
     @client.lpush key, @_stringify(body), (error) =>
       return callback error if error?
       @client.expire key, @RESPONSE_TTL, callback
+    return # redis fix
 
   listen: ({ requestId }, callback) =>
     key = "response:#{requestId}"
@@ -55,6 +59,7 @@ class SessionHandler
         return callback error
       [ channel, rawResponse ] = result
       callback null, @_parse rawResponse
+    return # redis fix
 
   getEchoIn: ({ sessionId }, callback) =>
     key = "session:#{sessionId}:echo-in"
@@ -64,12 +69,14 @@ class SessionHandler
       echoIn = new EchoIn()
       echoIn.fromJSON rawEchoIn
       callback null, echoIn
+    return # redis fix
 
   saveEchoIn: ({ sessionId, echoIn }, callback) =>
     key = "session:#{sessionId}:echo-in"
     @client.set key, echoIn.toJSON(), (error) =>
       return callback error if error?
       @client.expire key, @SESSION_TTL, callback
+    return # redis fix
 
   _stringify: (obj) =>
     return JSON.stringify obj

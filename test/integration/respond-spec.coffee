@@ -1,3 +1,4 @@
+{describe,beforeEach,afterEach,expect,it} = global
 request        = require 'request'
 redis          = require 'ioredis'
 RedisNs        = require '@octoblu/redis-ns'

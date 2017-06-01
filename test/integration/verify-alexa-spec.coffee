@@ -1,3 +1,4 @@
+{describe,beforeEach,afterEach,expect,it} = global
 request       = require 'request'
 shmock        = require 'shmock'
 moment        = require 'moment'
@@ -102,8 +103,8 @@ describe 'Verify Alexa', ->
       it 'should have the correct body response', ->
         expect(@body).to.deep.equal
           version: '1.0'
-          sessionAttributes: {}
           response:
+            directives: []
             outputSpeech:
               type: 'SSML'
               ssml: '<speak>This skill allows you to trigger an Octoblu flow that perform a series of events or actions. Currently, Your triggers are sweet, and yay. Say a trigger name to perform the action</speak>'
