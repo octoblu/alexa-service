@@ -1,6 +1,6 @@
 {
   "name": "alexa-service",
-  "version": "8.3.8",
+  "version": "8.3.9",
   "description": "Alexa Service",
   "main": "command.js",
   "scripts": {
@@ -62,6 +62,9 @@
     "sinon": "^2.3.2",
     "sinon-chai": "^2.8.0",
     "uuid": "^3.0.1"
+  },
+  "optionalDependencies": {
+    "hiredis": "^0.5.0"
   },
   "nyc": {
     "cache": true,
