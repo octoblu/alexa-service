@@ -1,6 +1,6 @@
 {
   "name": "alexa-service",
-  "version": "8.3.5",
+  "version": "8.3.6",
   "description": "Alexa Service",
   "main": "command.js",
   "scripts": {
