@@ -1,7 +1,7 @@
 _                    = require 'lodash'
-AuthenticatedHandler = require '../authenticated-handler'
-EchoInService        = require '../../services/echo-in-service'
-AlexaError           = require '../../models/alexa-error'
+AuthenticatedHandler = require '../../authenticated-handler'
+EchoInService        = require '../../../services/echo-in-service'
+AlexaError           = require '../../../models/alexa-error'
 debug                = require('debug')('alexa-service:handle-trigger')
 
 class HandleTrigger

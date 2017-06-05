@@ -1,5 +1,4 @@
 module.exports = {
-  LaunchRequest: require './handle-launch-request'
-  IntentRequest: require './handle-intent-request'
-  SessionEndedRequest: require './handle-session-ended-request'
+  v1: require('./v1')
+  v2: require('./v2')
 }

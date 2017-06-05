@@ -1,9 +1,9 @@
 AlexaError     = require '../models/alexa-error'
 SessionHandler = require '../handlers/session-handler'
 TypeHandler    = require '../handlers/type-handler'
-debug          = require('debug')('alexa-service:controller')
+debug          = require('debug')('alexa-service:v2-controller')
 
-class AlexaController
+class V2AlexaController
   constructor: ({ @timeoutSeconds, @meshbluConfig, @alexaServiceUri }) ->
     throw new Error 'Missing meshbluConfig' unless @meshbluConfig?
     throw new Error 'Missing alexaServiceUri' unless @alexaServiceUri?
@@ -18,8 +18,8 @@ class AlexaController
         @alexaServiceUri,
         request,
         response,
-        sessionHandler,
-        version: 'v1'
+        sessionHandler
+        version: 'v2'
       }
       typeHandler.handle (error) =>
         return @handleError res, error if error?
@@ -38,4 +38,4 @@ class AlexaController
       return res.sendError error if error?
       res.status(200).send { success: true }
 
-module.exports = AlexaController
+module.exports = V2AlexaController

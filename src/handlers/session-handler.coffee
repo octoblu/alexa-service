@@ -1,6 +1,7 @@
 _          = require 'lodash'
 Alexa      = require 'alexa-app'
 EchoIn     = require '../models/echo-in'
+EchoDevice = require '../models/echo-device'
 AlexaError = require '../models/alexa-error'
 
 class SessionHandler
@@ -57,8 +58,18 @@ class SessionHandler
         error = new Error 'Response timeout exceeded'
         error.code = 504
         return callback error
-      [ channel, rawResponse ] = result
+      rawResponse = result[1]
       callback null, @_parse rawResponse
+    return # redis fix
+
+  getEchoDevice: ({ sessionId }, callback) =>
+    key = "session:#{sessionId}:echo-device"
+    @client.get key, (error, rawEchoDevice) =>
+      return callback error if error?
+      return callback null unless rawEchoDevice?
+      echoDevice = new EchoDevice()
+      echoDevice.fromJSON rawEchoDevice
+      callback null, echoDevice
     return # redis fix
 
   getEchoIn: ({ sessionId }, callback) =>
