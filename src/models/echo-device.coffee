@@ -1,13 +1,13 @@
 _ = require 'lodash'
 
 class EchoDevice
-  fromJSON: (str) =>
+  fromRawJSON: (str) =>
     { @uuid, @name } = JSON.parse str
 
   toJSON: =>
     return JSON.stringify { @uuid, @name }
 
-  fromNode: ({ @uuid, @name }) =>
+  fromJSON: ({ @uuid, @name }) =>
 
   name: =>
     return @name
@@ -16,7 +16,7 @@ class EchoDevice
     return '' unless _.isString @name
     return @name.trim().toLowerCase()
 
-  buildMessage: ({ type, sessionId, responseId, baseUrl}, data) =>
+  buildMessage: ({ type, sessionId, responseId, baseUrl }, data) =>
     throw Error 'Missing responseId' unless responseId?
     throw Error 'Missing sessionId' unless sessionId?
     throw Error 'Missing type' unless type?

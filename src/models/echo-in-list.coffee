@@ -16,7 +16,7 @@ class EchoInList
     @_nodes ?= []
     _.each nodes, (node) =>
       echoIn = new EchoIn()
-      echoIn.fromNode { flowId, node }
+      echoIn.fromJSON { flowId, node }
       @_nodes.push echoIn
 
   toString: =>

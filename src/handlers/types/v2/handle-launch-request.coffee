@@ -12,10 +12,8 @@ class v2HandleLaunchRequest
 
   handle: (callback) =>
     @authenticatedHandler.handle callback, =>
-      @echoInService.list (error, list) =>
-        return callback error if error?
-        @response.say "#{OPEN_MESSAGE}. Currently, #{list.toString()}"
-        @response.shouldEndSession false, "Please say the name of a trigger associated with your account"
-        callback null
+      @response.say "#{OPEN_MESSAGE}. Tell Alexa a command to trigger a flow in Octoblu. If you are experiencing problems, make sure that your Octoblu account is properly linked and that you have linked your echo device properly"
+      @response.shouldEndSession false, "Please say the command you wish to perform"
+      callback null
 
 module.exports = v2HandleLaunchRequest

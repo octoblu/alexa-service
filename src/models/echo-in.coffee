@@ -1,13 +1,13 @@
 _ = require 'lodash'
 
 class EchoIn
-  fromJSON: (str) =>
+  fromRawJSON: (str) =>
     { @flowId, @node } = JSON.parse str
 
   toJSON: =>
     return JSON.stringify { @flowId, @node }
 
-  fromNode: ({ @flowId, @node }) =>
+  fromJSON: ({ @flowId, @node }) =>
 
   name: =>
     return @node.name

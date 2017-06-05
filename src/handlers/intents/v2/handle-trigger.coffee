@@ -1,6 +1,6 @@
 _                    = require 'lodash'
 AuthenticatedHandler = require '../../authenticated-handler'
-EchoInService        = require '../../../services/echo-in-service'
+EchoDeviceService    = require '../../../services/echo-device-service'
 AlexaError           = require '../../../models/alexa-error'
 debug                = require('debug')('alexa-service:handle-trigger')
 
@@ -16,7 +16,7 @@ class HandleTrigger
   handle: (callback) =>
     debug 'handling trigger'
     @authenticatedHandler.handle callback, =>
-      @echoInService = new EchoInService { @meshbluConfig }
+      @echoDeviceService = new EchoDeviceService { @meshbluConfig }
       @_trigger callback, =>
         @_waitForResponse callback
 
@@ -52,11 +52,9 @@ class HandleTrigger
     return callback new AlexaError 'Invalid trigger request' unless name
     { requestId } = @request.data.request
     debug 'triggering', { name, requestId }
-    @echoInService.list (error, list) =>
+    @echoDeviceService.get (error, echoDevice) =>
       return callback error if error?
-      echoIn = list.findByName name
-      return @_missingEchoIn callback unless echoIn?
-      @sessionHandler.saveEchoIn { @sessionId, echoIn }, (error) =>
+      @sessionHandler.saveEchoDevice { @sessionId, echoDevice }, (error) =>
         return callback error if error?
         options = {
           @sessionId,
@@ -64,25 +62,25 @@ class HandleTrigger
           baseUrl: @alexaServiceUri
           type: 'new'
         }
-        message = echoIn.buildMessage options, @request.data.request
-        @echoInService.message message, (error) =>
+        message = echoDevice.buildMessage options, @request.data.request
+        @echoDeviceService.message message, (error) =>
           return callback error if error?
           next()
 
   _triggerLast: (callback, next) =>
     { requestId } = @request.data.request
     debug 'triggering last', { requestId }
-    @sessionHandler.getEchoIn { @sessionId }, (error, echoIn) =>
+    @sessionHandler.getEchoDevice { @sessionId }, (error, echoDevice) =>
       return callback error if error?
-      return callback new AlexaError 'No trigger to reply to' unless echoIn?
+      return callback new AlexaError 'No trigger to reply to' unless echoDevice?
       options = {
         @sessionId,
         responseId: requestId,
         baseUrl: @alexaServiceUri
         type: 'reply'
       }
-      message = echoIn.buildMessage options, @request.data.request
-      @echoInService.message message, (error) =>
+      message = echoDevice.buildMessage options, @request.data.request
+      @echoDeviceService.message message, (error) =>
         return callback error if error?
         next()
 
@@ -96,12 +94,6 @@ class HandleTrigger
     debug 'request timeout'
     @response.say "Response timeout exceeded"
     @response.shouldEndSession true
-    callback null
-
-  _missingEchoIn: (callback) =>
-    debug 'missing echo in'
-    @response.say "No echo-in by that name"
-    @response.shouldEndSession false, "Please say the name of a echo-in associated with your account"
     callback null
 
 module.exports = HandleTrigger

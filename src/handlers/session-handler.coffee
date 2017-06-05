@@ -68,7 +68,7 @@ class SessionHandler
       return callback error if error?
       return callback null unless rawEchoDevice?
       echoDevice = new EchoDevice()
-      echoDevice.fromJSON rawEchoDevice
+      echoDevice.fromRawJSON rawEchoDevice
       callback null, echoDevice
     return # redis fix
 
@@ -78,13 +78,20 @@ class SessionHandler
       return callback error if error?
       return callback null unless rawEchoIn?
       echoIn = new EchoIn()
-      echoIn.fromJSON rawEchoIn
+      echoIn.fromRawJSON rawEchoIn
       callback null, echoIn
     return # redis fix
 
   saveEchoIn: ({ sessionId, echoIn }, callback) =>
     key = "session:#{sessionId}:echo-in"
     @client.set key, echoIn.toJSON(), (error) =>
+      return callback error if error?
+      @client.expire key, @SESSION_TTL, callback
+    return # redis fix
+
+  saveEchoDevice: ({ sessionId, echoDevice }, callback) =>
+    key = "session:#{sessionId}:echo-device"
+    @client.set key, echoDevice.toJSON(), (error) =>
       return callback error if error?
       @client.expire key, @SESSION_TTL, callback
     return # redis fix

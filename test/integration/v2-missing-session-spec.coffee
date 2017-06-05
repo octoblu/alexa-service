@@ -5,7 +5,7 @@ shmock        = require 'shmock'
 uuid          = require 'uuid'
 Server        = require '../../src/server'
 
-describe 'Missing Session', ->
+describe 'Missing Session (v2)', ->
   beforeEach (done) ->
     @meshblu = shmock 0xd00d
     enableDestroy(@meshblu)
@@ -34,12 +34,12 @@ describe 'Missing Session', ->
     @meshblu.destroy()
     @server.destroy()
 
-  describe 'POST /trigger', ->
+  describe 'POST /v2/trigger', ->
     beforeEach (done) ->
-      userAuth = new Buffer('user-uuid:user-token').toString('base64')
+      deviceAuth = new Buffer('device-uuid:device-token').toString('base64')
 
       options =
-        uri: '/trigger'
+        uri: '/v2/trigger'
         baseUrl: "http://localhost:#{@serverPort}"
         json:
           session:
@@ -48,7 +48,7 @@ describe 'Missing Session', ->
               applicationId: "application-id"
             user:
               userId: "user-id",
-              accessToken: userAuth
+              accessToken: deviceAuth
             new: false
           request:
             type: "IntentRequest",
