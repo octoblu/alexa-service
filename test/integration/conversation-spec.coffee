@@ -298,6 +298,7 @@ describe 'Conversation', ->
 
           body =
             response:
+              directives: []
               outputSpeech:
                 type: 'SSML'
                 ssml: '<speak>Howdy</speak>'
@@ -326,6 +327,7 @@ describe 'Conversation', ->
           expect(@body).to.deep.equal
             version: '1.0'
             response:
+              directives: []
               outputSpeech:
                 type: 'SSML'
                 ssml: '<speak>Howdy</speak>'

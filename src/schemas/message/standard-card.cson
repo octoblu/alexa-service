@@ -10,16 +10,22 @@ properties:
         ]
         type: 'string'
       respondTo: {}
+      responseId:
+        title: 'Response ID'
+        type: 'string'
+      endSession:
+        title: 'End Session'
+        type: 'boolean'
+        default: true
     required: [
       'jobType'
+      'responseId'
+      'endSession'
     ]
     type: 'object'
   data:
     type: 'object'
     properties:
-      responseId:
-        title: 'Response ID'
-        type: 'string'
       type:
         title: 'Type'
         type: 'string'
@@ -47,13 +53,7 @@ properties:
           'smallImageUrl',
           'largeImageUrl'
         ]
-      shouldEndSession:
-        title: 'End Session'
-        type: 'boolean'
-        default: true
     required: [
-      'responseId'
       'type'
       'title'
-      'shouldEndSession'
     ]

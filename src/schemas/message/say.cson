@@ -10,25 +10,25 @@ properties:
         ]
         type: 'string'
       respondTo: {}
+      responseId:
+        title: 'Response ID'
+        type: 'string'
+      endSession:
+        title: 'End Session'
+        type: 'boolean'
+        default: true
     required: [
+      'responseId'
+      'endSession'
       'jobType'
     ]
     type: 'object'
   data:
     type: 'object'
     properties:
-      responseId:
-        title: 'Response ID'
-        type: 'string'
       phrase:
         title: 'Phrase'
         type: 'string'
-      shouldEndSession:
-        title: 'End Session'
-        type: 'boolean'
-        default: true
     required: [
-      'responseId'
       'phrase'
-      'shouldEndSession'
     ]

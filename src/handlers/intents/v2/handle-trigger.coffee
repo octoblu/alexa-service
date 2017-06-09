@@ -27,6 +27,7 @@ class HandleTrigger
       debug 'got job response', { error, result }
       return @_requestTimeout callback if error?.code == 504
       return callback error if error?
+      return callback new Error('Missing jobType') unless result?.metadata?.jobType?
       @_handleResponse result
       debug 'calling it done'
       callback null
@@ -37,19 +38,10 @@ class HandleTrigger
     if metadata.jobType == 'Reprompt'
       @response.reprompt data.phrase
     if metadata.jobType == 'SimpleCard'
-      @response.card {
-        type: data.type
-        title: data.title
-        content: data.content
-      }
+      @response.card data
     if metadata.jobType == 'StandardCard'
-      @response.card {
-        type: data.type
-        title: data.title
-        text: data.text
-        image: data.image
-      }
-    @response.shouldEndSession(data.shouldEndSession)
+      @response.card data
+    @response.shouldEndSession metadata.endSession ? true
 
   _intentName: =>
     return @request.data?.request?.intent?.name

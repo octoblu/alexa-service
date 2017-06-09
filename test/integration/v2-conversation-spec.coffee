@@ -88,12 +88,12 @@ describe 'Conversation (v2)', ->
           .reply 200
 
         body =
-          response:
-            directives: []
-            outputSpeech:
-              type: 'SSML'
-              ssml: '<speak>Hello</speak>'
-            shouldEndSession: false
+          metadata:
+            jobType: 'Say'
+            responseId: responseId
+            endSession: false
+          data:
+            phrase: 'Hello'
 
         @sessionHandler.respond { responseId, body }, (error) =>
           return done error if error?
@@ -177,12 +177,12 @@ describe 'Conversation (v2)', ->
             .reply 200
 
           body =
-            response:
-              directives: []
-              outputSpeech:
-                type: 'SSML'
-                ssml: '<speak>Another</speak>'
-              shouldEndSession: true
+            metadata:
+              jobType: 'Say'
+              responseId: responseId
+              endSession: true
+            data:
+              phrase: 'Another'
 
           @sessionHandler.respond { responseId, body }, (error) =>
             return done error if error?
@@ -265,11 +265,12 @@ describe 'Conversation (v2)', ->
             .reply 200
 
           body =
-            response:
-              outputSpeech:
-                type: 'SSML'
-                ssml: '<speak>Howdy</speak>'
-              shouldEndSession: false
+            metadata:
+              jobType: 'Say'
+              responseId: responseId
+              endSession: false
+            data:
+              phrase: 'Howdy'
 
           @sessionHandler.respond { responseId, body }, (error) =>
             return done error if error?
@@ -294,6 +295,7 @@ describe 'Conversation (v2)', ->
           expect(@body).to.deep.equal
             version: '1.0'
             response:
+              directives: []
               outputSpeech:
                 type: 'SSML'
                 ssml: '<speak>Howdy</speak>'
@@ -350,12 +352,12 @@ describe 'Conversation (v2)', ->
               .reply 200
 
             body =
-              response:
-                directives: []
-                outputSpeech:
-                  type: 'SSML'
-                  ssml: '<speak>I am closing</speak>'
-                shouldEndSession: true
+              metadata:
+                jobType: 'Say'
+                responseId: responseId
+                endSession: true
+              data:
+                phrase: 'I am closing'
 
             @sessionHandler.respond { responseId, body }, (error) =>
               return done error if error?

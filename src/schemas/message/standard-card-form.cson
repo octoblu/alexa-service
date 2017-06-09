@@ -1,6 +1,9 @@
 angular: [
   {
-    key: 'data.responseId'
+    key: 'metadata.responseId'
+  }
+  {
+    key: 'metadata.endSession'
   }
   {
     key: 'data.title'
@@ -13,8 +16,5 @@ angular: [
   }
   {
     key: 'data.image.largeImageUrl'
-  }
-  {
-    key: 'data.shouldEndSession'
   }
 ]

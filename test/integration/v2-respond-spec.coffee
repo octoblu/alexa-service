@@ -35,18 +35,22 @@ describe 'Respond (v2)', ->
   afterEach ->
     @server.destroy()
 
-  describe 'POST /v2/respond/:responseId', ->
+  describe 'POST /v2/respond', ->
     describe 'when successful', ->
       beforeEach (done) ->
         options =
-          uri: '/v2/respond/request-id'
+          uri: '/v2/respond'
           baseUrl: "http://localhost:#{@serverPort}"
           json:
-            name: 'Freedom'
+            metadata:
+              responseId: 'right-request-id'
+              jobType: 'Say'
+            data:
+              phrase: 'Freedom'
 
         request.post options, (error, @response, @body) =>
           throw error if error?
-          @sessionHandler.listen { requestId: 'request-id' }, (error, @result) =>
+          @sessionHandler.listen { requestId: 'right-request-id' }, (error, @result) =>
             done error
 
       it 'should respond with 200', ->
@@ -56,20 +60,24 @@ describe 'Respond (v2)', ->
         expect(@body).to.deep.equal success: true
 
       it 'should have the response of Freedom', ->
-        expect(@result.name).to.equal 'Freedom'
+        expect(@result.data.phrase).to.equal 'Freedom'
 
     describe 'when incorrect job key', ->
       beforeEach (done) ->
         @timeout 3000
         options =
-          uri: '/v2/respond/wrong-response-id'
+          uri: '/v2/respond'
           baseUrl: "http://localhost:#{@serverPort}"
           json:
-            name: 'Freedom'
+            metadata:
+              responseId: 'wrong-response-id'
+              jobType: 'Say'
+            data:
+              phrase: 'Terrible'
 
         request.post options, (error, @response, @body) =>
           throw error if error?
-          @sessionHandler.listen { requestId: 'right-response-id' }, (@error) =>
+          @sessionHandler.listen { requestId: 'right-request-id' }, (@error) =>
             done()
 
       it 'should have a timeout error', ->

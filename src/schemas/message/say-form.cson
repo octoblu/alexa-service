@@ -1,11 +1,11 @@
 angular: [
   {
-    key: 'data.responseId'
+    key: 'metadata.responseId'
+  }
+  {
+    key: 'metadata.endSession'
   }
   {
     key: 'data.phrase'
-  }
-  {
-    key: 'data.shouldEndSession'
   }
 ]

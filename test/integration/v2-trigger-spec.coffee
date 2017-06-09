@@ -87,9 +87,13 @@ describe 'Trigger (v2)', ->
           }
           .reply 200
 
-        body = {
-          responseText: 'THIS IS THE RESPONSE TEXT'
-        }
+        body =
+          metadata:
+            jobType: 'Say'
+            responseId: requestId
+          data:
+            phrase: 'THIS IS THE RESPONSE TEXT'
+
         @sessionHandler.respond { responseId: requestId, body }, (error) =>
           return done error if error?
           options =
