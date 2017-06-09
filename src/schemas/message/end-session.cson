@@ -17,10 +17,14 @@ properties:
   data:
     type: 'object'
     properties:
+      responseId:
+        title: 'Response ID'
+        type: 'string'
       shouldEndSession:
         title: 'End Session'
         type: 'boolean'
         default: true
     required: [
+      'responseId'
       'shouldEndSession'
     ]

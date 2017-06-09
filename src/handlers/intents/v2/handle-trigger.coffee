@@ -37,9 +37,18 @@ class HandleTrigger
     if metadata.jobType == 'Reprompt'
       @response.reprompt data.phrase
     if metadata.jobType == 'SimpleCard'
-      @response.card data
+      @response.card {
+        type: data.type
+        title: data.title
+        content: data.content
+      }
     if metadata.jobType == 'StandardCard'
-      @response.card data
+      @response.card {
+        type: data.type
+        title: data.title
+        text: data.text
+        image: data.image
+      }
     @response.shouldEndSession(data.shouldEndSession)
 
   _intentName: =>

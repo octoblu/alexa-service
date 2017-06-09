@@ -1,2 +1,5 @@
 angular: [
+  {
+    key: 'data.responseId'
+  }
 ]

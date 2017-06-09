@@ -17,6 +17,9 @@ properties:
   data:
     type: 'object'
     properties:
+      responseId:
+        title: 'Response ID'
+        type: 'string'
       type:
         title: 'Type'
         type: 'string'
@@ -35,6 +38,7 @@ properties:
         type: 'boolean'
         default: true
     required: [
+      'responseId'
       'type'
       'title'
       'shouldEndSession'

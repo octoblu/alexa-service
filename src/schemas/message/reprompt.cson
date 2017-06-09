@@ -17,6 +17,9 @@ properties:
   data:
     type: 'object'
     properties:
+      responseId:
+        title: 'Response ID'
+        type: 'string'
       phrase:
         title: 'Phrase'
         type: 'string'
@@ -25,6 +28,7 @@ properties:
         type: 'boolean'
         default: true
     required: [
+      'responseId'
       'phrase'
       'shouldEndSession'
     ]
