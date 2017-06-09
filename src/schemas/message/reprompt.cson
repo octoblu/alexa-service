@@ -1,0 +1,30 @@
+title: 'Reprompt'
+type: 'object'
+properties:
+  metadata:
+    properties:
+      jobType:
+        default: 'Reprompt'
+        enum: [
+          'Reprompt'
+        ]
+        type: 'string'
+      respondTo: {}
+    required: [
+      'jobType'
+    ]
+    type: 'object'
+  data:
+    type: 'object'
+    properties:
+      phrase:
+        title: 'Phrase'
+        type: 'string'
+      shouldEndSession:
+        title: 'End Session'
+        type: 'boolean'
+        default: true
+    required: [
+      'phrase'
+      'shouldEndSession'
+    ]

@@ -1,0 +1,14 @@
+title: "Default Configuration"
+type: "object"
+properties:
+  options:
+    title: "Alexa Options"
+    type: "object"
+    properties:
+      intents:
+        title: "Avialable Intents"
+        type: "array"
+        items:
+          type: "string"
+'x-form-schema':
+  angular: "configure.Default.angular"

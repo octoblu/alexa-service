@@ -1,2 +1,3 @@
-require('coffee-script/register');
-require('./command.coffee');
+require("coffee-script/register")
+require("fs-cson/register")
+require("./command.coffee")

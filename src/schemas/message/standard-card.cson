@@ -1,0 +1,55 @@
+title: 'Standard Card'
+type: 'object'
+properties:
+  metadata:
+    properties:
+      jobType:
+        default: 'StandardCard'
+        enum: [
+          'StandardCard'
+        ]
+        type: 'string'
+      respondTo: {}
+    required: [
+      'jobType'
+    ]
+    type: 'object'
+  data:
+    type: 'object'
+    properties:
+      type:
+        title: 'Type'
+        type: 'string'
+        enum: [
+          'Standard',
+        ]
+        default: 'Standard'
+      title:
+        title: 'Title'
+        type: 'string'
+      text:
+        title: 'Text'
+        type: 'string'
+      image:
+        title: 'Image'
+        type: 'object'
+        properties:
+          smallImageUrl:
+            title: 'Small Image URL'
+            type: 'string'
+          largeImageUrl:
+            title: 'Large Image URL'
+            type: 'string'
+        required: [
+          'smallImageUrl',
+          'largeImageUrl'
+        ]
+      shouldEndSession:
+        title: 'End Session'
+        type: 'boolean'
+        default: true
+    required: [
+      'type'
+      'title'
+      'shouldEndSession'
+    ]

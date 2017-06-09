@@ -1,0 +1,11 @@
+angular: [
+  {
+    key: 'data.title'
+  }
+  {
+    key: 'data.content'
+  }
+  {
+    key: 'data.shouldEndSession'
+  }
+]

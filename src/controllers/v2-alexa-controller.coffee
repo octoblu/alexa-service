@@ -32,7 +32,8 @@ class V2AlexaController
     res.sendError error
 
   respond: (req, res) =>
-    { responseId } = req.params
+    { responseId } = req.body.data ? {}
+    return res.sendStatus(422) unless responseId?
     sessionHandler = new SessionHandler { @timeoutSeconds, client: req.redisClient }
     sessionHandler.respond { responseId, body: req.body }, (error) =>
       return res.sendError error if error?

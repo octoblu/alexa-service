@@ -27,21 +27,20 @@ class HandleTrigger
       debug 'got job response', { error, result }
       return @_requestTimeout callback if error?.code == 504
       return callback error if error?
-      @_convertResultToResponse result
+      @_handleResponse result
       debug 'calling it done'
       callback null
 
-  _convertLegacyResult: (result={}) =>
-    { responseText } = result
-    @response.say responseText
-    @response.shouldEndSession true
-
-  _convertJobResult: (data) =>
-    @response.response = _.assign @response.response, data
-
-  _convertResultToResponse: (data={}) =>
-    return @_convertLegacyResult data if data.responseText?
-    return @_convertJobResult data
+  _handleResponse: ({ metadata, data }) =>
+    if metadata.jobType == 'Say'
+      @response.say data.phrase
+    if metadata.jobType == 'Reprompt'
+      @response.reprompt data.phrase
+    if metadata.jobType == 'SimpleCard'
+      @response.card data
+    if metadata.jobType == 'StandardCard'
+      @response.card data
+    @response.shouldEndSession(data.shouldEndSession)
 
   _intentName: =>
     return @request.data?.request?.intent?.name

@@ -13,6 +13,6 @@ class Router
     app.post '/respond/:responseId', @alexaController.respond
 
     app.post '/v2/trigger', @v2AlexaController.trigger
-    app.post '/v2/respond/:responseId', @v2AlexaController.respond
+    app.post '/v2/respond', @v2AlexaController.respond
 
 module.exports = Router

@@ -1,0 +1,26 @@
+title: 'End Session'
+type: 'object'
+properties:
+  metadata:
+    properties:
+      jobType:
+        default: 'EndSession'
+        enum: [
+          'EndSession'
+        ]
+        type: 'string'
+      respondTo: {}
+    required: [
+      'jobType'
+    ]
+    type: 'object'
+  data:
+    type: 'object'
+    properties:
+      shouldEndSession:
+        title: 'End Session'
+        type: 'boolean'
+        default: true
+    required: [
+      'shouldEndSession'
+    ]

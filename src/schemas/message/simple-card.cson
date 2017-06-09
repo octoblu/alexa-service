@@ -1,0 +1,41 @@
+title: 'Simple Card'
+type: 'object'
+properties:
+  metadata:
+    properties:
+      jobType:
+        default: 'SimpleCard'
+        enum: [
+          'SimpleCard'
+        ]
+        type: 'string'
+      respondTo: {}
+    required: [
+      'jobType'
+    ]
+    type: 'object'
+  data:
+    type: 'object'
+    properties:
+      type:
+        title: 'Type'
+        type: 'string'
+        enum: [
+          'Simple',
+        ]
+        default: 'Simple'
+      title:
+        title: 'Title'
+        type: 'string'
+      content:
+        title: 'Content'
+        type: 'string'
+      shouldEndSession:
+        title: 'End Session'
+        type: 'boolean'
+        default: true
+    required: [
+      'type'
+      'title'
+      'shouldEndSession'
+    ]

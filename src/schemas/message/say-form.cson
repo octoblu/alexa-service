@@ -1,0 +1,8 @@
+angular: [
+  {
+    key: 'data.phrase'
+  }
+  {
+    key: 'data.shouldEndSession'
+  }
+]

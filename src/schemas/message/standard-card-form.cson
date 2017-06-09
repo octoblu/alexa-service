@@ -1,0 +1,17 @@
+angular: [
+  {
+    key: 'data.title'
+  }
+  {
+    key: 'data.text'
+  }
+  {
+    key: 'data.image.smallImageUrl'
+  }
+  {
+    key: 'data.image.largeImageUrl'
+  }
+  {
+    key: 'data.shouldEndSession'
+  }
+]
