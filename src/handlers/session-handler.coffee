@@ -5,8 +5,9 @@ EchoDevice = require '../models/echo-device'
 AlexaError = require '../models/alexa-error'
 
 class SessionHandler
-  constructor: ({ timeoutSeconds, @client }) ->
-    throw new Error 'Missing client' unless @client?
+  constructor: ({ timeoutSeconds, @client, @alexaServiceUri }) ->
+    throw new Error 'SessionHandler: requires client' unless @client?
+    throw new Error 'SessionHandler: requires alexaServiceUri' unless @alexaServiceUri?
     if timeoutSeconds
       @SESSION_TTL  = timeoutSeconds * 2
       @RESPONSE_TTL = timeoutSeconds
@@ -67,7 +68,7 @@ class SessionHandler
     @client.get key, (error, rawEchoDevice) =>
       return callback error if error?
       return callback null unless rawEchoDevice?
-      echoDevice = new EchoDevice()
+      echoDevice = new EchoDevice { @alexaServiceUri }
       echoDevice.fromRawJSON rawEchoDevice
       callback null, echoDevice
     return # redis fix

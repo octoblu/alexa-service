@@ -30,7 +30,7 @@ describe 'Respond', ->
       done()
 
     client = new RedisNs 'alexa-service:test', redis.createClient(undefined, dropBufferSupport: true)
-    @sessionHandler = new SessionHandler { timeoutSeconds: 1, client }
+    @sessionHandler = new SessionHandler { timeoutSeconds: 1, client, alexaServiceUri: 'https://alexa.octoblu.dev' }
 
   afterEach ->
     @server.destroy()

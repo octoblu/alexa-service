@@ -3,18 +3,24 @@ EchoDevice  = require '../models/echo-device'
 debug       = require('debug')('alexa-service:echo-in-service')
 
 class EchoDeviceService
-  constructor: ({ meshbluConfig }) ->
+  constructor: ({ meshbluConfig, @alexaServiceUri }) ->
+    throw new Error 'EchoDeviceService: requires meshbluConfig' unless meshbluConfig?
+    throw new Error 'EchoDeviceService: requires alexaServiceUri' unless @alexaServiceUri?
     @meshblu = new MeshbluHttp meshbluConfig
 
   get: (callback) =>
     @meshblu.whoami (error, device) =>
       return callback error if error?
-      echoDevice = new EchoDevice
+      echoDevice = new EchoDevice { @alexaServiceUri }
       echoDevice.fromJSON device
-      callback null, echoDevice 
+      callback null, echoDevice
 
   message: (message, callback) =>
     debug 'messaging', message
     @meshblu.message message, callback
+
+  update: (uuid, properties, callback) =>
+    debug 'update', { uuid, properties }
+    @meshblu.updateDangerously uuid, properties, callback
 
 module.exports = EchoDeviceService

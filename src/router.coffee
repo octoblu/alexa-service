@@ -1,5 +1,6 @@
 AlexaController    = require './controllers/alexa-controller'
 V2AlexaController  = require './controllers/v2-alexa-controller'
+SchemasController   = require './controllers/schemas-controller'
 
 class Router
   constructor: ({timeoutSeconds,meshbluConfig, alexaServiceUri}) ->
@@ -7,6 +8,7 @@ class Router
     throw new Error 'Missing alexaServiceUri' unless alexaServiceUri?
     @alexaController = new AlexaController {timeoutSeconds,meshbluConfig, alexaServiceUri}
     @v2AlexaController = new V2AlexaController {timeoutSeconds,meshbluConfig, alexaServiceUri}
+    @schemasController = new SchemasController {}
 
   route: (app) =>
     app.post '/trigger', @alexaController.trigger
@@ -14,5 +16,8 @@ class Router
 
     app.post '/v2/trigger', @v2AlexaController.trigger
     app.post '/v2/respond', @v2AlexaController.respond
+
+    app.get '/schemas', @schemasController.get
+    app.get '/schemas/:key', @schemasController.get
 
 module.exports = Router

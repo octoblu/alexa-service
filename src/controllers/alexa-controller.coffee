@@ -10,7 +10,7 @@ class AlexaController
 
   trigger: (req, res) =>
     debug 'trigger request', req.body
-    sessionHandler = new SessionHandler { @timeoutSeconds, client: req.redisClient }
+    sessionHandler = new SessionHandler { @timeoutSeconds, client: req.redisClient, @alexaServiceUri }
     sessionHandler.start req.body, (error, { request, response } = {}) =>
       return @handleError res, error if error?
       typeHandler = new TypeHandler {
@@ -33,7 +33,7 @@ class AlexaController
 
   respond: (req, res) =>
     { responseId } = req.params
-    sessionHandler = new SessionHandler { @timeoutSeconds, client: req.redisClient }
+    sessionHandler = new SessionHandler { @timeoutSeconds, client: req.redisClient, @alexaServiceUri }
     sessionHandler.respond { responseId, body: req.body }, (error) =>
       return res.sendError error if error?
       res.status(200).send { success: true }

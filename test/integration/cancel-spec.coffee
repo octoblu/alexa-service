@@ -36,7 +36,7 @@ describe 'Cancel Intent', ->
       done()
 
     client = new RedisNs 'alexa-service:test', redis.createClient(undefined, dropBufferSupport: true)
-    @sessionHandler = new SessionHandler { client, timeoutSeconds: 1 }
+    @sessionHandler = new SessionHandler { client, timeoutSeconds: 1, alexaServiceUri: 'https://alexa.octoblu.dev' }
 
   afterEach ->
     @meshblu.destroy()

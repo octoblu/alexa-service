@@ -1,4 +1,3 @@
-_                    = require 'lodash'
 AuthenticatedHandler = require '../../authenticated-handler'
 EchoDeviceService    = require '../../../services/echo-device-service'
 AlexaError           = require '../../../models/alexa-error'
@@ -16,7 +15,7 @@ class HandleTrigger
   handle: (callback) =>
     debug 'handling trigger'
     @authenticatedHandler.handle callback, =>
-      @echoDeviceService = new EchoDeviceService { @meshbluConfig }
+      @echoDeviceService = new EchoDeviceService { @meshbluConfig, @alexaServiceUri }
       @_trigger callback, =>
         @_waitForResponse callback
 
@@ -59,7 +58,6 @@ class HandleTrigger
         options = {
           @sessionId,
           responseId: requestId,
-          baseUrl: @alexaServiceUri
           type: 'new'
         }
         message = echoDevice.buildMessage options, @request.data.request

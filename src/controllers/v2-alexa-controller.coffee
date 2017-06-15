@@ -10,7 +10,7 @@ class V2AlexaController
 
   trigger: (req, res) =>
     debug 'trigger request', req.body
-    sessionHandler = new SessionHandler { @timeoutSeconds, client: req.redisClient }
+    sessionHandler = new SessionHandler { @timeoutSeconds, client: req.redisClient, @alexaServiceUri }
     sessionHandler.start req.body, (error, { request, response } = {}) =>
       return @handleError res, error if error?
       typeHandler = new TypeHandler {
@@ -35,7 +35,7 @@ class V2AlexaController
     { responseId, jobType } = req.body.metadata ? {}
     return res.sendStatus(422) unless responseId?
     return res.sendStatus(422) unless jobType?
-    sessionHandler = new SessionHandler { @timeoutSeconds, client: req.redisClient }
+    sessionHandler = new SessionHandler { @timeoutSeconds, client: req.redisClient, @alexaServiceUri }
     sessionHandler.respond { responseId, body: req.body }, (error) =>
       return res.sendError error if error?
       res.status(200).send { success: true }
