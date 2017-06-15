@@ -1,3 +1,4 @@
+passport           = require 'passport'
 AlexaController    = require './controllers/alexa-controller'
 V2AlexaController  = require './controllers/v2-alexa-controller'
 SchemasController   = require './controllers/schemas-controller'
@@ -19,5 +20,14 @@ class Router
 
     app.get '/schemas', @schemasController.get
     app.get '/schemas/:key', @schemasController.get
+
+    app.get '/authenticate', passport.authenticate('octoblu', {
+      failureRedirect: '/authenticate/failed',
+    })
+    app.get '/authenticate/callback', passport.authenticate('octoblu', {
+      failureRedirect: '/authenticate/failed',
+    })
+    app.get '/authenticate/failed', (request, response) =>
+      response.status(403).send({ message: 'Unable to authenticate' })
 
 module.exports = Router

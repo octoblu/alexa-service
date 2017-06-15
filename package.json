@@ -47,6 +47,8 @@
     "morgan": "^1.7.0",
     "normalize-url": "^1.5.3",
     "on-finished": "^2.3.0",
+    "passport": "^0.3.2",
+    "passport-octoblu": "^3.0.1",
     "request": "^2.72.0",
     "server-destroy": "^1.0.1",
     "validator": "^7.0.0",

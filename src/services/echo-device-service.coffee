@@ -6,10 +6,13 @@ class EchoDeviceService
   constructor: ({ meshbluConfig, @alexaServiceUri }) ->
     throw new Error 'EchoDeviceService: requires meshbluConfig' unless meshbluConfig?
     throw new Error 'EchoDeviceService: requires alexaServiceUri' unless @alexaServiceUri?
-    @meshblu = new MeshbluHttp meshbluConfig
+    @meshbluHttp = new MeshbluHttp meshbluConfig
 
+  create: (callback) =>
+    @meshbluHttp.register {type: 'alexa:echo-device'}, callback
+    
   get: (callback) =>
-    @meshblu.whoami (error, device) =>
+    @meshbluHttp.whoami (error, device) =>
       return callback error if error?
       echoDevice = new EchoDevice { @alexaServiceUri }
       echoDevice.fromJSON device
@@ -17,10 +20,10 @@ class EchoDeviceService
 
   message: (message, callback) =>
     debug 'messaging', message
-    @meshblu.message message, callback
+    @meshbluHttp.message message, callback
 
   update: (uuid, properties, callback) =>
     debug 'update', { uuid, properties }
-    @meshblu.updateDangerously uuid, properties, callback
+    @meshbluHttp.updateDangerously uuid, properties, callback
 
 module.exports = EchoDeviceService

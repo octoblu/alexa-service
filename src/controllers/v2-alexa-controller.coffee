@@ -5,8 +5,8 @@ debug          = require('debug')('alexa-service:v2-controller')
 
 class V2AlexaController
   constructor: ({ @timeoutSeconds, @meshbluConfig, @alexaServiceUri }) ->
-    throw new Error 'Missing meshbluConfig' unless @meshbluConfig?
-    throw new Error 'Missing alexaServiceUri' unless @alexaServiceUri?
+    throw new Error 'V2AlexaController: requires meshbluConfig' unless @meshbluConfig?
+    throw new Error 'V2AlexaController: requires alexaServiceUri' unless @alexaServiceUri?
 
   trigger: (req, res) =>
     debug 'trigger request', req.body
