@@ -1,14 +1,14 @@
 AuthenticatedHandler = require '../../authenticated-handler'
 EchoDeviceService    = require '../../../services/echo-device-service'
 AlexaError           = require '../../../models/alexa-error'
-debug                = require('debug')('alexa-service:handle-trigger')
+debug                = require('debug')('alexa-service:v2-handle-intent')
 
-class HandleTrigger
+class HandleIntent
   constructor: ({ @alexaServiceUri, @sessionHandler, @meshbluConfig, @request, @response }) ->
-    throw new Error 'Missing sessionHandler' unless @sessionHandler?
-    throw new Error 'Missing alexaServiceUri' unless @alexaServiceUri?
-    throw new Error 'Missing request' unless @request?
-    throw new Error 'Missing response' unless @response?
+    throw new Error 'HandleIntent: requires sessionHandler' unless @sessionHandler?
+    throw new Error 'HandleIntent: requires alexaServiceUri' unless @alexaServiceUri?
+    throw new Error 'HandleIntent: requires request' unless @request?
+    throw new Error 'HandleIntent: requires response' unless @response?
     { @sessionId } = @request.sessionDetails
     @authenticatedHandler = new AuthenticatedHandler { @meshbluConfig, @request, @response }
 
@@ -94,4 +94,4 @@ class HandleTrigger
     @response.shouldEndSession true
     callback null
 
-module.exports = HandleTrigger
+module.exports = HandleIntent

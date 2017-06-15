@@ -1,8 +1,4 @@
-module.exports = {
-  default:               require('./handle-trigger')
-  Trigger:               require('./handle-trigger')
-  ListTriggers:          require('./handle-list-triggers')
-  'AMAZON.HelpIntent':   require('./handle-help')
+module.exports =
+  default:               require('./handle-intent')
   'AMAZON.StopIntent':   require('../v1/handle-stop')
   'AMAZON.CancelIntent': require('../v1/handle-cancel')
-}
