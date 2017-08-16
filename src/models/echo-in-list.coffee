@@ -1,5 +1,6 @@
-_      = require 'lodash'
-EchoIn = require './echo-in'
+_          = require 'lodash'
+EchoIn     = require './echo-in'
+{ filter } = require 'fuzzaldrin'
 
 EMPTY_LIST="You don't have any echo-in triggers. Get started by importing one or more alexa bluprints."
 
@@ -29,9 +30,15 @@ class EchoInList
     return list.join ', and '
 
   findByName: (name) =>
-    name = @sanifyStr name
-    return _.find @_nodes, (node) =>
-      return node.saneName() == name
+    query = @sanifyStr name
+    nodeList = _.map @_nodes, (node) =>
+      return {
+        name: node.saneName()
+        node: node,
+      }
+    result = filter nodeList, query, { maxResults: 1, key: 'name' }
+    matched = _.first result
+    return _.get matched, 'node'
 
   sanifyStr: (str) =>
     return '' unless _.isString str

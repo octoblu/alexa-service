@@ -174,6 +174,137 @@ describe 'Trigger', ->
       it 'should message the flow', ->
         @message.done()
 
+    describe 'when it mostly matches', ->
+      beforeEach (done) ->
+        sessionId = uuid.v1()
+        requestId = uuid.v1()
+        userAuth = new Buffer('user-uuid:user-token').toString('base64')
+
+        @whoami = @meshblu
+          .post '/authenticate'
+          .set 'Authorization', "Basic #{userAuth}"
+          .reply 200, uuid: 'user-uuid', token: 'user-token'
+
+        @searchDevices = @meshblu
+          .post '/search/devices'
+          .set 'Authorization', "Basic #{userAuth}"
+          .set 'X-MESHBLU-PROJECTION', JSON.stringify { uuid: true, 'flow.nodes': true }
+          .send { owner: 'user-uuid', online: true, type: 'octoblu:flow' }
+          .reply 200, [
+            {
+              uuid: 'hello',
+              flow: {
+                nodes: [
+                  {
+                    id: 'weather',
+                    type: 'operation:echo-in',
+                    name: 'the weather'
+                  }
+                  {
+                    id: 'trip-report',
+                    type: 'operation:echo-in',
+                    name: 'the trip report'
+                  }
+                ]
+              }
+            }
+            {
+              uuid: 'bye',
+              flow: {
+                nodes: [
+                  {
+                    id: 'stock',
+                    type: 'operation:echo-in',
+                    name: 'the stock price'
+                  }
+                ]
+              }
+            }
+          ]
+
+        data = {
+          type: "IntentRequest",
+          requestId: requestId,
+          timestamp: "2016-02-12T19:28:15Z",
+          intent:
+            name: "Trigger",
+            slots:
+              Name:
+                name: "Name",
+                value: "weather"
+        }
+
+        @message = @meshblu
+          .post '/messages'
+          .set 'Authorization', "Basic #{userAuth}"
+          .send {
+            devices: ['hello']
+            topic: 'triggers-service'
+            payload:
+              callbackUrl: "https://alexa.octoblu.dev/respond/#{requestId}"
+              callbackMethod: "POST"
+              sessionId: sessionId
+              responseId: requestId
+              from: 'weather'
+              type: 'new'
+              params: data
+              payload: data
+          }
+          .reply 200
+
+        body = {
+          responseText: 'THIS IS THE RESPONSE TEXT'
+        }
+        @sessionHandler.respond { responseId: requestId, body }, (error) =>
+          return done error if error?
+          options =
+            uri: '/trigger'
+            baseUrl: "http://localhost:#{@serverPort}"
+            json:
+              session:
+                sessionId: sessionId,
+                application:
+                  applicationId: "application-id"
+                user:
+                  userId: "user-id",
+                  accessToken: userAuth
+                new: true
+              request:
+                type: "IntentRequest",
+                requestId: requestId,
+                timestamp: "2016-02-12T19:28:15Z",
+                intent:
+                  name: "Trigger",
+                  slots:
+                    Name:
+                      name: "Name",
+                      value: "weather"
+
+          request.post options, (error, @response, @body) =>
+            done error
+
+      it 'should have a body', ->
+        expect(@body).to.deep.equal
+          version: '1.0'
+          response:
+            directives: []
+            outputSpeech:
+              type: 'SSML'
+              ssml: '<speak>THIS IS THE RESPONSE TEXT</speak>'
+            shouldEndSession: true
+
+      it 'should respond with 200', ->
+        expect(@response.statusCode).to.equal 200
+
+      it 'should hit up whoami', ->
+        @whoami.done()
+
+      it 'should search for flows', ->
+        @searchDevices.done()
+
+      it 'should message the flow', ->
+        @message.done()
+
     describe 'when rest service times out', ->
       beforeEach (done) ->
         sessionId = uuid.v1()

@@ -1,6 +1,6 @@
 {
   "name": "alexa-service",
-  "version": "8.5.0",
+  "version": "8.6.0",
   "description": "Alexa Service",
   "main": "command.js",
   "scripts": {
@@ -39,6 +39,7 @@
     "express-redis-pooled-client": "^2.0.0",
     "express-send-error": "^1.1.0",
     "fs-cson": "^0.3.2",
+    "fuzzaldrin": "^2.1.0",
     "ioredis": "^3.1.1",
     "lodash": "^4.13.1",
     "meshblu-config": "^7.0.0",
