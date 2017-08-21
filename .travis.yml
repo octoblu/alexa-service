@@ -1,22 +1,8 @@
 language: node_js
 node_js:
-  - '5'
+  - '8'
 services:
   - redis
-addons:
-  code_climate:
-    repo_token: 7a120486a7e0f5153102b5b74f5211e3330eebcb62f777e2eb1367d7233dfe37
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-    packages:
-      - g++-4.8
-env:
-  - CXX=g++-4.8
-before_script:
-  - npm install -g codeclimate-test-reporter
-after_script:
-  - codeclimate-test-reporter < coverage/lcov.info
 branches:
   only:
     - '/^v[0-9]/'

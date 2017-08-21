@@ -1,8 +1,6 @@
 cors               = require 'cors'
-_                  = require 'lodash'
 morgan             = require 'morgan'
 express            = require 'express'
-onFinished         = require 'on-finished'
 bodyParser         = require 'body-parser'
 errorHandler       = require 'errorhandler'
 enableDestroy      = require 'server-destroy'
@@ -12,9 +10,7 @@ meshbluHealthcheck = require 'express-meshblu-healthcheck'
 RedisPooledClient  = require 'express-redis-pooled-client'
 
 Router             = require './router'
-alexa              = require './middlewares/alexa'
-rawBody            = require './middlewares/raw-body'
-debug              = require('debug')('alexa-service:server')
+verifier           = require 'alexa-verifier-middleware'
 
 class Server
   constructor: (options)->
@@ -22,7 +18,6 @@ class Server
     {@meshbluConfig,@alexaServiceUri} = options
     {@disableAlexaVerification} = options
     {@timeoutSeconds,@redisUri, @namespace} = options
-    {@testCert} = options
     {@maxConnections,@minConnections} = options
     throw new Error 'Missing meshbluConfig' unless @meshbluConfig?
     throw new Error 'Missing namespace' unless @namespace?
@@ -41,8 +36,6 @@ class Server
     app.use morgan 'dev', immediate: false unless @disableLogging
     app.use cors()
     app.use errorHandler()
-    app.use rawBody.generate()
-    app.use bodyParser.json limit : '1mb', defer: true
 
     redisPool = new RedisPooledClient {@namespace, @maxConnections, @minConnections,@redisUri}
     app.use redisPool.middleware()
@@ -50,7 +43,9 @@ class Server
 
     app.options '*', cors()
 
-    app.use '/trigger', alexa.verify { @testCert } unless @disableAlexaVerification
+    app.use '/trigger', verifier unless @disableAlexaVerification
+    app.use '/v2/trigger', verifier unless @disableAlexaVerification
+    app.use bodyParser.json limit : '1mb'
 
     router = new Router {@timeoutSeconds, @meshbluConfig, @alexaServiceUri }
     router.route app
