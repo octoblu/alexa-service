@@ -163,3 +163,47 @@ describe 'List Triggers', ->
 
     it 'should hit up whoami', ->
       @whoami.done()
+
+  describe 'when missing auth', ->
+    beforeEach (done) ->
+      sessionId = uuid.v1()
+      requestId = uuid.v1()
+      @whoami = @meshblu
+        .post '/authenticate'
+        .reply 403, error: message: 'Unauthorized'
+
+      options =
+        uri: '/trigger'
+        baseUrl: "http://localhost:#{@serverPort}"
+        json:
+          session:
+            sessionId: sessionId
+            application:
+              applicationId: "application-id"
+            user:
+              userId: "user-id",
+            new: true
+          request:
+            type: "IntentRequest",
+            requestId: requestId,
+            timestamp: "2016-02-12T19:28:15Z",
+            intent:
+              name: "ListTriggers"
+
+      request.post options, (error, @response, @body) =>
+        done error
+
+    it 'should have a body', ->
+      expect(@body).to.deep.equal
+        version: '1.0'
+        response:
+          directives: []
+          outputSpeech:
+            type: 'SSML'
+            ssml: '<speak>Please go to your Alexa app and link your account.</speak>'
+          card:
+            type: 'LinkAccount'
+          shouldEndSession: true
+
+    it 'should respond with 200', ->
+      expect(@response.statusCode).to.equal 200

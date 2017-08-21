@@ -35,26 +35,11 @@ describe 'Open Intent', ->
     @server.destroy()
 
   describe 'POST /trigger', ->
-    describe 'when successful', ->
+    describe 'when it has auth', ->
       beforeEach (done) ->
         sessionId = uuid.v1()
         requestId = uuid.v1()
         userAuth = new Buffer('user-uuid:user-token').toString('base64')
-
-        @whoami = @meshblu
-          .post '/authenticate'
-          .set 'Authorization', "Basic #{userAuth}"
-          .reply 200, uuid: 'user-uuid', token: 'user-token'
-
-        @searchDevices = @meshblu
-          .post '/search/devices'
-          .set 'Authorization', "Basic #{userAuth}"
-          .set 'X-MESHBLU-PROJECTION', JSON.stringify { uuid: true, 'flow.nodes': true }
-          .send owner: 'user-uuid', type: 'octoblu:flow', online: true
-          .reply 200, [
-            {online: true, flow: nodes: [{name: 'sweet', type: 'operation:echo-in'}]}
-            {online: true, flow: nodes: [{name: 'yay', type: 'operation:echo-in'}]}
-          ]
 
         options =
           uri: '/trigger'
@@ -83,83 +68,45 @@ describe 'Open Intent', ->
             directives: []
             outputSpeech:
               type: 'SSML'
-              ssml: '<speak>This skill allows you to trigger an Octoblu flow that perform a series of events or actions. Currently, Your triggers are sweet, and yay. Say a trigger name to perform the action</speak>'
-            reprompt:
-              outputSpeech:
-                type: "SSML"
-                ssml: "<speak>Please say the name of a trigger associated with your account</speak>"
+              ssml: '<speak>Welcome, this skill allows you to trigger an Octoblu flow that perform a series of events or actions</speak>'
             shouldEndSession: false
 
       it 'should respond with 200', ->
         expect(@response.statusCode).to.equal 200
 
-      it 'should hit up search for flows', ->
-        @searchDevices.done()
+    describe 'when missing auth', ->
+      beforeEach (done) ->
+        sessionId = uuid.v1()
+        requestId = uuid.v1()
 
-      it 'should hit up whoami', ->
-        @whoami.done()
+        options =
+          uri: '/trigger'
+          baseUrl: "http://localhost:#{@serverPort}"
+          json:
+            session:
+              sessionId: sessionId
+              application:
+                applicationId: "application-id"
+              user:
+                userId: "user-id",
+              new: true
+            request:
+              type: "LaunchRequest",
+              requestId: requestId,
+              timestamp: "2016-02-12T19:28:15Z",
 
-  describe 'when missing any triggers', ->
-    beforeEach (done) ->
-      sessionId = uuid.v1()
-      requestId = uuid.v1()
-      userAuth = new Buffer('user-uuid:user-token').toString('base64')
+        request.post options, (error, @response, @body) =>
+          done error
 
-      @whoami = @meshblu
-        .post '/authenticate'
-        .set 'Authorization', "Basic #{userAuth}"
-        .reply 200, uuid: 'user-uuid', token: 'user-token'
-
-      @searchDevices = @meshblu
-        .post '/search/devices'
-        .set 'Authorization', "Basic #{userAuth}"
-        .set 'X-MESHBLU-PROJECTION', JSON.stringify { uuid: true, 'flow.nodes': true }
-        .send owner: 'user-uuid', type: 'octoblu:flow', online: true
-        .reply 200, {
-          devices: []
-        }
-
-      options =
-        uri: '/trigger'
-        baseUrl: "http://localhost:#{@serverPort}"
-        json:
-          session:
-            sessionId: sessionId
-            application:
-              applicationId: "application-id"
-            user:
-              userId: "user-id",
-              accessToken: userAuth
-            new: true
-          request:
-            type: "LaunchRequest",
-            requestId: requestId,
-            timestamp: "2016-02-12T19:28:15Z",
-            intent:
-              name: "ListTriggers"
-
-      request.post options, (error, @response, @body) =>
-        done error
-
-    it 'should have a body', ->
-      expect(@body).to.deep.equal
-        version: '1.0'
-        response:
-          directives: []
-          outputSpeech:
-            type: 'SSML'
-            ssml: "<speak>This skill allows you to trigger an Octoblu flow that perform a series of events or actions. Currently, You don't have any echo-in triggers. Get started by importing one or more alexa bluprints.</speak>"
-          reprompt:
+      it 'should have a body', ->
+        expect(@body).to.deep.equal
+          version: '1.0'
+          response:
+            directives: []
             outputSpeech:
-              type: "SSML"
-              ssml: "<speak>Please say the name of a trigger associated with your account</speak>"
-          shouldEndSession: false
+              type: 'SSML'
+              ssml: '<speak>Welcome, this skill allows you to trigger an Octoblu flow that perform a series of events or actions</speak>'
+            shouldEndSession: false
 
-    it 'should respond with 200', ->
-      expect(@response.statusCode).to.equal 200
-
-    it 'should search for flows', ->
-      @searchDevices.done()
-
-    it 'should hit up whoami', ->
-      @whoami.done()
+      it 'should respond with 200', ->
+        expect(@response.statusCode).to.equal 200

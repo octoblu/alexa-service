@@ -1,5 +1,4 @@
 AuthenticatedHandler = require '../../authenticated-handler'
-EchoInService        = require '../../../services/echo-in-service'
 
 OPEN_MESSAGE="This skill allows you to trigger an Octoblu flow that perform a series of events or actions"
 
@@ -7,7 +6,6 @@ class v2HandleLaunchRequest
   constructor: ({ meshbluConfig, request, @response }) ->
     throw new Error 'Missing request' unless request?
     throw new Error 'Missing response' unless @response?
-    @echoInService        = new EchoInService { meshbluConfig }
     @authenticatedHandler = new AuthenticatedHandler { meshbluConfig, request, @response }
 
   handle: (callback) =>
