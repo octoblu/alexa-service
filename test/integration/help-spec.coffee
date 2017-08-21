@@ -68,11 +68,7 @@ describe 'Help', ->
             directives: []
             outputSpeech:
               type: 'SSML'
-              ssml: '<speak>Tell Alexa to trigger a flow by saying the name of your Echo in thing. If you are experiencing problems, make sure that your Octoblu account is properly linked and that you have your triggers named properly</speak>'
-            reprompt:
-              outputSpeech:
-                type: "SSML"
-                ssml: "<speak>Please say the name of a trigger associated with your account</speak>"
+              ssml: '<speak>Tell Alexa to trigger a flow by saying the name of the desired trigger. If you are experiencing problems, make sure that your Octoblu account is properly linked and that you have your triggers named properly</speak>'
             shouldEndSession: false
 
       it 'should respond with 200', ->
