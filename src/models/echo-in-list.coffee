@@ -24,9 +24,9 @@ class EchoInList
     return EMPTY_LIST if _.isEmpty @_nodes
     count = _.size(@_nodes)
     if count == 1
-      return "You have an available trigger, #{@_names()}. Say #{@_names()} or perform the action"
+      return "You have an available trigger, #{@_names()}. Say #{@_names()} to perform the action"
     if count == 2
-      return "You have two available triggers, #{@_names('and')}. Say #{@_names('or')} or perform the action"
+      return "You have two available triggers, #{@_names('and')}. Say #{@_names('or')} to perform the action"
     return "You have the following available triggers, #{@_names('and')}. Say a trigger name to perform the action"
 
   _names: (joinSep)=>

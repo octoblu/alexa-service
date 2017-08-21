@@ -85,7 +85,7 @@ describe 'List Triggers', ->
             directives: []
             outputSpeech:
               type: 'SSML'
-              ssml: '<speak>You have two available triggers, sweet and yay. Say sweet or yay or perform the action</speak>'
+              ssml: '<speak>You have two available triggers, sweet and yay. Say sweet or yay to perform the action</speak>'
             shouldEndSession: true
 
       it 'should respond with 200', ->
