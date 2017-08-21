@@ -26,7 +26,7 @@ class AlexaMeshbluConfig
       parsedToken = new Buffer(accessToken, 'base64').toString('utf8')
       [ uuid, token ] = parsedToken.split ':'
     catch error
-      console.error "Error parsing access token:", { message: error.message, accessToken }
+      debug "Error parsing access token:", { message: error.message, accessToken }
       return {}
 
     return { uuid, token }

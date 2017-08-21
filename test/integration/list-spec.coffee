@@ -85,7 +85,7 @@ describe 'List Triggers', ->
             directives: []
             outputSpeech:
               type: 'SSML'
-              ssml: '<speak>Your triggers are sweet, and yay. Say a trigger name to perform the action</speak>'
+              ssml: '<speak>You have two available triggers, sweet, and yay. Say a trigger name to perform the action</speak>'
             reprompt:
               outputSpeech:
                 type: "SSML"

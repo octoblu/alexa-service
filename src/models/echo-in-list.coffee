@@ -3,6 +3,7 @@ EchoIn     = require './echo-in'
 { filter } = require 'fuzzaldrin'
 
 EMPTY_LIST="You don't have any echo-in triggers. Get started by importing one or more alexa bluprints."
+TRIGGER_PROMPT="Say a trigger name to perform the action"
 
 class EchoInList
   fromFlows: (flows) =>
@@ -22,7 +23,12 @@ class EchoInList
 
   toString: =>
     return EMPTY_LIST if _.isEmpty @_nodes
-    return "Your triggers are #{@_names()}. Say a trigger name to perform the action"
+    count = _.size(@_nodes)
+    if count == 1
+      return "You have an available trigger, #{@_names()}. #{TRIGGER_PROMPT}"
+    if count == 2
+      return "You have two available triggers, #{@_names()}. #{TRIGGER_PROMPT}"
+    return "You have the following available triggers, #{@_names()}. #{TRIGGER_PROMPT}"
 
   _names: =>
     list = _.map @_nodes, (echoIn) =>
