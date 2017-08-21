@@ -16,7 +16,7 @@ class HandleListTriggers
         debug 'got list of echo-ins', { error }
         return callback error if error?
         @response.say list.toString()
-        @response.shouldEndSession false, "Please say the name of a trigger associated with your account"
+        @response.shouldEndSession true
         callback null
 
 module.exports = HandleListTriggers

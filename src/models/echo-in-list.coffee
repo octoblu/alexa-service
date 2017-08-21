@@ -3,7 +3,6 @@ EchoIn     = require './echo-in'
 { filter } = require 'fuzzaldrin'
 
 EMPTY_LIST="You don't have any echo-in triggers. Get started by importing one or more alexa bluprints."
-TRIGGER_PROMPT="Say a trigger name to perform the action"
 
 class EchoInList
   fromFlows: (flows) =>
@@ -25,15 +24,21 @@ class EchoInList
     return EMPTY_LIST if _.isEmpty @_nodes
     count = _.size(@_nodes)
     if count == 1
-      return "You have an available trigger, #{@_names()}. #{TRIGGER_PROMPT}"
+      return "You have an available trigger, #{@_names()}. Say #{@_names()} or perform the action"
     if count == 2
-      return "You have two available triggers, #{@_names()}. #{TRIGGER_PROMPT}"
-    return "You have the following available triggers, #{@_names()}. #{TRIGGER_PROMPT}"
+      return "You have two available triggers, #{@_names('and')}. Say #{@_names('or')} or perform the action"
+    return "You have the following available triggers, #{@_names('and')}. Say a trigger name to perform the action"
 
-  _names: =>
+  _names: (joinSep)=>
     list = _.map @_nodes, (echoIn) =>
       return echoIn.name()
-    return list.join ', and '
+    if _.size(@_nodes) == 1
+      return list
+    if _.size(@_nodes) == 2
+      return list.join(" #{joinSep} ")
+    last = list.pop()
+    listStr = list.join(" , ")
+    return "#{listStr}, and #{last}"
 
   findByName: (name) =>
     query = @sanifyStr name

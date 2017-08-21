@@ -85,12 +85,8 @@ describe 'List Triggers', ->
             directives: []
             outputSpeech:
               type: 'SSML'
-              ssml: '<speak>You have two available triggers, sweet, and yay. Say a trigger name to perform the action</speak>'
-            reprompt:
-              outputSpeech:
-                type: "SSML"
-                ssml: "<speak>Please say the name of a trigger associated with your account</speak>"
-            shouldEndSession: false
+              ssml: '<speak>You have two available triggers, sweet and yay. Say sweet or yay or perform the action</speak>'
+            shouldEndSession: true
 
       it 'should respond with 200', ->
         expect(@response.statusCode).to.equal 200
@@ -149,11 +145,7 @@ describe 'List Triggers', ->
           outputSpeech:
             type: 'SSML'
             ssml: "<speak>You don't have any echo-in triggers. Get started by importing one or more alexa bluprints.</speak>"
-          reprompt:
-            outputSpeech:
-              type: "SSML"
-              ssml: "<speak>Please say the name of a trigger associated with your account</speak>"
-          shouldEndSession: false
+          shouldEndSession: true
 
     it 'should respond with 200', ->
       expect(@response.statusCode).to.equal 200
