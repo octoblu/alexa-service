@@ -25,10 +25,10 @@ class AlexaController
         return @handleError res, error if error?
         sessionHandler.leave response.response, (error) =>
           return @handleError res, error if error?
-          res.status(200).send response.response
+          res.status(200).json(response.response).send()
 
   handleError: (res, error) =>
-    return res.status(200).send error.response if error instanceof AlexaError
+    return res.status(200).json(error.response).send() if error instanceof AlexaError
     res.sendError error
 
   respond: (req, res) =>
