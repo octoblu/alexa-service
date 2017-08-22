@@ -38,7 +38,7 @@ class IntentHandler
     debug "invalid intent: #{@version}:#{@intentName}"
     message = "Sorry, the application didn't know what to do with that intent."
     @response.say message
-    @response.shouldEndSession true, "Please say the name of a trigger associated with your account"
+    @response.shouldEndSession true
     callback null
 
 module.exports = IntentHandler

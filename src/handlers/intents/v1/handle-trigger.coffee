@@ -101,7 +101,7 @@ class HandleTrigger
   _missingEchoIn: (callback) =>
     debug 'missing echo in'
     @response.say "No echo-in by that name"
-    @response.shouldEndSession false, "Please say the name of a echo-in associated with your account"
+    @response.shouldEndSession true
     callback null
 
 module.exports = HandleTrigger
