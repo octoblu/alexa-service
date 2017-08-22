@@ -86,7 +86,7 @@ describe 'List Triggers', ->
             outputSpeech:
               type: 'SSML'
               ssml: '<speak>You have two available triggers, sweet and yay. Say sweet or yay to perform the action</speak>'
-            shouldEndSession: true
+            shouldEndSession: false
 
       it 'should respond with 200', ->
         expect(@response.statusCode).to.equal 200
@@ -145,7 +145,7 @@ describe 'List Triggers', ->
           outputSpeech:
             type: 'SSML'
             ssml: "<speak>You don't have any echo-in triggers. Get started by importing one or more alexa bluprints.</speak>"
-          shouldEndSession: true
+          shouldEndSession: false
 
     it 'should respond with 200', ->
       expect(@response.statusCode).to.equal 200
