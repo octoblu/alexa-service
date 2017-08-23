@@ -24,10 +24,19 @@ class EchoInList
     return EMPTY_LIST if _.isEmpty @_nodes
     count = _.size(@_nodes)
     if count == 1
-      return "You have an available trigger, #{@_names()}. Say #{@_names()} to perform the action"
+      return "
+        You have an available trigger, #{@_names()}.
+        Say, \"trigger #{@_names()}\" to perform the action
+      "
     if count == 2
-      return "You have two available triggers, #{@_names('and')}. Say #{@_names('or')} to perform the action"
-    return "You have the following available triggers, #{@_names('and')}. Say a trigger name to perform the action"
+      return "
+        You have two available triggers, #{@_names(' and ')}.
+        Say, \"trigger #{@_names('\" or \"trigger ')}\" to perform the action
+      "
+    return "
+      You have the following available triggers, #{@_names(', and ')}.
+      Say \"trigger\" then the name of the trigger to perform the action
+    "
 
   _names: (joinSep)=>
     list = _.map @_nodes, (echoIn) =>
@@ -35,10 +44,10 @@ class EchoInList
     if _.size(@_nodes) == 1
       return list
     if _.size(@_nodes) == 2
-      return list.join(" #{joinSep} ")
+      return list.join("#{joinSep}")
     last = list.pop()
-    listStr = list.join(" , ")
-    return "#{listStr}, and #{last}"
+    listStr = list.join(", ")
+    return "#{listStr}#{joinSep}#{last}"
 
   findByName: (name) =>
     query = @sanifyStr name

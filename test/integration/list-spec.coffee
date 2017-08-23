@@ -36,27 +36,17 @@ describe 'List Triggers', ->
 
   describe 'POST /trigger', ->
     describe 'when successful', ->
-      beforeEach (done) ->
+      beforeEach ->
         sessionId = uuid.v1()
         requestId = uuid.v1()
-        userAuth = new Buffer('user-uuid:user-token').toString('base64')
+        @userAuth = new Buffer('user-uuid:user-token').toString('base64')
 
         @whoami = @meshblu
           .post '/authenticate'
-          .set 'Authorization', "Basic #{userAuth}"
+          .set 'Authorization', "Basic #{@userAuth}"
           .reply 200, uuid: 'user-uuid', token: 'user-token'
 
-        @searchDevices = @meshblu
-          .post '/search/devices'
-          .set 'Authorization', "Basic #{userAuth}"
-          .set 'X-MESHBLU-PROJECTION', JSON.stringify { uuid: true, 'flow.nodes': true }
-          .send { owner: 'user-uuid', type: 'octoblu:flow', online: true }
-          .reply 200, [
-            {online: true, flow: nodes: [{name: 'sweet', type: 'operation:echo-in'}]}
-            {online: true, flow: nodes: [{name: 'yay', type: 'operation:echo-in'}]}
-          ]
-
-        options =
+        @options =
           uri: '/trigger'
           baseUrl: "http://localhost:#{@serverPort}"
           json:
@@ -66,7 +56,7 @@ describe 'List Triggers', ->
                 applicationId: "application-id"
               user:
                 userId: "user-id",
-                accessToken: userAuth
+                accessToken: @userAuth
               new: true
             request:
               type: "IntentRequest",
@@ -75,86 +65,150 @@ describe 'List Triggers', ->
               intent:
                 name: "ListTriggers"
 
-        request.post options, (error, @response, @body) =>
-          done error
+      describe 'when one echo-in exist', ->
+        beforeEach (done) ->
+          @searchDevices = @meshblu
+            .post '/search/devices'
+            .set 'Authorization', "Basic #{@userAuth}"
+            .set 'X-MESHBLU-PROJECTION', JSON.stringify { uuid: true, 'flow.nodes': true }
+            .send { owner: 'user-uuid', type: 'octoblu:flow', online: true }
+            .reply 200, [
+              {online: true, flow: nodes: [{name: 'yay', type: 'operation:echo-in'}]}
+            ]
 
-      it 'should have a body', ->
-        expect(@body).to.deep.equal
-          version: '1.0'
-          response:
-            directives: []
-            outputSpeech:
-              type: 'SSML'
-              ssml: '<speak>You have two available triggers, sweet and yay. Say sweet or yay to perform the action</speak>'
-            shouldEndSession: false
+          request.post @options, (error, @response, @body) =>
+            done error
 
-      it 'should respond with 200', ->
-        expect(@response.statusCode).to.equal 200
+        it 'should have a body', ->
+          expect(@body).to.deep.equal
+            version: '1.0'
+            response:
+              directives: []
+              outputSpeech:
+                type: 'SSML'
+                ssml: '
+                  <speak>You have an available trigger, yay.
+                  Say, "trigger yay" to perform the action</speak>
+                '
+              shouldEndSession: false
 
-      it 'should hit up search your flows', ->
-        @searchDevices.done()
+        it 'should respond with 200', ->
+          expect(@response.statusCode).to.equal 200
 
-      it 'should hit up whoami', ->
-        @whoami.done()
+        it 'should hit up search your flows', ->
+          @searchDevices.done()
 
-  describe 'when missing any triggers', ->
-    beforeEach (done) ->
-      sessionId = uuid.v1()
-      requestId = uuid.v1()
-      userAuth = new Buffer('user-uuid:user-token').toString('base64')
+        it 'should hit up whoami', ->
+          @whoami.done()
 
-      @whoami = @meshblu
-        .post '/authenticate'
-        .set 'Authorization', "Basic #{userAuth}"
-        .reply 200, uuid: 'user-uuid', token: 'user-token'
+      describe 'when two echo-in exist', ->
+        beforeEach (done) ->
+          @searchDevices = @meshblu
+            .post '/search/devices'
+            .set 'Authorization', "Basic #{@userAuth}"
+            .set 'X-MESHBLU-PROJECTION', JSON.stringify { uuid: true, 'flow.nodes': true }
+            .send { owner: 'user-uuid', type: 'octoblu:flow', online: true }
+            .reply 200, [
+              {online: true, flow: nodes: [{name: 'sweet', type: 'operation:echo-in'}]}
+              {online: true, flow: nodes: [{name: 'yay', type: 'operation:echo-in'}]}
+            ]
 
-      @searchDevices = @meshblu
-        .post '/search/devices'
-        .set 'Authorization', "Basic #{userAuth}"
-        .set 'X-MESHBLU-PROJECTION', JSON.stringify { uuid: true, 'flow.nodes': true }
-        .send owner: 'user-uuid', type: 'octoblu:flow', online: true
-        .reply 200, []
+          request.post @options, (error, @response, @body) =>
+            done error
 
-      options =
-        uri: '/trigger'
-        baseUrl: "http://localhost:#{@serverPort}"
-        json:
-          session:
-            sessionId: sessionId,
-            application:
-              applicationId: "application-id"
-            user:
-              userId: "user-id",
-              accessToken: userAuth
-            new: true
-          request:
-            type: "IntentRequest",
-            requestId: requestId,
-            timestamp: "2016-02-12T19:28:15Z",
-            intent:
-              name: "ListTriggers"
+        it 'should have a body', ->
+          expect(@body).to.deep.equal
+            version: '1.0'
+            response:
+              directives: []
+              outputSpeech:
+                type: 'SSML'
+                ssml: '
+                  <speak>You have two available triggers, sweet and yay.
+                  Say, "trigger sweet" or "trigger yay" to perform the action</speak>
+                '
+              shouldEndSession: false
 
-      request.post options, (error, @response, @body) =>
-        done error
+        it 'should respond with 200', ->
+          expect(@response.statusCode).to.equal 200
 
-    it 'should have a body', ->
-      expect(@body).to.deep.equal
-        version: '1.0'
-        response:
-          directives: []
-          outputSpeech:
-            type: 'SSML'
-            ssml: "<speak>You don't have any echo-in triggers. Get started by importing one or more alexa bluprints.</speak>"
-          shouldEndSession: false
+        it 'should hit up search your flows', ->
+          @searchDevices.done()
 
-    it 'should respond with 200', ->
-      expect(@response.statusCode).to.equal 200
+        it 'should hit up whoami', ->
+          @whoami.done()
 
-    it 'should hit up get a list of flows', ->
-      @searchDevices.done()
+      describe 'when three echo-in exist', ->
+        beforeEach (done) ->
+          @searchDevices = @meshblu
+            .post '/search/devices'
+            .set 'Authorization', "Basic #{@userAuth}"
+            .set 'X-MESHBLU-PROJECTION', JSON.stringify { uuid: true, 'flow.nodes': true }
+            .send { owner: 'user-uuid', type: 'octoblu:flow', online: true }
+            .reply 200, [
+              {online: true, flow: nodes: [{name: 'sweet', type: 'operation:echo-in'}]}
+              {online: true, flow: nodes: [{name: 'yay', type: 'operation:echo-in'}]}
+              {online: true, flow: nodes: [{name: 'cool', type: 'operation:echo-in'}]}
+            ]
 
-    it 'should hit up whoami', ->
-      @whoami.done()
+          request.post @options, (error, @response, @body) =>
+            done error
+
+        it 'should have a body', ->
+          expect(@body).to.deep.equal
+            version: '1.0'
+            response:
+              directives: []
+              outputSpeech:
+                type: 'SSML'
+                ssml: '
+                  <speak>You have the following available triggers, sweet, yay, and cool.
+                  Say "trigger" then the name of the trigger to perform the action</speak>
+                '
+              shouldEndSession: false
+
+        it 'should respond with 200', ->
+          expect(@response.statusCode).to.equal 200
+
+        it 'should hit up search your flows', ->
+          @searchDevices.done()
+
+        it 'should hit up whoami', ->
+          @whoami.done()
+
+      describe 'when no echo-in exists', ->
+        beforeEach (done) ->
+          @searchDevices = @meshblu
+            .post '/search/devices'
+            .set 'Authorization', "Basic #{@userAuth}"
+            .set 'X-MESHBLU-PROJECTION', JSON.stringify { uuid: true, 'flow.nodes': true }
+            .send { owner: 'user-uuid', type: 'octoblu:flow', online: true }
+            .reply 200, []
+
+          request.post @options, (error, @response, @body) =>
+            done error
+
+        it 'should have a body', ->
+          expect(@body).to.deep.equal
+            version: '1.0'
+            response:
+              directives: []
+              outputSpeech:
+                type: 'SSML'
+                ssml: "
+                  <speak>You don't have any echo-in triggers.
+                  Get started by importing one or more alexa bluprints.</speak>
+                "
+              shouldEndSession: false
+
+        it 'should respond with 200', ->
+          expect(@response.statusCode).to.equal 200
+
+        it 'should hit up get a list of flows', ->
+          @searchDevices.done()
+
+        it 'should hit up whoami', ->
+          @whoami.done()
 
   describe 'when missing auth', ->
     beforeEach (done) ->
