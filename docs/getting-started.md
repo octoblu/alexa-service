@@ -2,27 +2,20 @@
 
 # Table of Contents
 
-* [Introduction](#introduction)
-* [Getting Started](#getting-started)
-* [Creating Custom Skill](#creating-custom-skill)
+* [Add the Skill](#add-the-skill)
 * [Examples](#examples)
   * [Hello World](#hello-world)
   * [Stock Price](#stock-price)
 
+# Add the Skill
 
-## Introduction
+Go to [https://app.octoblu.com/login](https://app.octoblu.com/login) to sign in, or create a free Octoblu account. Once you've logged into your Octoblu account, add the **Octoblu Flows** skill to Amazon account, see the ["Enable Alexa Skills"](https://www.amazon.com/gp/help/customer/display.html?nodeId=201848700) documentation. When prompted to link your account use your Octoblu credentials.
 
-Octoblu makes it easy to build custom IoT automations. Use our Amazon Alexa Skill to trigger your Octoblu flows via voice commands.
+# Examples
 
-## Getting Started
+## Hello World
 
-Go to [https://app.octoblu.com/login](https://app.octoblu.com/login) to sign in, or create a free Octoblu account. Once you've logged into your Octoblu account, add the "Octoblu Flows" skill to Amazon account, see the ["Enable Alexa Skills"](https://www.amazon.com/gp/help/customer/display.html?nodeId=201848700) documentation. When prompted to link your account use your Octoblu credentials.
-
-## Examples
-
-### Hello World
-
-Once you have an Octoblu account and added the "Octoblu Flows" skill, it is time to create your first Alexa compatible flow.
+Once you have an Octoblu account and added the **Octoblu Flows** skill, it is time to create your first Alexa compatible flow.
 
 1. Create an Octoblu flow by going to [https://app.octoblu.com/my-flows](https://app.octoblu.com/my-flows). From there press the big "+" on left side of the screen. ![Create Flow Figure](https://cdn.octoblu.com/alexa/how-to/create-flow.png)
 2. Add an "Echo In" node to your flow. This can be found by selecting the "Tools" panel on the right hand side and then filtering for "Echo" using the search input on the far bottom right. Click the "Echo In" list item add it your flow. ![Add Echo Node](https://cdn.octoblu.com/alexa/how-to/add-echo-tool.png)
@@ -33,7 +26,7 @@ Once you have an Octoblu account and added the "Octoblu Flows" skill, it is time
 7. Deploy your flow by press the play button in the top right. The flow may ask for permissions, please click "Update & Deploy". The play button on the top right should be solid green when it is successfully deployed. ![Deploy Flow Figure](https://cdn.octoblu.com/alexa/how-to/deploy-flow-button.png)
 8. Now say to Alexa, "Alexa, ask Octoblu to trigger hello world" you should get a response saying "hello world"
 
-### Stock Price
+## Stock Price
 
 1. Using the steps from the [Hello World](#hello-world), create a new flow that will fetch the stock price of a ticker.
 2. Change the name of the "Echo In" node to "stock price".

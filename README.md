@@ -9,4 +9,8 @@
 [![NPM](https://nodei.co/npm/alexa-service.svg?style=flat)](https://npmjs.org/package/alexa-service)
 
 
-## [See Documentation](https://octoblu.github.io/alexa-service)
+## Introduction
+
+Octoblu makes it easy to build custom IoT automations. Use our Amazon Alexa Skill to trigger your Octoblu flows via voice commands.
+
+**[See Documentation](https://octoblu.github.io/alexa-service)**
