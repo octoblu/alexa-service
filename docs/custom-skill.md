@@ -15,15 +15,15 @@ Octoblu hosts an instance of the Alexa Service at [alexa.octoblu.com](https://al
 
 # Creating a Custom Skill
 
-1. Create Amazon Developer Account
-1. See the [Getting Started Guide](https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/getting-started-guide) by Amazon
-1. Add a new skill on the [skill list](https://developer.amazon.com/edw/home.html#/skills/list) page.
-1. **Skill Information**
-  1. Select "Custom Interaction Model"
-  1. Set your Skill Name
-  1. Set the Invocation Name
-1. **Interaction Model**
-  1. Set the Intent Schema to:
+- Create Amazon Developer Account
+- See the [Getting Started Guide](https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/getting-started-guide) by Amazon
+- Add a new skill on the [skill list](https://developer.amazon.com/edw/home.html#/skills/list) page.
+- **Skill Information**
+  - Select "Custom Interaction Model"
+  - Set your Skill Name
+  - Set the Invocation Name
+- **Interaction Model**
+  - Set the Intent Schema to:
 ```json
 {
   "intents": [
@@ -51,8 +51,8 @@ Octoblu hosts an instance of the Alexa Service at [alexa.octoblu.com](https://al
   ]
 }
 ```
-  1. Create a Custom Slot with a type of "TRIGGER" and the values will be the name of the tasks you want to run. The values should be the same of the "echo-in" node name in your flow.
-  1. Add the following generic Sample Utterances
+  - Create a Custom Slot with a type of "TRIGGER" and the values will be the name of the tasks you want to run. The values should be the same of the "echo-in" node name in your flow.
+  - Add the following generic Sample Utterances
 ```json
 {
   "intents": [
@@ -211,38 +211,38 @@ Octoblu hosts an instance of the Alexa Service at [alexa.octoblu.com](https://al
   ]
 }
 ```
-1. **Configuration**
-  1. Set the Endpoint to HTTPS and `https://alexa.octoblu.com/trigger` or the url of your hosted Alexa Service.
-  1. Set Account Linking to "Yes"
-  1. Set the Authorization URL to `https://oauth.octoblu.com/alexa/authorize`
-  1. Create a Oauth Device / Application in Octoblu
-    1. Go to your [all things](https://app.octoblu.com/things/all) page.
-    1. Select and create a new Oauth Device
-    1. Add a name to the Oauth Device
-    1. Set the callbackUrl to the Redirect URL listed on the Configuration Page in your Alexa Skill.
-    1. The Oauth device creating in Octoblu should be discoverable by everyone. This can be set on the permissions tab.
-    1. The UUID and Token will of the device will be needed for the Alexa Skill. You can get the Token by generating a new one in the device configuration page in octoblu.
-  1. The Skill Client ID will be the UUID of the Oauth device you created.
-  1. The Following need to be added to the domain list
+- **Configuration**
+  - Set the Endpoint to HTTPS and `https://alexa.octoblu.com/trigger` or the url of your hosted Alexa Service.
+  - Set Account Linking to "Yes"
+  - Set the Authorization URL to `https://oauth.octoblu.com/alexa/authorize`
+  - Create a Oauth Device / Application in Octoblu
+    - Go to your [all things](https://app.octoblu.com/things/all) page.
+    - Select and create a new Oauth Device
+    - Add a name to the Oauth Device
+    - Set the callbackUrl to the Redirect URL listed on the Configuration Page in your Alexa Skill.
+    - The Oauth device creating in Octoblu should be discoverable by everyone. This can be set on the permissions tab.
+    - The UUID and Token will of the device will be needed for the Alexa Skill. You can get the Token by generating a new one in the device configuration page in octoblu.
+  - The Skill Client ID will be the UUID of the Oauth device you created.
+  - The Following need to be added to the domain list
     - twitter.com
     - facebook.com
     - google.com
     - citrixonline.com
     - github.com
     - octoblu.com
-  1. No scope needs to be set
-  1. Set the Authorization Grant Type to "Auth Code Grant"
-  1. Set the Access Token URI to "https://oauth.octoblu.com/access_token"
-  1. Set the Client Secret to the Token of the Oauth Device
-  1. Set the Client Authentication Scheme to "HTTP Basic"
-  1. Set the terms to "https://app.octoblu.com/terms" or your own terms.
-1. **SSL Certificate**
-  1. Select the option, "My development endpoint has a certificate from a trusted certificate authority"
+  - No scope needs to be set
+  - Set the Authorization Grant Type to "Auth Code Grant"
+  - Set the Access Token URI to "https://oauth.octoblu.com/access_token"
+  - Set the Client Secret to the Token of the Oauth Device
+  - Set the Client Authentication Scheme to "HTTP Basic"
+  - Set the terms to "https://app.octoblu.com/terms" or your own terms.
+- **SSL Certificate**
+  - Select the option, "My development endpoint has a certificate from a trusted certificate authority"
     - If you are hosting your own Alexa Service you may have different requirements for the SSL configuration.
-1. **Publishing Information** (If testing this section is optional)
-  1. This information is specific to your skill
-1. **Privacy & Compliance** (If testing this section is optional)
-  1. This information is specific to your skill
+- **Publishing Information** (If testing this section is optional)
+  - This information is specific to your skill
+- **Privacy & Compliance** (If testing this section is optional)
+  - This information is specific to your skill
 
 If you are getting unauthorized, disable and re-enable your skill, by going to http://alexa.amazon.com/spa/index.html#skills/your-skills and clicking on "link". This should open up another tab, authenticating you with Octoblu.
 
