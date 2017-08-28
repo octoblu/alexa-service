@@ -1,4 +1,4 @@
-**[Home](index.md)** | **[Getting Started](getting-started.md)** | **[Custom Skill](custom-skill.md)**
+**[Home](index.md)** | [Getting Started](getting-started.md) | [Custom Skill](custom-skill.md)
 
 ## Introduction
 
