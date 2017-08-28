@@ -1,3 +1,5 @@
+**->[Home](index.md)**
+
 # Build a Custom Skill
 
 # Table of Contents
