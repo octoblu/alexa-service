@@ -4,13 +4,10 @@
 
 # Table of Contents
 
-* [Getting Started](#getting-started)
 * [Creating a Custom Skill](#creating-a-custom-skill)
 * [Octoblu Usage](#octoblu-usage)
   * [Flows](#flows)
   * [Custom Flows](#custom-flows)
-
-# Getting Started
 
 The Alexa Service, is a micro-service that allows [Octoblu](https://www.octoblu.com) to react and respond to requests from the [Amazon Echo](https://echo.amazon.com) device, or an Alexa App.
 
