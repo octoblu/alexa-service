@@ -1,4 +1,4 @@
-**->[Home](index.md)**
+**[Home](index.md)** | **[Getting Started](getting-started.md)** | **[Custom-Skill](custom-skill.md)**
 
 # Build a Custom Skill
 
