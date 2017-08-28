@@ -1,4 +1,4 @@
-# Octoblu Alexa Skill
+# Getting Started
 
 # Table of Contents
 

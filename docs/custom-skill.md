@@ -1,4 +1,4 @@
-# Build Custom Skill
+# Build a Custom Skill
 
 # Table of Contents
 
