@@ -4,22 +4,19 @@
 
 # Table of Contents
 
-* [Introduction](#introduction)
 * [Getting Started](#getting-started)
-  * [Creating a Custom Skill](#creating-a-custom-skill)
+* [Creating a Custom Skill](#creating-a-custom-skill)
 * [Octoblu Usage](#octoblu-usage)
   * [Flows](#flows)
   * [Custom Flows](#custom-flows)
 
-# Introduction
+# Getting Started
 
 The Alexa Service, is a micro-service that allows [Octoblu](https://www.octoblu.com) to react and respond to requests from the [Amazon Echo](https://echo.amazon.com) device, or an Alexa App.
 
 Octoblu hosts an instance of the Alexa Service at [alexa.octoblu.com](https://alexa.octoblu.com) and is available for public use.
 
-# Getting Started
-
-## Creating a Custom Skill
+# Creating a Custom Skill
 
 1. Create Amazon Developer Account
 1. See the [Getting Started Guide](https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/getting-started-guide) by Amazon
