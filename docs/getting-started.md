@@ -24,7 +24,7 @@ Once you have an Octoblu account and added the **Octoblu Flows** skill, it is ti
 3. Naming your "Echo In" node is important. The name of the "Echo In" node must closely match the command given to Alexa. For example, saying, "Alexa, ask Octoblu to trigger hello world" will trigger an "Echo In" node named "hello world".
 4. Next we need to add an "Echo Out" node to your flow. The "Echo Out" node will be used to reply to the Alexa request. This means you give Alexa a customer response to say. You can add the node using the instructions in step 2.
 5. Draw a wire between the "Echo In" node and the "Echo Out" node. Drag from the port on the right of the "Echo In" node and connect it to the port on the left of the "Echo Out" node.
-6. Configure the "Echo Out" node by selecting it and using the configuration panel on the right. Set the "Callback Url" field to `{{msg.callbackUrl}}` and the "Response Text" field should be set to "Hello World".
+6. Configure the "Echo Out" node by selecting it and using the configuration panel on the right. Set the "Callback Url" field to "{{msg.callbackUrl}}" and the "Response Text" field should be set to "Hello World".
 7. Deploy your flow by press the play button in the top right. The flow may ask for permissions, please click "Update & Deploy". The play button on the top right should be solid green when it is successfully deployed. ![Deploy Flow Figure](https://cdn.octoblu.com/alexa/how-to/deploy-flow-button.png)
 8. Now say to Alexa, "Alexa, ask Octoblu to trigger hello world" you should get a response saying "hello world"
 
