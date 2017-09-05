@@ -5,9 +5,16 @@
 # Table of Contents
 
 * [Add the Skill](#add-the-skill)
+* [How it Works](#how-it-works)
 * [Examples](#examples)
   * [Hello World](#hello-world)
   * [Stock Price](#stock-price)
+
+# How it Works
+
+The **Octoblu Flows** skill works by linking you Octoblu account to your Amazon account. When linked and using the skill via voice commands to Alexa, you can interact with your flows that are configured with "Echo In" and "Echo Out" nodes. When triggering a flow, you can say `Alexa, ask Octoblu to trigger <insert echo in name here>` which will send the Alexa request to the matching "Echo In" node.
+
+After Alexa is given the command, the matching flow should receive the request and will perform the actions specified in the flow. When done, the flow needs to respond to the request using the callback url in the request. You can add your own custom response text when responding to the request.
 
 # Add the Skill
 
