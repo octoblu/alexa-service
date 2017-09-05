@@ -4,8 +4,8 @@
 
 # Table of Contents
 
-* [Add the Skill](#add-the-skill)
 * [How it Works](#how-it-works)
+* [Add the Skill](#add-the-skill)
 * [Examples](#examples)
   * [Hello World](#hello-world)
   * [Stock Price](#stock-price)
@@ -21,6 +21,8 @@ After Alexa is given the command, the matching flow should receive the request a
 Go to [https://app.octoblu.com/login](https://app.octoblu.com/login) to sign in, or create a free Octoblu account. Once you've logged into your Octoblu account, add the **Octoblu Flows** skill to Amazon account, see the ["Enable Alexa Skills"](https://www.amazon.com/gp/help/customer/display.html?nodeId=201848700) documentation. When prompted to link your account use your Octoblu credentials.
 
 # Examples
+
+Here are a few examples to get started with.
 
 ## Hello World
 
@@ -47,4 +49,4 @@ Once you have an Octoblu account and added the **Octoblu Flows** skill, it is ti
 8. Configure the stock price node with the Ticker symbol of your choice. For example, Citrix's ticker symbol is `CTXS`.
 9. Configure the "Echo Out" node with the "Callback Url" field of `{{msg.callbackUrl}}` and the "Response Text" should something like `The stock price is {{msg.price}}`.
 10. Deploy your flow by press the play button in the top right. The flow may ask for permissions, please click "Update & Deploy". The play button on the top right should be solid green when it is successfully deployed.
-11. Now, say to Alexa, "Alexa, ask Octoblu to get the stock price." It should respond with "The stock price is 75.427"
+11. Now, say to Alexa, "Alexa, ask Octoblu to get the stock price." Alexa should respond with "The stock price is 75.427"
